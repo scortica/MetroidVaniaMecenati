@@ -57,6 +57,7 @@ function mainMenu.enter(stateMachine)
             textColor = {0, 0, 0}
         },
 
+
         credits = {
             x = 980,
             y = 700,
@@ -147,10 +148,9 @@ function mainMenu.draw()
         -- Draw quit button
         love.graphics.setColor(uiButtons.quit.currentColor)
         love.graphics.rectangle("fill", uiButtons.quit.x, uiButtons.quit.y, uiButtons.quit.width, uiButtons.quit.height)
-        -- Draw play button text
+        -- Draw quit button text
         love.graphics.setColor(uiButtons.quit.textColor)
         love.graphics.print(uiButtons.quit.text, uiButtons.quit.x + 10, uiButtons.quit.y + 10)
-
 
          -- Draw credits button rectangle
         love.graphics.setColor(uiButtons.credits.currentColor)
@@ -212,14 +212,10 @@ function mainMenu.mousemoved(x, y, dx, dy, istouch)
         elseif isMouseOverButton(uiButtons.quit, transformedX, transformedY) then
             uiButtons.quit.currentColor = {0,0,0}
             uiButtons.quit.textColor = {1, 1, 1}
-        elseif isMouseOverButton(uiButtons.credits, transformedX, transformedY) then
-            uiButtons.credits.currentColor = {0,0,0}
-            uiButtons.credits.textColor = {1, 1, 1}
         else
             -- Reset the colors
             uiButtons.play.currentColor = uiButtons.play.releasedColor
             uiButtons.quit.currentColor = uiButtons.quit.releasedColor
-            uiButtons.credits.currentColor = uiButtons.credits.releasedColor
             uiButtons.play.textColor = {0, 0, 0}
             uiButtons.quit.textColor = {0, 0, 0}
             uiButtons.credits.textColor = {0, 0, 0}

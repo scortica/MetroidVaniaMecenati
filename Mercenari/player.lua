@@ -13,21 +13,23 @@ function player.new(params)
     params = params or {}
 
     -- esempi di parametri o valori preimportati
-    self.x = params.x or 100
-    self.y = params.y or 100
-    self.width = params.width or 10
-    self.height = params.height or 10
+    self.x = params.x or 800
+    self.y = params.y or 500
+    self.dx = 0
+    self.dy = 0
+    self.width = params.width or 128
+    self.height = params.height or 128
     self.speed = params.speed or 3
+    self.gravity = 110
     self.scale = params.scale or 1
     self.defaultSpeed = self.speed
     self.lp= params.lp or 100
 
-    self.isjump=false
-    self.jumpHeight=30
-    self.jumpVelocity = 100 -- Velocità del salto
-    self.groundLevel = self.y -- Livello del suolo
+    self.collider = params.collider
 
-    --self.spriteSheetPath = 'sprites/playerSheet.png'
+
+    self.spriteSheetPath = 'Assets/Sprites/player.png'
+    self.playerSprite = nil
 
     self.mouseX=nil
     self.mouseY=nil
@@ -45,62 +47,44 @@ function player.mousepressed(x, y, button, istouch, presses)
     end
 end
 
---[[local function atan2(x,y)
-    if x>0 then return math.atan(y/x)
-    elseif x<0 and y>=0 then return math.atan(y/x)+math.pi
-    elseif x<0 and y<0 then return math.atan(y/x)-math.pi
-    elseif x==0 and y>0 then return math.pi/2
-    elseif x==0 and y<0 then return -math.pi/2
-    else return 0 --nel caso in cui x e y sono 0 end 
-    end
-end
 
-function player:getLookAtPointRotation()
-    return atan2((self.x-self.mouseX),(self.y-self.mouseY))-math.pi/2
-end]]
 ---------------------------------------
 
 
+
 function player:load()
-    --image=love.graphics.newImage(self.spriteSheetPath)
+    self.playerSprite=love.graphics.newImage(self.spriteSheetPath)
     --local grid= anim8.newGrid(64,64, image:getWidth(), image:getHeight())
     --animation = anim8.newAnimation(grid('1-10',1),0.3)
+    self.t = self.jumpMaxTime
     print("Player loaded")
 end
 
 ---------------------------------------
 ---FUNZIONI LOVE
 function player:update(dt)
-
-    -- Gestione del salto
-    if self.isjump then
-        self.y = self.y - self.jumpVelocity * dt
-        
-
-        if  self.y >= self.groundLevel + self.jumpHeight then
-            self.y = self.y + self.jumpHeight
-        end
-
-        -- Controllo per atterraggio
-        if self.y >= self.groundLevel then
     
-        end
-    end
-
+    -- Gestione del salto
+    local px, py = self.collider:getLinearVelocity()
     -- Movimento laterale
-    if love.keyboard.isDown("a") then
-        if not movementDirections.left and not movementDirections.right then
-            self.x = self.x - self.speed * dt
+    if love.keyboard.isDown("space") then
+        if py >= 0 and py <= 0.5 then
+            self.collider:applyLinearImpulse(0, -100)
         end
     end
-
-    if love.keyboard.isDown("d") then
-        if not movementDirections.right and not movementDirections.left then
-            self.x = self.x + self.speed * dt
-        end
+    if love.keyboard.isDown("a") and px >= -150 then
+        --self.dx = self.speed * -1
+        self.collider:applyForce(-500, 0)
+    elseif love.keyboard.isDown("d") and px <= 150  then
+        --self.dx = self.speed
+        self.collider:applyForce(500, 0)
+    else
+        --self.dx = 0
     end
 
+    
 
+    --self.collider:setLinearVelocity(self.dx, self.dy)
     --animation:update(dt)
 
 end
@@ -110,7 +94,7 @@ local myColor = {1, 1, 1, 1}
 function player:draw()
     --animation:draw(image, self.x, self.y)
     love.graphics.setColor(myColor)
-    love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
+    love.graphics.draw(self.playerSprite, self.x, self.y, 0, 0.5, 0.5, self.playerSprite:getWidth()/2, self.playerSprite:getHeight()/2)
 end
 ---------------------------------------
 
