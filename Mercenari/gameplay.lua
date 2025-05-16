@@ -29,7 +29,19 @@ local player = nil
 --------------------------------------------------
 function gameplay.enter(stateMachine)
     stateMachineRef = stateMachine
-    
+    Pause.load({
+        onResume = function()
+            ispause = false
+        end,
+        onMainMenu = function()
+            ispause = false
+            if stateMachineRef then
+                stateMachineRef.changeState("mainMenu")
+            else
+                print("Error: state_machine_ref is nil")
+            end
+        end
+    })
     cam = camera()
     map = sti('Assets/Maps/TestMap4.lua')
     world = wf.newWorld(0, 200, true)
@@ -79,7 +91,7 @@ end
 
 function gameplay.update(dt)
     if ispause then
-        Pause:load()
+        
         Pause:update(dt)
     else
         world:update(dt)
@@ -121,6 +133,18 @@ end
 -- FUNZIONI LOVE
 --------------------------------------------------
 ---
+
+function gameplay.mousemoved(x, y, dx, dy, istouch)
+    Pause.mousemoved(x, y, dx, dy, istouch)
+end
+
+function gameplay.mousepressed(x, y, button, istouch, presses)
+    Pause.mousepressed(x, y, button, istouch, presses)
+end
+
+function gameplay.mousereleased(x, y, button, istouch, presses)
+    Pause.mousereleased(x, y, button, istouch, presses)
+end
 function  gameplay.keypressed(key, scancode, isrepeat)
     
     if key == "space"  then

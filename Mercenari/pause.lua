@@ -1,5 +1,5 @@
 local pause = {}
-local stateMachineRef = nil
+local callbacks = {}
 
 local uiButtons = nil
 
@@ -8,8 +8,8 @@ local function isMouseOverButton(button, x, y)
            (y >= button.y and y <= button.y + button.height)
 end
 
-function pause.load()
-
+function pause.load(cb)
+    callbacks = cb or {}
     uiButtons = {
         resume = {
             x = 980,
@@ -148,28 +148,19 @@ function pause.mousereleased(x, y, button, istouch, presses)
     if uiButtons then
         if isMouseOverButton(uiButtons.resume, transformedX, transformedY) then
             uiButtons.resume.currentColor = uiButtons.resume.releasedColor
-
-            -- Change to gameplay state, or any other state
-            if stateMachineRef then
-                stateMachineRef.changeState("gameplay")
-            else
-                print("Error: state_machine_ref is nil")
-            end
+            if callbacks.onResume then callbacks.onResume() end -- Call the onResume callback
 
         elseif isMouseOverButton(uiButtons.mainMenu, transformedX, transformedY) then
             uiButtons.mainMenu.currentColor = uiButtons.mainMenu.releasedColor 
-            if stateMachineRef then
-                stateMachineRef.changeState("mainMenu")
-            else
-                print("Error: state_machine_ref is nil")
-            end
+            if callbacks.onMainMenu then callbacks.onMainMenu() end -- Call the onMainMenu callback
         elseif isMouseOverButton(uiButtons.keybinds, transformedX, transformedY) then
             uiButtons.keybinds.currentColor = uiButtons.keybinds.releasedColor    
-             if stateMachineRef then
+             ------------------MODIFICARE PER METTERE KEYBINDS------------------
+            --[[if stateMachineRef then
                 stateMachineRef.changeState("keybinds")
             else
                 print("Error: state_machine_ref is nil")
-            end
+            end]]
 
         end
     end
@@ -179,9 +170,7 @@ end
 function pause.keyreleased(key, scancode)
 
     if key == "escape" then
-            if stateMachineRef ~= nil then
-                stateMachineRef.changeState("gameplay")
-            end
+            if callbacks.onResume then callbacks.onResume() end
         end
     if key == "f11" then
             -- Toggle fullscreen mode
