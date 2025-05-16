@@ -10,6 +10,8 @@ end
 
 function pause.load(cb)
     callbacks = cb or {}
+
+    --pauseMenu = sti("Assets/Images/pauseMenu.lua")
     uiButtons = {
         resume = {
             x = 980,
@@ -56,7 +58,18 @@ function pause.update(dt)
 end
 
 function pause.draw()
+    love.graphics.push()
+    love.graphics.translate(SETTINGS.DISPLAY.OFFSETX, SETTINGS.DISPLAY.OFFSETY)
+    love.graphics.scale(SETTINGS.DISPLAY.SCALE)
+
     if uiButtons then
+        love.graphics.setColor(1, 1, 1, 1)
+        --pauseMenu:drawLayer(pauseMenu.layers["Background"])
+
+        love.graphics.setColor(1, 1, 1, 0.5)
+        --pauseMenu:drawLayer(pauseMenu.layers["Block"])
+
+        love.graphics.setColor(1, 1, 1, 1)
         -- Draw resume button rectangle
         love.graphics.setColor(uiButtons.resume.currentColor)
         love.graphics.rectangle("fill", uiButtons.resume.x, uiButtons.resume.y, uiButtons.resume.width, uiButtons.resume.height)
@@ -80,6 +93,12 @@ function pause.draw()
         love.graphics.print(uiButtons.mainMenu.text, uiButtons.mainMenu.x + 10, uiButtons.mainMenu.y + 10)
 
     end
+
+    -- Reset line width
+    love.graphics.setLineWidth(1)
+
+    -- End of scaled draw
+    love.graphics.pop()
 end
 
 function pause.mousemoved(x, y, dx, dy, istouch)
