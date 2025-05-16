@@ -33,21 +33,47 @@ function gameplay.enter(stateMachine)
     cam = camera()
     map = sti('Assets/Maps/TestMap4.lua')
     world = wf.newWorld(0, 200, true)
+    world:addCollisionClass('Platform')
+    world:addCollisionClass('Player')
 
     
     player = Player.new({x = 100,y = 200, speed = 100, collider = world:newBSGRectangleCollider(100, 200, 25, 25, 2)})
     if player then 
         player:load() 
         player.collider:setFixedRotation(true)
+        player.collider:setCollisionClass("Player")
     end
     platforms = {}
     if map.layers["Platform"] then
         for i, obj in pairs(map.layers["Platform"].objects) do
             local platform = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)--[[bf.Collider.new(world, "Polygon", {obj.x, obj.y, obj.x + obj.width, obj.height, obj.x, obj.y + obj.height})]] 
             platform:setType("static")
+            platform:setCollisionClass("Platform")
             table.insert(platforms, platform)
         end
     end
+
+    player.collider:setPreSolve(function(collider_1, collider_2, contact)
+    if collider_1.collision_class == 'Player' and collider_2.collision_class == 'Platform' then
+        
+        local px, py = collider_1:getPosition()
+        local pw, ph = 25, 25 -- usa le dimensioni reali del player
+        local tx, ty = collider_2:getPosition()
+        local tw, th = collider_2:getObject() and collider_2:getObject().width or 0, collider_2:getObject() and collider_2:getObject().height or 0
+        -- Se il player è sopra la piattaforma
+        if py + ph/2 <= ty - th/2 + 5 then
+            player.isGrounded = true
+        else    
+            player.isGrounded = false
+        end
+    end
+end)
+
+player.collider:setPostSolve(function(collider_1, collider_2, contact, normalimpulse, tangentimpulse)
+    if collider_1.collision_class == 'Player' and collider_2.collision_class == 'Platform' then
+        player.grounded = false
+    end
+end)
     
 end
 
@@ -102,6 +128,7 @@ function  gameplay.keypressed(key, scancode, isrepeat)
             
 
                 player.isJump = true
+                player.isGrounded = false
            
         end
        

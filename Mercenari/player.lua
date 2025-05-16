@@ -25,10 +25,10 @@ function player.new(params)
     self.defaultSpeed = self.speed
     self.lp= params.lp or 100
     self.jumpNum = 0
-    self.jumpResetTime = 0.1
+    self.jumpResetTime = 0.095
     self.isJump = false
     self.collider = params.collider
-
+    self.isGrounded = false
 
     self.spriteSheetPath = 'Assets/Sprites/player.png'
     self.playerSprite = nil
@@ -50,6 +50,8 @@ function player.mousepressed(x, y, button, istouch, presses)
 end
 
 
+
+
 ---------------------------------------
 
 
@@ -63,26 +65,27 @@ end
 ---------------------------------------
 ---FUNZIONI LOVE
 function player:update(dt)
+    print(self.isGrounded)
     -- Gestione del salto
     local px, py = self.collider:getLinearVelocity()
     -- Movimento laterale
+    
+
+    if self.isGrounded then
+        self.jumpNum = 0
+    end
+    
     if self.isJump then
         
-        if self.jumpNum < 2 and py > -30 and py < 30 then
+        if self.jumpNum < 1 and py > -30 and py < 30 then
+
             self.collider:applyLinearImpulse(0, -150)
+         
             self.jumpNum = self.jumpNum + 1
-            self.jumpResetTime = 0.5
         end
             self.isJump = false
     end
 
-    if py == 0 then
-        self.jumpResetTime = self.jumpResetTime - dt
-        if self.jumpResetTime <= 0 then
-            self.jumpNum = 0
-            self.jumpResetTime = 0.5
-        end
-    end
     if love.keyboard.isDown("a") and px >= -150 then
         --self.dx = self.speed * -1
         self.collider:applyForce(-500, 0)
