@@ -24,7 +24,9 @@ function player.new(params)
     self.scale = params.scale or 1
     self.defaultSpeed = self.speed
     self.lp= params.lp or 100
-
+    self.jumpNum = 0
+    self.jumpResetTime = 0.1
+    self.isJump = false
     self.collider = params.collider
 
 
@@ -56,20 +58,29 @@ function player:load()
     self.playerSprite=love.graphics.newImage(self.spriteSheetPath)
     --local grid= anim8.newGrid(64,64, image:getWidth(), image:getHeight())
     --animation = anim8.newAnimation(grid('1-10',1),0.3)
-    self.t = self.jumpMaxTime
-    print("Player loaded")
 end
 
 ---------------------------------------
 ---FUNZIONI LOVE
 function player:update(dt)
-    
     -- Gestione del salto
     local px, py = self.collider:getLinearVelocity()
     -- Movimento laterale
-    if love.keyboard.isDown("space") then
-        if py >= 0 and py <= 0.5 then
-            self.collider:applyLinearImpulse(0, -100)
+    if self.isJump then
+        
+        if self.jumpNum < 2 and py > -30 and py < 30 then
+            self.collider:applyLinearImpulse(0, -150)
+            self.jumpNum = self.jumpNum + 1
+            self.jumpResetTime = 0.5
+        end
+            self.isJump = false
+    end
+
+    if py == 0 then
+        self.jumpResetTime = self.jumpResetTime - dt
+        if self.jumpResetTime <= 0 then
+            self.jumpNum = 0
+            self.jumpResetTime = 0.5
         end
     end
     if love.keyboard.isDown("a") and px >= -150 then
@@ -79,7 +90,11 @@ function player:update(dt)
         --self.dx = self.speed
         self.collider:applyForce(500, 0)
     else
-        --self.dx = 0
+        if px > 0 then
+            self.collider:applyForce(-(px + 200), 0)
+        elseif px < 0 then
+            self.collider:applyForce(-(px - 200), 0)
+        end
     end
 
     

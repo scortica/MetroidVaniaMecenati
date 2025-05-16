@@ -32,7 +32,7 @@ function gameplay.enter(stateMachine)
     
     cam = camera()
     map = sti('Assets/Maps/TestMap4.lua')
-    world = wf.newWorld(0, 100, true)
+    world = wf.newWorld(0, 200, true)
 
     
     player = Player.new({x = 100,y = 200, speed = 100, collider = world:newBSGRectangleCollider(100, 200, 25, 25, 2)})
@@ -99,21 +99,21 @@ function  gameplay.keypressed(key, scancode, isrepeat)
     
     if key == "space"  then
         if player then
-            local px, py = player.collider:getLinearVelocity()
-            if not player.isjump and py >= 0 and py <= 1 then
+            
 
-                player.isjump = true
-            end
+                player.isJump = true
+           
         end
        
     end
 end
 
 function gameplay.keyreleased(key, scancode)
-
+   
     if key == "escape" then
         ispause = not ispause
     end
+    
 
     if key == "f1" then
         debugText = not debugText
