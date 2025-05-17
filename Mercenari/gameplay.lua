@@ -47,9 +47,13 @@ function gameplay.enter(stateMachine)
     world = wf.newWorld(0, 200, true)
     world:addCollisionClass('Platform')
     world:addCollisionClass('Player')
+    world:addCollisionClass('PlayerAttack', {ignores = {'Player'}})
+    world:addCollisionClass('Enemy')
+    world:addCollisionClass('EnemyAttack')
+
 
     
-    player = Player.new({x = 100,y = 200, speed = 100, collider = world:newBSGRectangleCollider(100, 200, 25, 25, 2)})
+    player = Player.new({x = 100,y = 200, speed = 100})
     if player then 
         player:load() 
         player.collider:setFixedRotation(true)
@@ -66,8 +70,8 @@ function gameplay.enter(stateMachine)
     end
 
     player.collider:setPreSolve(function(collider_1, collider_2, contact)
+
     if collider_1.collision_class == 'Player' and collider_2.collision_class == 'Platform' then
-        
         local px, py = collider_1:getPosition()  -- posizione del player.collider
         local pw, ph = 25, 25 -- usa le dimensioni reali del player
         local tx, ty = collider_2:getPosition() -- posizione della piattaforma
@@ -86,6 +90,20 @@ player.collider:setPostSolve(function(collider_1, collider_2, contact, normalimp
         player.grounded = false
     end
 end)
+
+player.attackCollider:setPreSolve(function(collider_1, collider_2, contact)
+    if collider_1.collision_class == 'PlayerAttack' and collider_2.collision_class == 'Enemy' then
+       if not player.attackHasHit then
+            --Logica attacco Nemico
+            player.attackHasHit = true
+        end
+    end
+end)
+
+    map:resize(love.graphics.getWidth(), love.graphics.getHeight())
+    map:drawLayer(map.layers["Background"])
+    map:drawLayer(map.layers["Block"])
+    cam:lookAt(player.x, player.y)
     
 end
 
@@ -139,7 +157,13 @@ function gameplay.mousemoved(x, y, dx, dy, istouch)
 end
 
 function gameplay.mousepressed(x, y, button, istouch, presses)
-    Pause.mousepressed(x, y, button, istouch, presses)
+    if ispause then
+        Pause.mousepressed(x, y, button, istouch, presses)
+    end
+    if player then
+        player:mousepressed(x, y, button, istouch, presses)
+    end
+
 end
 
 function gameplay.mousereleased(x, y, button, istouch, presses)
@@ -149,8 +173,6 @@ function  gameplay.keypressed(key, scancode, isrepeat)
     
     if key == "space"  then
         if player then
-            
-
                 player.isJump = true
                 player.isGrounded = false
            
