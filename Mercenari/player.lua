@@ -16,7 +16,6 @@ function player.new(params)
     self.x = params.x or 800
     self.y = params.y or 500
     self.dx = 0
-    self.dy = 0
     self.width = params.width or 128
     self.height = params.height or 128
     self.speed = params.speed or 3
@@ -27,7 +26,7 @@ function player.new(params)
     self.jumpNum = 0
     self.jumpResetTime = 0.095
     self.isJump = false
-    self.collider = params.collider
+    self.collider = world:newBSGRectangleCollider(params.x, params.y, 25, 25, 2)  -- collider del player windfield
     self.isGrounded = false
 
     self.spriteSheetPath = 'Assets/Sprites/player.png'
@@ -36,16 +35,31 @@ function player.new(params)
     self.mouseX=nil
     self.mouseY=nil
 
+    self.isAttacking = false
+    self.attackHasHit = false
+    self.attackTimer = 0
+    self.attackDuration = 0.5
+    self.attackCollider = world:newRectangleCollider(params.x, params.y, 25, 25) -- collider dell'attacco windfield
+
     return self
 end
 
 local debugText = true
-local movementDirections={up=false,down=false,left=false,right=false,shift=false}
 
-function player.mousepressed(x, y, button, istouch, presses)
+function player:mousepressed(x, y, button, istouch, presses)
 
-    if button == 1 then -- Left mouse button
-        if debugText then print("Left mouse button pressed") end
+    -- Se il player non è in attacco e il tasto sinistro del mouse è premuto
+    -- attiva l'attacco e resetta il timer dell'attacco
+    if button == 1 and not self.isAttacking then -- Left mouse button
+        self.isAttacking = true
+        self.attackHasHit = false
+
+         self.attackTimer = 0
+    end
+    -- Se il tasto destro del mouse è premuto,
+    --------------------------------IMPLEMENTARE LOGICA PARRY---------------------------------------
+    if button == 2 then -- Right mouse button
+        -- parry logic here  
     end
 end
 
@@ -53,45 +67,86 @@ end
 
 
 ---------------------------------------
+---------------------------------FUNZIONI LOVE-------------------------------------------------
 
 
+---------------------------------------LOAD----------------------------------------------------
 
 function player:load()
+    self.attackCollider:setType("dynamic")
+    self.attackCollider:setFixedRotation(true)
+    self.attackCollider:setGravityScale(0)
+    self.attackCollider:setCollisionClass("PlayerAttack")
+    self.attackCollider:isActive(false)
     self.playerSprite=love.graphics.newImage(self.spriteSheetPath)
     --local grid= anim8.newGrid(64,64, image:getWidth(), image:getHeight())
     --animation = anim8.newAnimation(grid('1-10',1),0.3)
 end
 
----------------------------------------
----FUNZIONI LOVE
-function player:update(dt)
-    print(self.isGrounded)
-    -- Gestione del salto
-    local px, py = self.collider:getLinearVelocity()
-    -- Movimento laterale
-    
+-------------------------------------------------------------------------------------------------------
+----------------------------------------UPDATE-----------------------------------------------------------
 
+function player:update(dt)
+    local px, py = self.collider:getLinearVelocity()
+    ------------------------------LOGICA ATTACCO---------------------------------------------------------
+
+    -- Se il player è in attacco, attiva il collider dell'attacco
+    -- e posizionalo in base alla direzione del player
+    -- Se il player non è in attacco, disattiva il collider dell'attacco
+    if self.isAttacking then
+        if self.dx == "Left" then
+            self.attackCollider:setPosition(self.x - 25, self.y)
+        else
+            self.attackCollider:setPosition(self.x + 25, self.y)
+        end
+        self.attackCollider:setActive(true)
+       
+    else
+        self.attackCollider:setActive(false)
+    end
+
+    -- Se il player sta attaccando, incrementa il timer dell'attacco
+    -- Se il timer dell'attacco supera la durata dell'attacco, disattiva l'attacco
+    if self.isAttacking then
+        self.attackTimer = self.attackTimer + dt
+        if self.attackTimer >= self.attackDuration then
+            self.isAttacking = false
+            self.attackCollider:setActive(false)
+        end
+    end
+    -------------------------------------------------------------------------------------------------------
+    ------------------------------LOGICA SALTO-------------------------------------------------------------
+    -- Se il player è a terra, resetta il numero di salti
     if self.isGrounded then
         self.jumpNum = 0
     end
     
+    -- Se il player salta (premendo la barra spaziatrice) e non ha superato il numero massimo di salti
+    -- applica una forza verso l'alto al collider del player per farlo saltare
+    -- altrimenti, non saltare
     if self.isJump then
         
-        if self.jumpNum < 1 and py > -30 and py < 30 then
+        if self.jumpNum < 1 --[[and py > -30 and py < 30 ]]then
 
             self.collider:applyLinearImpulse(0, -150)
          
             self.jumpNum = self.jumpNum + 1
         end
-            self.isJump = false
+        self.isJump = false
     end
+    -------------------------------------------------------------------------------------------------------
 
+    ------------------------------LOGICA MOVIMENTO---------------------------------------------------------
+    -- Se premi "a" o "d", applica una forza al collider del player per muoverlo a sinistra o a destra
+    -- Se non premi nessun tasto, applica una forza al collider del player per fermarlo
     if love.keyboard.isDown("a") and px >= -150 then
         --self.dx = self.speed * -1
         self.collider:applyForce(-500, 0)
+        self.dx = "Left"
     elseif love.keyboard.isDown("d") and px <= 150  then
         --self.dx = self.speed
         self.collider:applyForce(500, 0)
+        self.dx = "Right"
     else
         if px > 0 then
             self.collider:applyForce(-(px + 200), 0)
@@ -99,19 +154,18 @@ function player:update(dt)
             self.collider:applyForce(-(px - 200), 0)
         end
     end
-
     
-
-    --self.collider:setLinearVelocity(self.dx, self.dy)
     --animation:update(dt)
 
 end
-
-local myColor = {1, 1, 1, 1}
+-----------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------DRAW----------------------------------------------------------------------------------------
 	
 function player:draw()
     --animation:draw(image, self.x, self.y)
-    love.graphics.setColor(myColor)
+    -- Resetta il colore per evitare problemi di sovrapposizione
+    love.graphics.setColor(1,1,1,1)
+    -- Disegna il player
     love.graphics.draw(self.playerSprite, self.x, self.y, 0, 0.5, 0.5, self.playerSprite:getWidth()/2, self.playerSprite:getHeight()/2)
 end
 ---------------------------------------
