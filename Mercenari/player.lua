@@ -26,10 +26,10 @@ function player.new(params)
     self.jumpNum = 0
     self.jumpResetTime = 0.095
     self.isJump = false
-    self.collider = world:newBSGRectangleCollider(params.x, params.y, 25, 25, 2)  -- collider del player windfield
+    self.collider = world:newBSGRectangleCollider(params.x, params.y, 64, 128, 2)  -- collider del player windfield
     self.isGrounded = false
 
-    self.spriteSheetPath = 'Assets/Sprites/player.png'
+    self.spriteSheetPath = 'Assets/Sprites/player/PH_player.png'
     self.playerSprite = nil
 
     self.mouseX=nil
@@ -128,7 +128,7 @@ function player:update(dt)
         
         if self.jumpNum < 1 --[[and py > -30 and py < 30 ]]then
 
-            self.collider:applyLinearImpulse(0, -150)
+            self.collider:applyLinearImpulse(0, -5000)
          
             self.jumpNum = self.jumpNum + 1
         end
@@ -139,19 +139,19 @@ function player:update(dt)
     ------------------------------LOGICA MOVIMENTO---------------------------------------------------------
     -- Se premi "a" o "d", applica una forza al collider del player per muoverlo a sinistra o a destra
     -- Se non premi nessun tasto, applica una forza al collider del player per fermarlo
-    if love.keyboard.isDown("a") and px >= -150 then
+    if love.keyboard.isDown("a") and px >= -250 then
         --self.dx = self.speed * -1
-        self.collider:applyForce(-500, 0)
+        self.collider:applyForce(-10000, 0)
         self.dx = "Left"
-    elseif love.keyboard.isDown("d") and px <= 150  then
+    elseif love.keyboard.isDown("d") and px <= 250  then
         --self.dx = self.speed
-        self.collider:applyForce(500, 0)
+        self.collider:applyForce(10000, 0)
         self.dx = "Right"
     else
         if px > 0 then
-            self.collider:applyForce(-(px + 200), 0)
+            self.collider:applyForce(-(px + 9300), 0)
         elseif px < 0 then
-            self.collider:applyForce(-(px - 200), 0)
+            self.collider:applyForce(-(px - 9300), 0)
         end
     end
     
@@ -166,7 +166,9 @@ function player:draw()
     -- Resetta il colore per evitare problemi di sovrapposizione
     love.graphics.setColor(1,1,1,1)
     -- Disegna il player
-    love.graphics.draw(self.playerSprite, self.x, self.y, 0, 1, 1, self.playerSprite:getWidth()/2, self.playerSprite:getHeight()/2)
+    love.graphics.setColor(1,0,0)
+    love.graphics.draw(self.playerSprite, self.x, self.y, 0, 0.5, 0.5, self.playerSprite:getWidth()/2, self.playerSprite:getHeight()/2)
+    love.graphics.setColor(1,1,1)
 end
 ---------------------------------------
 
