@@ -16,6 +16,7 @@ function player.new(params)
     self.x = params.x or 800
     self.y = params.y or 500
     self.dx = 0
+    self.dy = 150
     self.width = params.width or 128
     self.height = params.height or 256
     self.speed = params.speed or 3
@@ -26,10 +27,10 @@ function player.new(params)
     self.jumpNum = 0
     self.jumpResetTime = 0.095
     self.isJump = false
-    self.collider = world:newBSGRectangleCollider(params.x, params.y, 25, 25, 2)  -- collider del player windfield
+    self.collider = world:newBSGRectangleCollider(params.x, params.y, 64, 128, 2)  -- collider del player windfield
     self.isGrounded = false
 
-    self.spriteSheetPath = 'Assets/Sprites/player.png'
+    self.spriteSheetPath = 'Assets/Sprites/player/PH_player.png'
     self.playerSprite = nil
 
     self.mouseX=nil
@@ -124,14 +125,18 @@ function player:update(dt)
     -- Se il player salta (premendo la barra spaziatrice) e non ha superato il numero massimo di salti
     -- applica una forza verso l'alto al collider del player per farlo saltare
     -- altrimenti, non saltare
-    if self.isJump then
+    if self.isJump and self.jumpNum < 1 then
         
-        if self.jumpNum < 1 --[[and py > -30 and py < 30 ]]then
+       
 
-            self.collider:applyLinearImpulse(0, -150)
+            self.dy = -150
          
             self.jumpNum = self.jumpNum + 1
-        end
+
+        
+
+    else
+        self.dy = 150
         self.isJump = false
     end
     -------------------------------------------------------------------------------------------------------
@@ -139,22 +144,20 @@ function player:update(dt)
     ------------------------------LOGICA MOVIMENTO---------------------------------------------------------
     -- Se premi "a" o "d", applica una forza al collider del player per muoverlo a sinistra o a destra
     -- Se non premi nessun tasto, applica una forza al collider del player per fermarlo
-    if love.keyboard.isDown("a") and px >= -150 then
-        --self.dx = self.speed * -1
-        self.collider:applyForce(-500, 0)
-        self.dx = "Left"
-    elseif love.keyboard.isDown("d") and px <= 150  then
-        --self.dx = self.speed
-        self.collider:applyForce(500, 0)
-        self.dx = "Right"
+    if love.keyboard.isDown("a")then
+        self.dx = self.speed * -1
+    elseif love.keyboard.isDown("d")then
+        self.dx = self.speed
+        
     else
+        self.dx = 0
         if px > 0 then
-            self.collider:applyForce(-(px + 200), 0)
+           --self.collider:applyForce(-(px + 9300), 0)
         elseif px < 0 then
-            self.collider:applyForce(-(px - 200), 0)
+            --self.collider:applyForce(-(px - 9300), 0)
         end
     end
-    
+    self.collider:setLinearVelocity(self.dx, self.dy)
     --animation:update(dt)
 
 end
@@ -166,7 +169,9 @@ function player:draw()
     -- Resetta il colore per evitare problemi di sovrapposizione
     love.graphics.setColor(1,1,1,1)
     -- Disegna il player
-    love.graphics.draw(self.playerSprite, self.x, self.y, 0, 1, 1, self.playerSprite:getWidth()/2, self.playerSprite:getHeight()/2)
+    love.graphics.setColor(1,0,0)
+    love.graphics.draw(self.playerSprite, self.x, self.y, 0, 0.5, 0.5, self.playerSprite:getWidth()/2, self.playerSprite:getHeight()/2)
+    love.graphics.setColor(1,1,1)
 end
 ---------------------------------------
 
