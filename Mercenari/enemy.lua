@@ -37,9 +37,6 @@ function enemy.new(params)
     self.attackDuration = 0.5
     self.attackCollider = world:newRectangleCollider(params.x, params.y, 25, 25) -- collider dell'attacco windfield
 
-    self.playerX = nil
-    self.playerY = nil
-
     return self
 end
 -----------------------------------------------------------------------------------------------
@@ -101,10 +98,8 @@ function enemy:load()
     self.collider:setFixedRotation(true)
 end
 
-function enemy:update(dt,playerX,playerY)
+function enemy:update(dt,player)
 
-    self.playerX = playerX
-    self.playerY = playerY
 
     -- Aggiorna la posizione del collider dell'attacco in base alla posizione del player
     self.attackCollider:setPosition(self.collider:getPosition())
@@ -121,8 +116,8 @@ function enemy:update(dt,playerX,playerY)
         end
     end
 
-    if distance(self.x,self.playerX,self.y,self.playerY) then
-        print("Distanza tra nemico e player: " .. distance(self.x,self.playerX,self.y,self.playerY))
+    if distance(self.x,player.x ,self.y, player.y) < 20 then
+        print("Distanza tra nemico e player: " .. distance(self.x,player.x, self.y, player.y))
     end
 
     -- Logica di movimento e gravità qui (se necessario)

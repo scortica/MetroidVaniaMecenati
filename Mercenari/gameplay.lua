@@ -8,7 +8,6 @@ local Player = require("player")
 local sti = require("Libraries/sti")
 local camera = require("Libraries/camera")
 local wf = require("Libraries/windfield")
-local bf = require("Libraries/breezefield")
 local Pause = require("pause")
 local Enemy = require("enemy")
 --------------------------------------------------
@@ -45,8 +44,10 @@ function gameplay.enter(stateMachine)
         end
     })
     cam = camera()
+
     map = sti('Assets/Maps/MappaProva5.lua')
     world = wf.newWorld(0, 200, true)
+
     world:addCollisionClass('Platform')
     world:addCollisionClass('Player')
     world:addCollisionClass('PlayerAttack', {ignores = {'Player'}})
@@ -54,7 +55,7 @@ function gameplay.enter(stateMachine)
     world:addCollisionClass('EnemyAttack', {ignores = {'Enemy'}})
 
     
-    player = Player.new({x = 100,y = 200, speed = 100})
+    player = Player.new({x = 100,y = -150, speed = 150})
     if player then 
         player:load() 
         player.collider:setFixedRotation(true)
@@ -129,7 +130,7 @@ function gameplay.update(dt)
         if enemy then 
             enemy.x = enemy.collider:getX()
             enemy.y = enemy.collider:getY()
-            enemy:update(dt,player.x, player.y)
+            enemy:update(dt, player)
         end
     end
 
