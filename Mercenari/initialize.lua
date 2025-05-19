@@ -12,13 +12,13 @@ function initialize.enter(stateMachine)
 
         -- Fullscreen on mobile
         SETTINGS.DISPLAY.FULLSCREEN = true
-        SETTINGS.DISPLAY.RESIZABLE = false
+        SETTINGS.DISPLAY.RESIZABLE = true
         SETTINGS.DISPLAY.BORDERLESS = true
 
     -- On desktop
     else
         SETTINGS.DISPLAY.FULLSCREEN = false
-        SETTINGS.DISPLAY.RESIZABLE = true
+        SETTINGS.DISPLAY.RESIZABLE = false
         SETTINGS.DISPLAY.BORDERLESS = false
     end
 

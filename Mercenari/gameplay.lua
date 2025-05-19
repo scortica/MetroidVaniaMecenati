@@ -10,6 +10,7 @@ local camera = require("Libraries/camera")
 local wf = require("Libraries/windfield")
 local bf = require("Libraries/breezefield")
 local Pause = require("pause")
+local Enemy = require("enemy")
 --------------------------------------------------
 
 --------------------------------------------------
@@ -18,6 +19,7 @@ local Pause = require("pause")
 local debugText = true
 local ispause = false
 local player = nil
+local enemy = nil
 --------------------------------------------------
 
 --------------------------------------------------
@@ -49,8 +51,7 @@ function gameplay.enter(stateMachine)
     world:addCollisionClass('Player')
     world:addCollisionClass('PlayerAttack', {ignores = {'Player'}})
     world:addCollisionClass('Enemy')
-    world:addCollisionClass('EnemyAttack')
-
+    world:addCollisionClass('EnemyAttack', {ignores = {'Enemy'}})
 
     
     player = Player.new({x = 100,y = 200, speed = 100})
@@ -67,6 +68,11 @@ function gameplay.enter(stateMachine)
             platform:setCollisionClass("Platform")
             table.insert(platforms, platform)
         end
+    end
+
+    enemy = Enemy.new({x = 300, y = 200, speed = 100})
+    if enemy then 
+        enemy:load() 
     end
 
     player.collider:setPreSolve(function(collider_1, collider_2, contact)
@@ -120,6 +126,11 @@ function gameplay.update(dt)
         
             cam:lookAt(player.x, player.y)
         end
+        if enemy then 
+            enemy.x = enemy.collider:getX()
+            enemy.y = enemy.collider:getY()
+            enemy:update(dt,player.x, player.y)
+        end
     end
 
 end
@@ -137,6 +148,10 @@ function gameplay.draw()
             player:draw() 
         end
 
+        if enemy then
+            enemy:draw()
+        end
+
         world:draw()
 
     cam:detach()
@@ -144,7 +159,11 @@ function gameplay.draw()
     if ispause then
         Pause:draw()
     end
+
+
 end
+
+
 --------------------------------------------------
 
 --------------------------------------------------
