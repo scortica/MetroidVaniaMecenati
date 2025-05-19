@@ -2,7 +2,7 @@ local pause = {}
 local callbacks = {}
 
 local uiButtons = nil
-
+local pauseMenu = nil
 local function isMouseOverButton(button, x, y)
     return (x >= button.x and x <= button.x + button.width) and
            (y >= button.y and y <= button.y + button.height)
@@ -10,7 +10,7 @@ end
 
 function pause.load(cb)
     callbacks = cb or {}
-
+    
     --pauseMenu = sti("Assets/Images/pauseMenu.lua")
     uiButtons = {
         resume = {
@@ -50,7 +50,7 @@ function pause.load(cb)
         }
     }
 
-    
+    pauseMenu = love.graphics.newImage("Assets/Pause/PauseCornice.png")
 end
 
 function pause.update(dt)
@@ -62,13 +62,12 @@ function pause.draw()
     love.graphics.translate(SETTINGS.DISPLAY.OFFSETX, SETTINGS.DISPLAY.OFFSETY)
     love.graphics.scale(SETTINGS.DISPLAY.SCALE)
 
+    love.graphics.setColor(50/255, 60/255, 57/255, 0.5)
+    love.graphics.rectangle("fill", 0, 0, SETTINGS.DISPLAY.WIDTH, SETTINGS.DISPLAY.HEIGHT)
+
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.draw(pauseMenu, 0, 0, 0, 0.5, 0.5)
     if uiButtons then
-        love.graphics.setColor(1, 1, 1, 1)
-        --pauseMenu:drawLayer(pauseMenu.layers["Background"])
-
-        love.graphics.setColor(1, 1, 1, 0.5)
-        --pauseMenu:drawLayer(pauseMenu.layers["Block"])
-
         love.graphics.setColor(1, 1, 1, 1)
         -- Draw resume button rectangle
         love.graphics.setColor(uiButtons.resume.currentColor)
