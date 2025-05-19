@@ -3,8 +3,8 @@ local player = {}
 player.__index = player
 require("globals")
 
---local anim8 =require("anim8")
---local image,animation
+local anim8 =require("Libraries/anim8")
+local image,animation
 
 
 function player.new(params)

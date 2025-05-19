@@ -3,6 +3,9 @@ local enemy = {}
 enemy.__index = enemy
 require("globals")
 
+local anim8 =require("Libraries/anim8")
+local image,animation
+
 function enemy.new(params)
     local self = setmetatable({}, enemy)
 
@@ -22,10 +25,10 @@ function enemy.new(params)
     self.jumpNum = 0
     self.jumpResetTime = 0.095
     self.isJump = false
-    self.collider = world:newBSGRectangleCollider(params.x, params.y, 25, 25, 2)  -- collider del player windfield
+    self.collider = world:newBSGRectangleCollider(params.x, params.y, 74, 117, 2)  -- collider del player windfield
     self.isGrounded = false
 
-    self.spriteSheetPath = 'Assets/Sprites/player.png'
+    self.spriteSheetPath = 'Assets/Sprites/enemy/ghost_sheet.png'
     self.enemySprite = nil
 
     self.mouseX=nil
@@ -35,7 +38,7 @@ function enemy.new(params)
     self.attackHasHit = false
     self.attackTimer = 0
     self.attackDuration = 0.5
-    self.attackCollider = world:newRectangleCollider(params.x, params.y, 25, 25) -- collider dell'attacco windfield
+    --self.attackCollider = world:newRectangleCollider(params.x, params.y, 25, 25) -- collider dell'attacco windfield
 
     return self
 end
@@ -93,18 +96,20 @@ end
 ---------------------------------FUNZIONI LOVE-------------------------------------------------
 -----------------------------------------------------------------------------------------------
 function enemy:load()
-    self.enemySprite = love.graphics.newImage(self.spriteSheetPath)
+    image = love.graphics.newImage(self.spriteSheetPath)
     self.collider:setCollisionClass("Enemy")
     self.collider:setFixedRotation(true)
+    local grid= anim8.newGrid(74,117, image:getWidth(), image:getHeight())
+    animation = anim8.newAnimation(grid('1-5',1),0.5)
 end
 
 function enemy:update(dt,player)
 
 
     -- Aggiorna la posizione del collider dell'attacco in base alla posizione del player
-    self.attackCollider:setPosition(self.collider:getPosition())
-    self.attackCollider:setCollisionClass("EnemyAttack")
-    self.attackCollider:setType("dynamic")
+    --self.attackCollider:setPosition(self.collider:getPosition())
+    --self.attackCollider:setCollisionClass("EnemyAttack")
+    --self.attackCollider:setType("dynamic")
 
     -- Aggiorna il timer dell'attacco
     if self.isAttacking then
@@ -121,14 +126,19 @@ function enemy:update(dt,player)
     end
 
     -- Logica di movimento e gravità qui (se necessario)
+
+    animation:update(dt)
 end
 
 function enemy:draw()
-    --animation:draw(image, self.x, self.y)
-    -- Resetta il colore per evitare problemi di sovrapposizione
+
     love.graphics.setColor(1,1,1,1)
+    -- Resetta il colore per evitare problemi di sovrapposizione
+    animation:draw(image, self.x, self.y,0,1,1,74/2,117/2)
+    
     -- Disegna il player
-    love.graphics.draw(self.enemySprite, self.x, self.y, 0, 1, 1, self.enemySprite:getWidth()/2, self.enemySprite:getHeight()/2)
+    --love.graphics.draw(self.enemySprite, self.x, self.y, 0, 1, 1, self.enemySprite:getWidth()/2, self.enemySprite:getHeight()/2)
+
 end
 
 
