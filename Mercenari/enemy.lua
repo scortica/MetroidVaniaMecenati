@@ -26,7 +26,7 @@ function enemy.new(params)
     self.isGrounded = false
 
     self.spriteSheetPath = 'Assets/Sprites/player.png'
-    self.playerSprite = nil
+    self.enemySprite = nil
 
     self.mouseX=nil
     self.mouseY=nil
@@ -96,7 +96,7 @@ end
 ---------------------------------FUNZIONI LOVE-------------------------------------------------
 -----------------------------------------------------------------------------------------------
 function enemy:load()
-    self.playerSprite = love.graphics.newImage(self.spriteSheetPath)
+    self.enemySprite = love.graphics.newImage(self.spriteSheetPath)
     self.collider:setCollisionClass("Enemy")
     self.collider:setFixedRotation(true)
 end
@@ -129,7 +129,11 @@ function enemy:update(dt,playerX,playerY)
 end
 
 function enemy:draw()
-    love.graphics.draw(self.playerSprite, self.collider:getX(), self.collider:getY(), 0, self.scale, self.scale, self.width / 2, self.height / 2)
+    --animation:draw(image, self.x, self.y)
+    -- Resetta il colore per evitare problemi di sovrapposizione
+    love.graphics.setColor(1,1,1,1)
+    -- Disegna il player
+    love.graphics.draw(self.enemySprite, self.x, self.y, 0, 1, 1, self.enemySprite:getWidth()/2, self.enemySprite:getHeight()/2)
 end
 
 

@@ -17,7 +17,7 @@ function player.new(params)
     self.y = params.y or 500
     self.dx = 0
     self.width = params.width or 128
-    self.height = params.height or 128
+    self.height = params.height or 256
     self.speed = params.speed or 3
     self.gravity = 110
     self.scale = params.scale or 1
@@ -166,7 +166,7 @@ function player:draw()
     -- Resetta il colore per evitare problemi di sovrapposizione
     love.graphics.setColor(1,1,1,1)
     -- Disegna il player
-    love.graphics.draw(self.playerSprite, self.x, self.y, 0, 0.5, 0.5, self.playerSprite:getWidth()/2, self.playerSprite:getHeight()/2)
+    love.graphics.draw(self.playerSprite, self.x, self.y, 0, 1, 1, self.playerSprite:getWidth()/2, self.playerSprite:getHeight()/2)
 end
 ---------------------------------------
 
