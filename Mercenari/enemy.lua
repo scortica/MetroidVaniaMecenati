@@ -65,6 +65,29 @@ function enemy:shoot()
     end
 end
 
+local function atan2(y, x)
+    if x > 0 then
+        return math.atan(y / x)
+    elseif x < 0 and y >= 0 then
+        return math.atan(y / x) + math.pi
+    elseif x < 0 and y < 0 then
+        return math.atan(y / x) - math.pi
+    elseif x == 0 and y > 0 then
+        return math.pi / 2
+    elseif x == 0 and y < 0 then
+        return -math.pi / 2
+    else
+        return 0 -- for the case when x == 0 and y == 0
+    end
+end
+
+local function getLookAtPointRotation(x, y, playerX,playerY)
+    return atan2((y - playerY), (x - playerX)) - math.pi/2
+end
+
+local function distance(x1,x2,y1,y2)
+    return math.sqrt((x2-x1)^2 + (y2-y1)^2)
+end
 
 -----------------------------------------------------------------------------------------------
 
@@ -75,16 +98,18 @@ end
 function enemy:load()
     self.playerSprite = love.graphics.newImage(self.spriteSheetPath)
     self.collider:setCollisionClass("Enemy")
-    self.collider:setType("dynamic")
     self.collider:setFixedRotation(true)
-    self.collider:setMass(1)
 end
 
-function enemy:update(dt)
+function enemy:update(dt,playerX,playerY)
+
+    self.playerX = playerX
+    self.playerY = playerY
+
     -- Aggiorna la posizione del collider dell'attacco in base alla posizione del player
     self.attackCollider:setPosition(self.collider:getPosition())
     self.attackCollider:setCollisionClass("EnemyAttack")
-    self.attackCollider:setType("static")
+    self.attackCollider:setType("dynamic")
 
     -- Aggiorna il timer dell'attacco
     if self.isAttacking then
@@ -96,15 +121,18 @@ function enemy:update(dt)
         end
     end
 
+    if distance(self.x,self.playerX,self.y,self.playerY) then
+        print("Distanza tra nemico e player: " .. distance(self.x,self.playerX,self.y,self.playerY))
+    end
+
     -- Logica di movimento e gravità qui (se necessario)
 end
 
 function enemy:draw()
     love.graphics.draw(self.playerSprite, self.collider:getX(), self.collider:getY(), 0, self.scale, self.scale, self.width / 2, self.height / 2)
-    if debugText then
-        love.graphics.print("Enemy X: " .. self.collider:getX() .. " Y: " .. self.collider:getY(), 10, 10)
-    end
 end
+
+
 -----------------------------------------------------------------------------------------------
 
 
