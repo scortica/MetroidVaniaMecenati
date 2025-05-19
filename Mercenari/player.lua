@@ -128,7 +128,12 @@ function player:update(dt)
         
         if self.jumpNum < 1 --[[and py > -30 and py < 30 ]]then
 
-            self.collider:applyLinearImpulse(0, -5000)
+
+
+
+            self.collider:applyLinearImpulse(0, -6000)
+
+
          
             self.jumpNum = self.jumpNum + 1
         end
@@ -139,14 +144,18 @@ function player:update(dt)
     ------------------------------LOGICA MOVIMENTO---------------------------------------------------------
     -- Se premi "a" o "d", applica una forza al collider del player per muoverlo a sinistra o a destra
     -- Se non premi nessun tasto, applica una forza al collider del player per fermarlo
-    if love.keyboard.isDown("a") and px >= -250 then
+
+
+    if love.keyboard.isDown("a") and px >= -300 then
         --self.dx = self.speed * -1
         self.collider:applyForce(-10000, 0)
         self.dx = "Left"
-    elseif love.keyboard.isDown("d") and px <= 250  then
+    elseif love.keyboard.isDown("d") and px <= 300  then
         --self.dx = self.speed
         self.collider:applyForce(10000, 0)
         self.dx = "Right"
+
+
     else
         if px > 0 then
             self.collider:applyForce(-(px + 9300), 0)
