@@ -16,7 +16,6 @@ function player.new(params)
     self.x = params.x or 800
     self.y = params.y or 500
     self.dx = 0
-    self.dy = 150
     self.width = params.width or 128
     self.height = params.height or 256
     self.speed = params.speed or 3
@@ -125,21 +124,19 @@ function player:update(dt)
     -- Se il player salta (premendo la barra spaziatrice) e non ha superato il numero massimo di salti
     -- applica una forza verso l'alto al collider del player per farlo saltare
     -- altrimenti, non saltare
-    if self.isJump and self.jumpNum < 1 then
+    if self.isJump then
         
-       
+        if self.jumpNum < 1 --[[and py > -30 and py < 30 ]]then
+
 
 
 
             self.collider:applyLinearImpulse(0, -6000)
 
+
          
             self.jumpNum = self.jumpNum + 1
-
-        
-
-    else
-        self.dy = 150
+        end
         self.isJump = false
     end
     -------------------------------------------------------------------------------------------------------
@@ -147,6 +144,7 @@ function player:update(dt)
     ------------------------------LOGICA MOVIMENTO---------------------------------------------------------
     -- Se premi "a" o "d", applica una forza al collider del player per muoverlo a sinistra o a destra
     -- Se non premi nessun tasto, applica una forza al collider del player per fermarlo
+
 
     if love.keyboard.isDown("a") and px >= -300 then
         --self.dx = self.speed * -1
@@ -157,15 +155,15 @@ function player:update(dt)
         self.collider:applyForce(10000, 0)
         self.dx = "Right"
 
+
     else
-        self.dx = 0
         if px > 0 then
-           --self.collider:applyForce(-(px + 9300), 0)
+            self.collider:applyForce(-(px + 9300), 0)
         elseif px < 0 then
-            --self.collider:applyForce(-(px - 9300), 0)
+            self.collider:applyForce(-(px - 9300), 0)
         end
     end
-    self.collider:setLinearVelocity(self.dx, self.dy)
+    
     --animation:update(dt)
 
 end
