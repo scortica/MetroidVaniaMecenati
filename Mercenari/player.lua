@@ -16,7 +16,6 @@ function player.new(params)
     self.x = params.x or 800
     self.y = params.y or 500
     self.dx = 0
-    self.dy = 150
     self.width = params.width or 128
     self.height = params.height or 256
     self.speed = params.speed or 3
@@ -125,18 +124,14 @@ function player:update(dt)
     -- Se il player salta (premendo la barra spaziatrice) e non ha superato il numero massimo di salti
     -- applica una forza verso l'alto al collider del player per farlo saltare
     -- altrimenti, non saltare
-    if self.isJump and self.jumpNum < 1 then
+    if self.isJump then
         
-       
+        if self.jumpNum < 1 --[[and py > -30 and py < 30 ]]then
 
-            self.dy = -150
+            self.collider:applyLinearImpulse(0, -5000)
          
             self.jumpNum = self.jumpNum + 1
-
-        
-
-    else
-        self.dy = 150
+        end
         self.isJump = false
     end
     -------------------------------------------------------------------------------------------------------
@@ -144,20 +139,22 @@ function player:update(dt)
     ------------------------------LOGICA MOVIMENTO---------------------------------------------------------
     -- Se premi "a" o "d", applica una forza al collider del player per muoverlo a sinistra o a destra
     -- Se non premi nessun tasto, applica una forza al collider del player per fermarlo
-    if love.keyboard.isDown("a")then
-        self.dx = self.speed * -1
-    elseif love.keyboard.isDown("d")then
-        self.dx = self.speed
-        
+    if love.keyboard.isDown("a") and px >= -250 then
+        --self.dx = self.speed * -1
+        self.collider:applyForce(-10000, 0)
+        self.dx = "Left"
+    elseif love.keyboard.isDown("d") and px <= 250  then
+        --self.dx = self.speed
+        self.collider:applyForce(10000, 0)
+        self.dx = "Right"
     else
-        self.dx = 0
         if px > 0 then
-           --self.collider:applyForce(-(px + 9300), 0)
+            self.collider:applyForce(-(px + 9300), 0)
         elseif px < 0 then
-            --self.collider:applyForce(-(px - 9300), 0)
+            self.collider:applyForce(-(px - 9300), 0)
         end
     end
-    self.collider:setLinearVelocity(self.dx, self.dy)
+    
     --animation:update(dt)
 
 end
