@@ -1,0 +1,47 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "MappaProva5.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        "MappaProva5.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 1189.3333333333335,
+                "y": 1136.6666666666665
+            }
+        },
+        "MappaProva5.tmx#ph_tileset1": {
+            "scaleInDock": 1
+        },
+        "ph_tileset1.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "last.exportedFilePath": "C:/Users/PC/Desktop/LOVE2DGroupProject/GitHubClone/MetroidVaniaMecenati/Mercenari/Assets/Maps",
+    "last.imagePath": "C:/Users/PC/Desktop/LOVE2DGroupProject/GitHubClone/MetroidVaniaMecenati/Mercenari/Assets/Maps",
+    "map.lastUsedExportFilter": "File Lua (*.lua)",
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 64,
+    "map.tileWidth": 64,
+    "openFiles": [
+        "MappaProva5.tmx",
+        "ph_tileset1.tsx"
+    ],
+    "project": "Mappa72.tiled-project",
+    "recentFiles": [
+        "ph_tileset1.tsx",
+        "MappaProva5.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 64,
+        "width": 64
+    }
+}
