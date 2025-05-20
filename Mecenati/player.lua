@@ -31,7 +31,7 @@ function player.new(params)
     self.spriteSheetPath = {idle='Assets/Sprites/player/PH_player.png',
                             walk=' ',
                             attack=' ',
-                            jump='Assets/Sprites/player/PH_player_jump.png'}
+                            jump='Assets/Sprites/player/player_jump_sheet.png'}
     self.playerSprite = nil
 
     self.mouseX=nil
@@ -84,7 +84,7 @@ function player:load()
     self.attackCollider:setGravityScale(0)
     self.attackCollider:setCollisionClass("PlayerAttack")
     self.attackCollider:isActive(false)
-    self.playerSprite=love.graphics.newImage(self.spriteSheetPath.idle)
+    self.playerSprite=love.graphics.newImage(self.spriteSheetPath.jump)
     --local grid= anim8.newGrid(64,64, image:getWidth(), image:getHeight())
     --animation = anim8.newAnimation(grid('1-10',1),0.3)
 end
@@ -164,13 +164,13 @@ function player:update(dt)
     end
     
 
-    if self.isWalking then
+    --[[if self.isWalking then
         animation:update(dt)
     elseif self.isJump then
         animation:update(dt)
     else
         animation:update(dt)
-    end
+    end]]
     
 
 end
@@ -182,7 +182,6 @@ function player:draw()
     -- Resetta il colore per evitare problemi di sovrapposizione
     love.graphics.setColor(1,1,1,1)
     -- Disegna il player
-    love.graphics.setColor(1,0,0)
     love.graphics.draw(self.playerSprite, self.x, self.y, 0, 0.5, 0.5, self.playerSprite:getWidth()/2, self.playerSprite:getHeight()/2)
     love.graphics.setColor(1,1,1)
 end
