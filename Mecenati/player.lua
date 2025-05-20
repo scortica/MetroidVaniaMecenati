@@ -4,7 +4,7 @@ player.__index = player
 require("globals")
 
 local anim8 =require("Libraries/anim8")
-local image,animation
+local image,animation,grid
 
 
 function player.new(params)
@@ -28,7 +28,7 @@ function player.new(params)
     self.collider = world:newBSGRectangleCollider(params.x, params.y, 64, 128, 2)  -- collider del player windfield
     self.isGrounded = false
 
-    self.spriteSheetPath = {idle='Assets/Sprites/player/PH_player.png',
+    self.spriteSheetPath = {idle='Assets/Sprites/player/player_idle_sheet.png',
                             walk=' ',
                             attack=' ',
                             jump='Assets/Sprites/player/player_jump_sheet.png'}
@@ -84,9 +84,10 @@ function player:load()
     self.attackCollider:setGravityScale(0)
     self.attackCollider:setCollisionClass("PlayerAttack")
     self.attackCollider:isActive(false)
-    self.playerSprite=love.graphics.newImage(self.spriteSheetPath.jump)
-    --local grid= anim8.newGrid(64,64, image:getWidth(), image:getHeight())
-    --animation = anim8.newAnimation(grid('1-10',1),0.3)
+    
+    self.playerSprite=love.graphics.newImage(self.spriteSheetPath.idle)
+    grid= anim8.newGrid(139,131, self.playerSprite:getWidth(), self.playerSprite:getHeight())
+    animation = anim8.newAnimation(grid('1-5',1),0.3)
 end
 
 -------------------------------------------------------------------------------------------------------
@@ -149,11 +150,12 @@ function player:update(dt)
         --self.dx = self.speed * -1
         self.collider:applyForce(-10000, 0)
         self.dx = "Left"
+        self.isWalking = true
     elseif love.keyboard.isDown("d") and px <= 300  then
         --self.dx = self.speed
         self.collider:applyForce(10000, 0)
         self.dx = "Right"
-
+        self.isWalking = true
 
     else
         if px > 0 then
@@ -161,16 +163,29 @@ function player:update(dt)
         elseif px < 0 then
             self.collider:applyForce(-(px - 9300), 0)
         end
+        self.isWalking = false
     end
     
 
-    --[[if self.isWalking then
+    if self.isWalking then
+        self.playerSprite=love.graphics.newImage(self.spriteSheetPath.idle)
+        grid= anim8.newGrid(139,131, self.playerSprite:getWidth(), self.playerSprite:getHeight())
+        animation = anim8.newAnimation(grid('1-2',1),0.3)
+
         animation:update(dt)
     elseif self.isJump then
+        self.playerSprite=love.graphics.newImage(self.spriteSheetPath.jump)
+        grid= anim8.newGrid(141,134, self.playerSprite:getWidth(), self.playerSprite:getHeight())
+        animation = anim8.newAnimation(grid('1-9',1),0.3)
+
         animation:update(dt)
     else
+        self.playerSprite=love.graphics.newImage(self.spriteSheetPath.idle)
+        grid= anim8.newGrid(139,131, self.playerSprite:getWidth(), self.playerSprite:getHeight())
+        animation = anim8.newAnimation(grid('1-5',1),0.3)
+
         animation:update(dt)
-    end]]
+    end
     
 
 end
@@ -178,12 +193,17 @@ end
 ---------------------------------------------DRAW----------------------------------------------------------------------------------------
 	
 function player:draw()
-    --animation:draw(image, self.x, self.y)
-    -- Resetta il colore per evitare problemi di sovrapposizione
+    animation:draw(self.playerSprite, self.x, self.y,0,1,1)
     love.graphics.setColor(1,1,1,1)
-    -- Disegna il player
-    love.graphics.draw(self.playerSprite, self.x, self.y, 0, 0.5, 0.5, self.playerSprite:getWidth()/2, self.playerSprite:getHeight()/2)
+    --love.graphics.draw(self.playerSprite, self.x, self.y, 0, 0.5, 0.5, self.playerSprite:getWidth()/2, self.playerSprite:getHeight()/2)
     love.graphics.setColor(1,1,1)
+
+    if debugText then
+        --print("Player width: " .. self.playerSprite:getWidth())
+        --print("Player height: " .. self.playerSprite:getHeight())
+
+    end
+    
 end
 ---------------------------------------
 

@@ -17,7 +17,7 @@ function initialize.enter(stateMachine)
 
     -- On desktop
     else
-        SETTINGS.DISPLAY.FULLSCREEN = false
+        SETTINGS.DISPLAY.FULLSCREEN = true
         SETTINGS.DISPLAY.RESIZABLE = true
         SETTINGS.DISPLAY.BORDERLESS = false
     end
