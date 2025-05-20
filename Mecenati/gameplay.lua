@@ -106,11 +106,11 @@ player.attackCollider:setPreSolve(function(collider_1, collider_2, contact)
         end
     end
 end)
-
-    map:resize(love.graphics.getWidth(), love.graphics.getHeight())
-    map:drawLayer(map.layers["Background"])
-    map:drawLayer(map.layers["Block"])
-    cam:lookAt(player.x, player.y)
+    mappa = love.graphics.newImage("Assets/Maps/background_1_livello.png")
+   -- map:resize(love.graphics.getWidth(), love.graphics.getHeight())
+   -- map:drawLayer(map.layers["Background"])
+   -- map:drawLayer(map.layers["Block"])
+   -- cam:lookAt(player.x, player.y)
     
 end
 
@@ -139,8 +139,12 @@ end
 function gameplay.draw()
     -- Draw the game here
     cam:attach()
-        love.graphics.setColor(1, 1, 1)
-        map:drawLayer(map.layers["Background"])
+
+        love.graphics.setColor(1,1,1)
+        love.graphics.rectangle("fill",0 ,-1000 ,10000, 10000)
+
+        love.graphics.draw(mappa, -1000, -540)
+        --map:drawLayer(map.layers["Background"])
         map:drawLayer(map.layers["Block"])
 
         
