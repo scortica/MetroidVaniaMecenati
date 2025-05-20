@@ -79,15 +79,17 @@ function gameplay.enter(stateMachine)
     player.collider:setPreSolve(function(collider_1, collider_2, contact)
 
     if collider_1.collision_class == 'Player' and collider_2.collision_class == 'Platform' then
-        local px, py = collider_1:getPosition()  -- posizione del player.collider
-        local pw, ph = 25, 25 -- usa le dimensioni reali del player
-        local tx, ty = collider_2:getPosition() -- posizione della piattaforma
-        local tw, th = collider_2:getObject() and collider_2:getObject().width or 0, collider_2:getObject() and collider_2:getObject().height or 0  -- dimensioni della piattaforma
-        -- Se il player è sopra la piattaforma
-        if py + ph/2 <= ty - th/2 + 5 then 
-            player.isGrounded = true
-        else    
-            player.isGrounded = false
+        if player.jumpBuffer <= 0 then
+            local px, py = collider_1:getPosition()  -- posizione del player.collider
+            local pw, ph = 25, 25 -- usa le dimensioni reali del player
+            local tx, ty = collider_2:getPosition() -- posizione della piattaforma
+            local tw, th = collider_2:getObject() and collider_2:getObject().width or 0, collider_2:getObject() and collider_2:getObject().height or 0  -- dimensioni della piattaforma
+            -- Se il player è sopra la piattaforma
+            if py + ph/2 <= ty - th/2 + 5 then 
+                player.isGrounded = true
+            else    
+                player.isGrounded = false
+            end
         end
     end
 end)
