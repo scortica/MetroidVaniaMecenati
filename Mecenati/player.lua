@@ -46,7 +46,7 @@ function player.new(params)
 
     self.isWalking = false
     self.isJump = false
-
+    self.jumpBuffer = 0
     
     return self
 end
@@ -122,7 +122,7 @@ function player:load()
     self.playerSprite.idle.animation = anim8.newAnimation(self.playerSprite.idle.grid('1-5',1),0.3)
     --self.playerSprite.walk.animation = anim8.newAnimation(self.playerSprite.walk.grid('1-2',1),0.3)
     --self.playerSprite.attack.animation = anim8.newAnimation(self.playerSprite.attack.grid('1-2',1),0.3)
-    self.playerSprite.jump.animation = anim8.newAnimation(self.playerSprite.jump.grid('1-9',1),0.3)
+    self.playerSprite.jump.animation = anim8.newAnimation(self.playerSprite.jump.grid('1-9',1),0.15)
 
 
     self.currentAnimation = self.playerSprite.idle
@@ -174,9 +174,17 @@ function player:update(dt)
         
         if self.jumpNum < 1 --[[and py > -30 and py < 30 ]]then
             self.collider:applyLinearImpulse(0, -6000)
+            self.isGrounded = false
             self.jumpNum = self.jumpNum + 1
+            self.jumpBuffer = 0.1 -- ignore ground for 0.1 seconds
+            self.currentAnimation = self.playerSprite.jump
+            self.currentAnimation.animation:gotoFrame(1)
         end
         self.isJump = false
+    end
+
+    if self.jumpBuffer > 0 then
+        self.jumpBuffer = self.jumpBuffer - dt
     end
     -------------------------------------------------------------------------------------------------------
 
@@ -208,12 +216,16 @@ function player:update(dt)
     if self.isAttacking then
         --self.currentAnimation = self.playerSprite.attack.animation
     elseif not self.isGrounded then
-        self.currentAnimation = self.playerSprite.jump
+        if self.currentAnimation ~= self.playerSprite.jump then
+            self.currentAnimation = self.playerSprite.jump
+        end
     elseif self.isWalking then
        
         --self.currentAnimation = self.playerSprite.walk.animation
     else
-        self.currentAnimation = self.playerSprite.idle
+        if self.currentAnimation ~= self.playerSprite.idle then
+            self.currentAnimation = self.playerSprite.idle
+        end
     end
 
     if self.currentAnimation then
@@ -245,7 +257,7 @@ end
 function player:keypressed(key, scancode, isrepeat)
     if key == "space"  then 
                 self.isJump = true
-                self.isGrounded = false           
+                     
        
     end
 end
