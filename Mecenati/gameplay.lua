@@ -9,7 +9,8 @@ local sti = require("Libraries/sti")
 local camera = require("Libraries/camera")
 local wf = require("Libraries/windfield")
 local Pause = require("pause")
-local Enemy = require("enemy")
+local Enemy_ghost = require("enemy_ghost")
+local Enemy_shooter = require("enemy_shooter")
 --------------------------------------------------
 
 --------------------------------------------------
@@ -18,7 +19,7 @@ local Enemy = require("enemy")
 local debugText = true
 local ispause = false
 local player = nil
-local enemy = nil
+local enemy_ghost = nil
 --------------------------------------------------
 
 --------------------------------------------------
@@ -71,9 +72,9 @@ function gameplay.enter(stateMachine)
         end
     end
 
-    enemy = Enemy.new({x = 300, y = 200, speed = 100})
-    if enemy then 
-        enemy:load() 
+    enemy_ghost = Enemy_ghost.new({x = 300, y = 200, speed = 100})
+    if enemy_ghost then 
+        enemy_ghost:load() 
     end
 
     player.collider:setPreSolve(function(collider_1, collider_2, contact)
@@ -129,10 +130,10 @@ function gameplay.update(dt)
         
             cam:lookAt(player.x, player.y)
         end
-        if enemy then 
-            enemy.x = enemy.collider:getX()
-            enemy.y = enemy.collider:getY()
-            enemy:update(dt, player)
+        if enemy_ghost then 
+            enemy_ghost.x = enemy_ghost.collider:getX()
+            enemy_ghost.y = enemy_ghost.collider:getY()
+            enemy_ghost:update(dt, player)
         end
     end
 
@@ -155,8 +156,8 @@ function gameplay.draw()
             player:draw() 
         end
 
-        if enemy then
-            enemy:draw()
+        if enemy_ghost then
+            enemy_ghost:draw()
         end
 
         world:draw()

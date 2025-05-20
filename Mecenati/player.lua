@@ -112,6 +112,9 @@ function player:load()
             frameN = 9
         }
     }
+
+
+
     
     self.playerSprite.idle.grid = anim8.newGrid(139,131, self.playerSprite.idle.sprite:getWidth(), self.playerSprite.idle.sprite:getHeight())
     --self.playerSprite.walk.grid = anim8.newGrid(139,131, self.playerSprite.walk.sprite:getWidth(), self.playerSprite.walk.sprite:getHeight())
@@ -122,7 +125,7 @@ function player:load()
     self.playerSprite.idle.animation = anim8.newAnimation(self.playerSprite.idle.grid('1-5',1),0.3)
     --self.playerSprite.walk.animation = anim8.newAnimation(self.playerSprite.walk.grid('1-2',1),0.3)
     --self.playerSprite.attack.animation = anim8.newAnimation(self.playerSprite.attack.grid('1-2',1),0.3)
-    self.playerSprite.jump.animation = anim8.newAnimation(self.playerSprite.jump.grid('1-9',1),0.15)
+    self.playerSprite.jump.animation = anim8.newAnimation(self.playerSprite.jump.grid('1-9',1),0.1)
 
 
     self.currentAnimation = self.playerSprite.idle
@@ -254,11 +257,16 @@ function player:draw()
     
 end
 ---------------------------------------
+
+---KEYBINDS----------------------------
+---------------------------------------
 function player:keypressed(key, scancode, isrepeat)
     if key == "space"  then 
                 self.isJump = true
-                     
-       
+                self.isGrounded = false
     end
 end
+
+---------------------------------------
+
 return player
