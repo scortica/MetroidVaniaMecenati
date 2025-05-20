@@ -25,11 +25,13 @@ function player.new(params)
     self.lp= params.lp or 100
     self.jumpNum = 0
     self.jumpResetTime = 0.095
-    self.isJump = false
     self.collider = world:newBSGRectangleCollider(params.x, params.y, 64, 128, 2)  -- collider del player windfield
     self.isGrounded = false
 
-    self.spriteSheetPath = 'Assets/Sprites/player/PH_player.png'
+    self.spriteSheetPath = {idle='Assets/Sprites/player/PH_player.png',
+                            walk=' ',
+                            attack=' ',
+                            jump='Assets/Sprites/player/PH_player_jump.png'}
     self.playerSprite = nil
 
     self.mouseX=nil
@@ -41,6 +43,10 @@ function player.new(params)
     self.attackDuration = 0.5
     self.attackCollider = world:newRectangleCollider(params.x, params.y, 25, 25) -- collider dell'attacco windfield
 
+    self.isWalking = false
+    self.isJump = false
+
+    
     return self
 end
 
@@ -78,7 +84,7 @@ function player:load()
     self.attackCollider:setGravityScale(0)
     self.attackCollider:setCollisionClass("PlayerAttack")
     self.attackCollider:isActive(false)
-    self.playerSprite=love.graphics.newImage(self.spriteSheetPath)
+    self.playerSprite=love.graphics.newImage(self.spriteSheetPath.idle)
     --local grid= anim8.newGrid(64,64, image:getWidth(), image:getHeight())
     --animation = anim8.newAnimation(grid('1-10',1),0.3)
 end
@@ -127,14 +133,7 @@ function player:update(dt)
     if self.isJump then
         
         if self.jumpNum < 1 --[[and py > -30 and py < 30 ]]then
-
-
-
-
             self.collider:applyLinearImpulse(0, -6000)
-
-
-         
             self.jumpNum = self.jumpNum + 1
         end
         self.isJump = false
@@ -164,7 +163,15 @@ function player:update(dt)
         end
     end
     
-    --animation:update(dt)
+
+    if self.isWalking then
+        animation:update(dt)
+    elseif self.isJump then
+        animation:update(dt)
+    else
+        animation:update(dt)
+    end
+    
 
 end
 -----------------------------------------------------------------------------------------------------------------------------------------
