@@ -90,22 +90,26 @@ function player:load()
         idle = {
             sprite = love.graphics.newImage(self.spriteSheetPath.idle),
             grid= nil,
-            animation = nil
+            animation = nil,
+            frameN = 5
         },
         walk = {
             sprite = nil,--love.graphics.newImage(self.spriteSheetPath.walk),
             grid= nil,
-            animation = nil
+            animation = nil,
+            frameN = nil
         },
         attack ={
             sprite = nil,--love.graphics.newImage(self.spriteSheetPath.attack),
             grid= nil,
-            animation = nil
+            animation = nil,
+            frameN = nil
         },
         jump = {
             sprite = love.graphics.newImage(self.spriteSheetPath.jump),
             grid= nil,
-            animation = nil
+            animation = nil,
+            frameN = 9
         }
     }
     
@@ -121,7 +125,7 @@ function player:load()
     self.playerSprite.jump.animation = anim8.newAnimation(self.playerSprite.jump.grid('1-9',1),0.3)
 
 
-    self.currentAnimation = self.playerSprite.jump
+    self.currentAnimation = self.playerSprite.idle
 
     end
 
@@ -224,7 +228,7 @@ end
 	
 function player:draw()
     if self.currentAnimation then
-       self.currentAnimation.animation:draw(self.currentAnimation.sprite, self.x, self.y,0,1,1)
+       self.currentAnimation.animation:draw(self.currentAnimation.sprite, self.x, self.y, 0, 1 , 1 , self.currentAnimation.sprite:getWidth()/(self.currentAnimation.frameN*3), self.currentAnimation.sprite:getHeight()/2)
     end
     love.graphics.setColor(1,1,1,1)
     --love.graphics.draw(self.playerSprite, self.x, self.y, 0, 0.5, 0.5, self.playerSprite:getWidth()/2, self.playerSprite:getHeight()/2)
