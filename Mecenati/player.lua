@@ -33,6 +33,7 @@ function player.new(params)
                             attack=' ',
                             jump='Assets/Sprites/player/player_jump_sheet.png'}
     self.playerSprite = nil
+    self.currentAnimation = nil
 
     self.mouseX=nil
     self.mouseY=nil
@@ -85,10 +86,44 @@ function player:load()
     self.attackCollider:setCollisionClass("PlayerAttack")
     self.attackCollider:isActive(false)
     
-    self.playerSprite=love.graphics.newImage(self.spriteSheetPath.idle)
-    grid= anim8.newGrid(139,131, self.playerSprite:getWidth(), self.playerSprite:getHeight())
-    animation = anim8.newAnimation(grid('1-5',1),0.3)
-end
+    self.playerSprite = {
+        idle = {
+            sprite = love.graphics.newImage(self.spriteSheetPath.idle),
+            grid= nil,
+            animation = nil
+        },
+        walk = {
+            sprite = nil,--love.graphics.newImage(self.spriteSheetPath.walk),
+            grid= nil,
+            animation = nil
+        },
+        attack ={
+            sprite = nil,--love.graphics.newImage(self.spriteSheetPath.attack),
+            grid= nil,
+            animation = nil
+        },
+        jump = {
+            sprite = love.graphics.newImage(self.spriteSheetPath.jump),
+            grid= nil,
+            animation = nil
+        }
+    }
+    
+    self.playerSprite.idle.grid = anim8.newGrid(139,131, self.playerSprite.idle.sprite:getWidth(), self.playerSprite.idle.sprite:getHeight())
+    --self.playerSprite.walk.grid = anim8.newGrid(139,131, self.playerSprite.walk.sprite:getWidth(), self.playerSprite.walk.sprite:getHeight())
+    --self.playerSprite.attack.grid = anim8.newGrid(139,131, self.playerSprite.attack.sprite:getWidth(), self.playerSprite.attack.sprite:getHeight())
+    self.playerSprite.jump.grid = anim8.newGrid(141,134, self.playerSprite.jump.sprite:getWidth(), self.playerSprite.jump.sprite:getHeight())
+
+
+    self.playerSprite.idle.animation = anim8.newAnimation(self.playerSprite.idle.grid('1-5',1),0.3)
+    --self.playerSprite.walk.animation = anim8.newAnimation(self.playerSprite.walk.grid('1-2',1),0.3)
+    --self.playerSprite.attack.animation = anim8.newAnimation(self.playerSprite.attack.grid('1-2',1),0.3)
+    self.playerSprite.jump.animation = anim8.newAnimation(self.playerSprite.jump.grid('1-9',1),0.3)
+
+
+    self.currentAnimation = self.playerSprite.jump
+
+    end
 
 -------------------------------------------------------------------------------------------------------
 ----------------------------------------UPDATE-----------------------------------------------------------
@@ -166,26 +201,21 @@ function player:update(dt)
         self.isWalking = false
     end
     
-
-    if self.isWalking then
-        self.playerSprite=love.graphics.newImage(self.spriteSheetPath.idle)
-        grid= anim8.newGrid(139,131, self.playerSprite:getWidth(), self.playerSprite:getHeight())
-        animation = anim8.newAnimation(grid('1-2',1),0.3)
-
-        animation:update(dt)
-    elseif self.isJump then
-        self.playerSprite=love.graphics.newImage(self.spriteSheetPath.jump)
-        grid= anim8.newGrid(141,134, self.playerSprite:getWidth(), self.playerSprite:getHeight())
-        animation = anim8.newAnimation(grid('1-9',1),0.3)
-
-        animation:update(dt)
+    if self.isAttacking then
+        --self.currentAnimation = self.playerSprite.attack.animation
+    elseif not self.isGrounded then
+        --self.currentAnimation = self.playerSprite.jump.animation
+    elseif self.isWalking then
+       
+        --self.currentAnimation = self.playerSprite.walk.animation
     else
-        self.playerSprite=love.graphics.newImage(self.spriteSheetPath.idle)
-        grid= anim8.newGrid(139,131, self.playerSprite:getWidth(), self.playerSprite:getHeight())
-        animation = anim8.newAnimation(grid('1-5',1),0.3)
-
-        animation:update(dt)
+        --self.currentAnimation = self.playerSprite.idle.animation
     end
+
+    if self.currentAnimation then
+        self.currentAnimation.animation:update(dt)
+    end
+        
     
 
 end
@@ -193,7 +223,9 @@ end
 ---------------------------------------------DRAW----------------------------------------------------------------------------------------
 	
 function player:draw()
-    animation:draw(self.playerSprite, self.x, self.y,0,1,1)
+    if self.currentAnimation then
+       self.currentAnimation.animation:draw(self.currentAnimation.sprite, self.x, self.y,0,1,1)
+    end
     love.graphics.setColor(1,1,1,1)
     --love.graphics.draw(self.playerSprite, self.x, self.y, 0, 0.5, 0.5, self.playerSprite:getWidth()/2, self.playerSprite:getHeight()/2)
     love.graphics.setColor(1,1,1)
