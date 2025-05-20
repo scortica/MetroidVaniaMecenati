@@ -208,12 +208,12 @@ function player:update(dt)
     if self.isAttacking then
         --self.currentAnimation = self.playerSprite.attack.animation
     elseif not self.isGrounded then
-        --self.currentAnimation = self.playerSprite.jump.animation
+        self.currentAnimation = self.playerSprite.jump
     elseif self.isWalking then
        
         --self.currentAnimation = self.playerSprite.walk.animation
     else
-        --self.currentAnimation = self.playerSprite.idle.animation
+        self.currentAnimation = self.playerSprite.idle
     end
 
     if self.currentAnimation then
@@ -242,5 +242,11 @@ function player:draw()
     
 end
 ---------------------------------------
-
+function player:keypressed(key, scancode, isrepeat)
+    if key == "space"  then 
+                self.isJump = true
+                self.isGrounded = false           
+       
+    end
+end
 return player

@@ -194,15 +194,10 @@ function gameplay.mousereleased(x, y, button, istouch, presses)
     Pause.mousereleased(x, y, button, istouch, presses)
 end
 function  gameplay.keypressed(key, scancode, isrepeat)
-    
-    if key == "space"  then
-        if player then
-                player.isJump = true
-                player.isGrounded = false
-           
-        end
-       
+    if player then
+        player:keypressed(key, scancode, isrepeat)
     end
+    
 end
 
 function gameplay.keyreleased(key, scancode)
