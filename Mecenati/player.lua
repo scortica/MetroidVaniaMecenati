@@ -125,7 +125,7 @@ function player:load()
     self.playerSprite.idle.animation = anim8.newAnimation(self.playerSprite.idle.grid('1-5',1),0.3)
     --self.playerSprite.walk.animation = anim8.newAnimation(self.playerSprite.walk.grid('1-2',1),0.3)
     --self.playerSprite.attack.animation = anim8.newAnimation(self.playerSprite.attack.grid('1-2',1),0.3)
-    self.playerSprite.jump.animation = anim8.newAnimation(self.playerSprite.jump.grid('1-9',1),0.1)
+    self.playerSprite.jump.animation = anim8.newAnimation(self.playerSprite.jump.grid('2-9',1),0.15)
 
 
     self.currentAnimation = self.playerSprite.idle

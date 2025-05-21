@@ -4,7 +4,6 @@ enemy.__index = enemy
 require("globals")
 
 local anim8 =require("Libraries/anim8")
-local image,animation
 
 function enemy.new(params)
     local self = setmetatable({}, enemy)
@@ -30,6 +29,9 @@ function enemy.new(params)
 
     self.spriteSheetPath = 'Assets/Sprites/enemy/ghost_sheet.png'
     self.enemySprite = nil
+    self.image = nil
+    self.grid = nil
+    self.animation = nil
 
     self.mouseX=nil
     self.mouseY=nil
@@ -96,11 +98,11 @@ end
 ---------------------------------FUNZIONI LOVE-------------------------------------------------
 -----------------------------------------------------------------------------------------------
 function enemy:load()
-    image = love.graphics.newImage(self.spriteSheetPath)
+    self.image = love.graphics.newImage(self.spriteSheetPath)
     self.collider:setCollisionClass("Enemy")
     self.collider:setFixedRotation(true)
-    local grid= anim8.newGrid(74,117, image:getWidth(), image:getHeight())
-    animation = anim8.newAnimation(grid('1-5',1),0.5)
+    self.grid= anim8.newGrid(74,117, self.image:getWidth(), self.image:getHeight())
+    self.animation = anim8.newAnimation(self.grid('1-5',1),0.5)
 end
 
 function enemy:update(dt,player)
@@ -127,14 +129,14 @@ function enemy:update(dt,player)
 
     -- Logica di movimento e gravità qui (se necessario)
 
-    animation:update(dt)
+    self.animation:update(dt)
 end
 
 function enemy:draw()
 
     love.graphics.setColor(1,1,1,1)
     -- Resetta il colore per evitare problemi di sovrapposizione
-    animation:draw(image, self.x, self.y,0,1,1,74/2,117/2)
+    self.animation:draw(self.image, self.x, self.y , 0, 1, 1, 74/2, 117/2)
     
     -- Disegna il player
     --love.graphics.draw(self.enemySprite, self.x, self.y, 0, 1, 1, self.enemySprite:getWidth()/2, self.enemySprite:getHeight()/2)

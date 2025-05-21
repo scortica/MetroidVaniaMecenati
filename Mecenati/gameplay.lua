@@ -9,8 +9,7 @@ local sti = require("Libraries/sti")
 local camera = require("Libraries/camera")
 local wf = require("Libraries/windfield")
 local Pause = require("pause")
-local Enemy_ghost = require("enemy_ghost")
-local Enemy_shooter = require("enemy_shooter")
+local EnemyManager = require("enemyManager")
 --------------------------------------------------
 
 --------------------------------------------------
@@ -20,6 +19,7 @@ local debugText = true
 local ispause = false
 local player = nil
 local enemy_ghost = nil
+local enemyManager = nil
 --------------------------------------------------
 
 --------------------------------------------------
@@ -55,8 +55,12 @@ function gameplay.enter(stateMachine)
     world:addCollisionClass('Enemy')
     world:addCollisionClass('EnemyAttack', {ignores = {'Enemy'}})
 
+    if map.layers["PlayerSpawn"] then
+        for i, obj in pairs(map.layers["PlayerSpawn"].objects) do
+            player = Player.new({x = obj.x,y = obj.y, speed = 150})
+        end
+    end
     
-    player = Player.new({x = 100,y = -150, speed = 150})
     if player then 
         player:load() 
         player.collider:setFixedRotation(true)
@@ -72,11 +76,10 @@ function gameplay.enter(stateMachine)
         end
     end
 
-    enemy_ghost = Enemy_ghost.new({x = 300, y = 200, speed = 100})
-    if enemy_ghost then 
-        enemy_ghost:load() 
+    enemyManager = EnemyManager.new()
+    if enemyManager then
+        enemyManager:load()
     end
-
     player.collider:setPreSolve(function(collider_1, collider_2, contact)
 
     if collider_1.collision_class == 'Player' and collider_2.collision_class == 'Platform' then
@@ -130,10 +133,8 @@ function gameplay.update(dt)
         
             cam:lookAt(player.x, player.y)
         end
-        if enemy_ghost then 
-            enemy_ghost.x = enemy_ghost.collider:getX()
-            enemy_ghost.y = enemy_ghost.collider:getY()
-            enemy_ghost:update(dt, player)
+        if enemyManager then
+            enemyManager:update(dt, player)
         end
     end
 
@@ -156,8 +157,8 @@ function gameplay.draw()
             player:draw() 
         end
 
-        if enemy_ghost then
-            enemy_ghost:draw()
+        if enemyManager then
+            enemyManager:draw()
         end
 
         world:draw()

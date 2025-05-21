@@ -9,8 +9,8 @@ return {
   height = 20,
   tilewidth = 64,
   tileheight = 64,
-  nextlayerid = 4,
-  nextobjectid = 15,
+  nextlayerid = 6,
+  nextobjectid = 20,
   properties = {},
   tilesets = {
     {
@@ -277,6 +277,103 @@ return {
           y = 576.5,
           width = 127.5,
           height = 31.25,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        }
+      }
+    },
+    {
+      type = "objectgroup",
+      draworder = "topdown",
+      id = 4,
+      name = "PlayerSpawn",
+      class = "",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
+      properties = {},
+      objects = {
+        {
+          id = 15,
+          name = "",
+          type = "",
+          shape = "rectangle",
+          x = 71.0125,
+          y = 1036.22,
+          width = 102.781,
+          height = 104.65,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        }
+      }
+    },
+    {
+      type = "objectgroup",
+      draworder = "topdown",
+      id = 5,
+      name = "EnemySpawn",
+      class = "",
+      visible = true,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      parallaxx = 1,
+      parallaxy = 1,
+      properties = {},
+      objects = {
+        {
+          id = 16,
+          name = "Ghost",
+          type = "",
+          shape = "rectangle",
+          x = 435.419,
+          y = 431.681,
+          width = 90.6344,
+          height = 136.419,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 17,
+          name = "Shooter",
+          type = "",
+          shape = "rectangle",
+          x = 1075.47,
+          y = 297.131,
+          width = 87.8312,
+          height = 135.484,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 18,
+          name = "Shooter",
+          type = "",
+          shape = "rectangle",
+          x = 1714.58,
+          y = 521.381,
+          width = 97.175,
+          height = 162.581,
+          rotation = 0,
+          visible = true,
+          properties = {}
+        },
+        {
+          id = 19,
+          name = "Ghost",
+          type = "",
+          shape = "rectangle",
+          x = 23.3594,
+          y = 396.175,
+          width = 81.2906,
+          height = 158.844,
           rotation = 0,
           visible = true,
           properties = {}
