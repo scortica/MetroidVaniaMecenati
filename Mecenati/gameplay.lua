@@ -47,7 +47,7 @@ function gameplay.enter(stateMachine)
     cam = camera()
 
     map = sti('Assets/Maps/MappaProva5.lua')
-    world = wf.newWorld(0, 700, true)
+    world = wf.newWorld(0, 500, true)
 
     world:addCollisionClass('Platform')
     world:addCollisionClass('Player')

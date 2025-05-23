@@ -47,6 +47,8 @@ function player.new(params)
     self.isWalking = false
     self.isJump = false
     self.jumpBuffer = 0
+    self.jumpState = "idle"
+    self.apexTimer = 0
     
     return self
 end
@@ -176,12 +178,10 @@ function player:update(dt)
     if self.isJump then
         
         if self.jumpNum < 1 --[[and py > -30 and py < 30 ]]then
-            self.collider:applyLinearImpulse(0, -6000)
+            self.collider:applyLinearImpulse(0, -6500)
             self.isGrounded = false
             self.jumpNum = self.jumpNum + 1
             self.jumpBuffer = 0.1 -- ignore ground for 0.1 seconds
-            self.currentAnimation = self.playerSprite.jump
-            self.currentAnimation.animation:gotoFrame(1)
         end
         self.isJump = false
     end
@@ -189,6 +189,22 @@ function player:update(dt)
     if self.jumpBuffer > 0 then
         self.jumpBuffer = self.jumpBuffer - dt
     end
+
+     if py < 0 then
+        -- Going up: normal gravity
+        self.collider:setGravityScale(1)
+    elseif py > 0 then
+        -- Falling: increase gravity for faster fall
+        self.collider:setGravityScale(4)
+    else
+        -- On ground or not moving vertically
+        self.collider:setGravityScale(1)
+    end
+
+
+
+
+
     -------------------------------------------------------------------------------------------------------
 
     ------------------------------LOGICA MOVIMENTO---------------------------------------------------------
@@ -222,15 +238,69 @@ function player:update(dt)
     if self.isAttacking then
         --self.currentAnimation = self.playerSprite.attack.animation
     elseif not self.isGrounded then
-        if self.currentAnimation ~= self.playerSprite.jump then
-            self.currentAnimation = self.playerSprite.jump
+        if py < -20 then
+            -- Ascending: frames 2-4, no loop
+            if self.jumpState ~= "ascend" then
+                self.jumpState = "ascend"
+                self.currentAnimation = self.playerSprite.jump
+                self.currentAnimation.animation = anim8.newAnimation(self.playerSprite.jump.grid('2-4',1), 0.10, "pauseAtEnd")
+                self.currentAnimation.animation:gotoFrame(1)
+                self.currentAnimation.animation:resume()
+            end
+        elseif math.abs(py) <= 20 then
+            -- Apex: frame 5
+            if self.jumpState ~= "apex" then
+                self.jumpState = "apex"
+                self.currentAnimation = self.playerSprite.jump
+                self.currentAnimation.animation = anim8.newAnimation(self.playerSprite.jump.grid(5,1), 1)
+            self.currentAnimation.animation:gotoFrame(1)
+            self.currentAnimation.animation:pause()
+                self.apexTimer = 0
+            end
+            self.apexTimer = self.apexTimer + dt
+            -- Optionally, after a short time, force descend state
+            if self.apexTimer > 0.18 then
+                self.jumpState = "descend"
+                self.currentAnimation = self.playerSprite.jump
+                self.currentAnimation.animation = anim8.newAnimation(self.playerSprite.jump.grid('6-7',1), 0.12, "pauseAtEnd")
+                self.currentAnimation.animation:gotoFrame(1)
+                self.currentAnimation.animation:resume()
+            end
+        elseif py > 20 then
+            -- Descending: frames 6-7, no loop
+            if self.jumpState ~= "descend" then
+                self.jumpState = "descend"
+                self.currentAnimation = self.playerSprite.jump
+                self.currentAnimation.animation = anim8.newAnimation(self.playerSprite.jump.grid('6-7',1), 0.12, "pauseAtEnd")
+                self.currentAnimation.animation:gotoFrame(1)
+                self.currentAnimation.animation:resume()
+            end
         end
-    elseif self.isWalking then
-       
+    elseif self.isGrounded and not self.isWalking then
+        if self.jumpState ~= "land" and self.jumpState ~= "idle" then
+            self.jumpState = "land"
+            self.landingTimer = 0
+            self.currentAnimation = self.playerSprite.jump
+            self.currentAnimation.animation = anim8.newAnimation(self.playerSprite.jump.grid(8,1), 1)
+            self.currentAnimation.animation:gotoFrame(1)
+            self.currentAnimation.animation:pause()
+        end
+        self.landingTimer = (self.landingTimer or 0) + dt
+        if self.landingTimer > 0.12 then
+            if self.currentAnimation ~= self.playerSprite.idle then
+                self.jumpState = "idle"
+                self.currentAnimation = self.playerSprite.idle
+                self.currentAnimation.animation:gotoFrame(1)
+                self.currentAnimation.animation:resume()
+            end
+        end
+    elseif self.isWalking then 
         self.currentAnimation = self.playerSprite.walk
     else
         if self.currentAnimation ~= self.playerSprite.idle then
             self.currentAnimation = self.playerSprite.idle
+            self.currentAnimation.animation:gotoFrame(1)
+        self.currentAnimation.animation:resume()
         end
     end
 

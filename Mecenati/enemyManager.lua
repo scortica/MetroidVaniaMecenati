@@ -26,6 +26,7 @@ function EnemyManager:load()
             elseif obj.name == "Shooter" then
                 local enemy = Enemy_shooter.new({x = obj.x, y = obj.y, speed = 100})
                 table.insert(self.shooters, enemy)
+                enemy:load()
             --elseif  then
 
             end
@@ -38,7 +39,7 @@ function EnemyManager:update(dt, player)
     end
 
    for i, shooter in ipairs(self.shooters) do
-        shooter:draw()
+        shooter:update(dt, player)
     end
 end
 
