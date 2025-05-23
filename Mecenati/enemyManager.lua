@@ -23,9 +23,9 @@ function EnemyManager:load()
                 local enemy = Enemy_ghost.new({x = obj.x, y = obj.y, speed = 100})
                 table.insert(self.ghosts, enemy)
                 enemy:load()
-            --elseif   obj.name == "Shooter"then
-                --local enemy = Enemy_shooter.new({x = obj.x, y = obj.y, speed = 100})
-                --table.insert(self.shooters, enemy)
+            elseif obj.name == "Shooter" then
+                local enemy = Enemy_shooter.new({x = obj.x, y = obj.y, speed = 100})
+                table.insert(self.shooters, enemy)
             --elseif  then
 
             end
@@ -37,9 +37,9 @@ function EnemyManager:update(dt, player)
         ghost:update(dt, player)
     end
 
-   -- for i, shooter in ipairs(self.shooters) do
-       -- shooter:draw()
-    --end
+   for i, shooter in ipairs(self.shooters) do
+        shooter:draw()
+    end
 end
 
 
@@ -48,9 +48,9 @@ function EnemyManager:draw()
         ghost:draw()
     end
 
-    --for i, shooter in ipairs(self.shooters) do
-        --shooter:draw()
-    --end
+    for i, shooter in ipairs(self.shooters) do
+        shooter:draw()
+    end
 end
 
 return EnemyManager

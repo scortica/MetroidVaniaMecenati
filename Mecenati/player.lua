@@ -29,9 +29,9 @@ function player.new(params)
     self.isGrounded = false
 
     self.spriteSheetPath = {idle='Assets/Sprites/player/player_idle_sheet.png',
-                            walk=' ',
+                            walk='Assets/Sprites/player/player_run_sheet.png',
                             attack=' ',
-                            jump='Assets/Sprites/player/player_jump_sheet.png'}
+                            jump='Assets/Sprites/player/player_jump_sheet1.png'}
     self.playerSprite = nil
     self.currentAnimation = nil
 
@@ -94,10 +94,10 @@ function player:load()
             frameN = 5
         },
         walk = {
-            sprite = nil,--love.graphics.newImage(self.spriteSheetPath.walk),
+            sprite = love.graphics.newImage(self.spriteSheetPath.walk),
             grid= nil,
             animation = nil,
-            frameN = nil
+            frameN = 8
         },
         attack ={
             sprite = nil,--love.graphics.newImage(self.spriteSheetPath.attack),
@@ -117,13 +117,13 @@ function player:load()
 
     
     self.playerSprite.idle.grid = anim8.newGrid(139,131, self.playerSprite.idle.sprite:getWidth(), self.playerSprite.idle.sprite:getHeight())
-    --self.playerSprite.walk.grid = anim8.newGrid(139,131, self.playerSprite.walk.sprite:getWidth(), self.playerSprite.walk.sprite:getHeight())
+    self.playerSprite.walk.grid = anim8.newGrid(139,131, self.playerSprite.walk.sprite:getWidth(), self.playerSprite.walk.sprite:getHeight())
     --self.playerSprite.attack.grid = anim8.newGrid(139,131, self.playerSprite.attack.sprite:getWidth(), self.playerSprite.attack.sprite:getHeight())
-    self.playerSprite.jump.grid = anim8.newGrid(141,134, self.playerSprite.jump.sprite:getWidth(), self.playerSprite.jump.sprite:getHeight())
+    self.playerSprite.jump.grid = anim8.newGrid(152,128, self.playerSprite.jump.sprite:getWidth(), self.playerSprite.jump.sprite:getHeight())
 
 
     self.playerSprite.idle.animation = anim8.newAnimation(self.playerSprite.idle.grid('1-5',1),0.3)
-    --self.playerSprite.walk.animation = anim8.newAnimation(self.playerSprite.walk.grid('1-2',1),0.3)
+    self.playerSprite.walk.animation = anim8.newAnimation(self.playerSprite.walk.grid('1-8',1),0.15)
     --self.playerSprite.attack.animation = anim8.newAnimation(self.playerSprite.attack.grid('1-2',1),0.3)
     self.playerSprite.jump.animation = anim8.newAnimation(self.playerSprite.jump.grid('2-9',1),0.15)
 
@@ -207,6 +207,8 @@ function player:update(dt)
         self.dx = "Right"
         self.isWalking = true
 
+    elseif love.keyboard.isDown("a") or love.keyboard.isDown("d") then
+        --VUOTO
     else
         if px > 0 then
             self.collider:applyForce(-(px + 9300), 0)
@@ -214,6 +216,7 @@ function player:update(dt)
             self.collider:applyForce(-(px - 9300), 0)
         end
         self.isWalking = false
+
     end
     
     if self.isAttacking then
@@ -224,7 +227,7 @@ function player:update(dt)
         end
     elseif self.isWalking then
        
-        --self.currentAnimation = self.playerSprite.walk.animation
+        self.currentAnimation = self.playerSprite.walk
     else
         if self.currentAnimation ~= self.playerSprite.idle then
             self.currentAnimation = self.playerSprite.idle

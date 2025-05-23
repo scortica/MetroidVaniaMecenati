@@ -1,12 +1,12 @@
-local enemy = {}
+local EnemyGhost = {}
 
-enemy.__index = enemy
+EnemyGhost.__index = EnemyGhost
 require("globals")
 
 local anim8 =require("Libraries/anim8")
 
-function enemy.new(params)
-    local self = setmetatable({}, enemy)
+function EnemyGhost.new(params)
+    local self = setmetatable({}, EnemyGhost)
 
     params = params or {}
 
@@ -16,16 +16,10 @@ function enemy.new(params)
     self.dx = 0
     self.width = params.width or 128
     self.height = params.height or 128
-    self.speed = params.speed or 3
-    self.gravity = 110
     self.scale = params.scale or 1
-    self.defaultSpeed = self.speed
     self.lp= params.lp or 100
-    self.jumpNum = 0
-    self.jumpResetTime = 0.095
-    self.isJump = false
+
     self.collider = world:newBSGRectangleCollider(params.x, params.y, 74, 117, 2)  -- collider del player windfield
-    self.isGrounded = false
 
     self.spriteSheetPath = 'Assets/Sprites/enemy/ghost_sheet.png'
     self.enemySprite = nil
@@ -33,8 +27,6 @@ function enemy.new(params)
     self.grid = nil
     self.animation = nil
 
-    self.mouseX=nil
-    self.mouseY=nil
 
     self.isAttacking = false
     self.attackHasHit = false
@@ -50,12 +42,12 @@ local debugText = true
 
 ---------------------------------FUNZIONI ENEMY------------------------------------------------
 -----------------------------------------------------------------------------------------------
-function enemy:findPlayer(player)
+function EnemyGhost:findPlayer(player)
     -- Trova la posizione del player
     self.playerX, self.playerY = player.collider:getPosition()
 end
 
-function enemy:shoot()
+function EnemyGhost:shoot()
     -- Se il player è in un raggio di 100 pixel, attacca
     if self.playerX and self.playerY then
         local distance = math.sqrt((self.playerX - self.collider:getX())^2 + (self.playerY - self.collider:getY())^2)
@@ -63,6 +55,8 @@ function enemy:shoot()
             self.isAttacking = true
             self.attackHasHit = false
             self.attackTimer = 0
+
+            
         end
     end
 end
@@ -97,7 +91,7 @@ end
 
 ---------------------------------FUNZIONI LOVE-------------------------------------------------
 -----------------------------------------------------------------------------------------------
-function enemy:load()
+function EnemyGhost:load()
     self.image = love.graphics.newImage(self.spriteSheetPath)
     self.collider:setCollisionClass("Enemy")
     self.collider:setFixedRotation(true)
@@ -105,7 +99,7 @@ function enemy:load()
     self.animation = anim8.newAnimation(self.grid('1-5',1),0.5)
 end
 
-function enemy:update(dt,player)
+function EnemyGhost:update(dt,player)
 
 
     -- Aggiorna la posizione del collider dell'attacco in base alla posizione del player
@@ -132,7 +126,7 @@ function enemy:update(dt,player)
     self.animation:update(dt)
 end
 
-function enemy:draw()
+function EnemyGhost:draw()
 
     love.graphics.setColor(1,1,1,1)
     -- Resetta il colore per evitare problemi di sovrapposizione
@@ -148,4 +142,4 @@ end
 
 
 
-return enemy
+return EnemyGhost
