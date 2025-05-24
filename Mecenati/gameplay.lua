@@ -4,6 +4,7 @@ local stateMachineRef = nil
 --------------------------------------------------
 -- REQUIRE
 --------------------------------------------------
+local anim8 =require("Libraries/anim8")
 local Player = require("player")
 local sti = require("Libraries/sti")
 local camera = require("Libraries/camera")
@@ -20,6 +21,11 @@ local ispause = false
 local player = nil
 local enemy_ghost = nil
 local enemyManager = nil
+
+local UI_PLAYER_image,UI_PLAYER_animation,UI_PLAYER_grid
+local UI_LP_image,UI_LP_animation,UI_LP_grid
+
+
 --------------------------------------------------
 
 --------------------------------------------------
@@ -30,6 +36,11 @@ local enemyManager = nil
 -- FUNZIONI LOVE
 --------------------------------------------------
 function gameplay.enter(stateMachine)
+
+    UI_PLAYER_image = love.graphics.newImage("Assets/Sprites/UI/iconUI.png")
+    UI_PLAYER_grid = anim8.newGrid(123, 108, UI_PLAYER_image:getWidth(), UI_PLAYER_image:getHeight())
+    UI_PLAYER_animation = anim8.newAnimation(UI_PLAYER_grid('1-5', 1), 0.2)
+
     stateMachineRef = stateMachine
     Pause.load({
         onResume = function()
@@ -138,11 +149,17 @@ function gameplay.update(dt)
         end
     end
 
+    UI_PLAYER_animation:update(dt)
+
 end
 
 function gameplay.draw()
     -- Draw the game here
+    
+
     cam:attach()
+
+        
 
         love.graphics.setColor(1,1,1)
         love.graphics.rectangle("fill",0 ,-1000 ,10000, 10000)
@@ -164,6 +181,8 @@ function gameplay.draw()
         world:draw()
 
     cam:detach()
+
+    UI_PLAYER_animation:draw(UI_PLAYER_image, 10, 10)
 
     if ispause then
         Pause:draw()
