@@ -1,10 +1,10 @@
 PLAYER
     • Gestione parry collision
     • Fix attack collision
-    • Logica di HP
-        - Danno
-        - Morte
-        - Cura
+    • Logica di HP 5/6 vite
+        - Danno toglie 1 vita
+        - Morte quando vite vanno a 0
+        - Cura consuma 4 barre croce
 
 ENEMY_GHOST
     • Fix collision Box fissate sullo sprite
