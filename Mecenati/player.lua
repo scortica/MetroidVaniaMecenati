@@ -178,7 +178,7 @@ function player:update(dt)
     if self.isJump then
         
         if self.jumpNum < 1 --[[and py > -30 and py < 30 ]]then
-            self.collider:applyLinearImpulse(0, -6500)
+            self.collider:applyLinearImpulse(0, -7000)
             self.isGrounded = false
             self.jumpNum = self.jumpNum + 1
             self.jumpBuffer = 0.1 -- ignore ground for 0.1 seconds
@@ -315,10 +315,11 @@ end
 ---------------------------------------------DRAW----------------------------------------------------------------------------------------
 	
 function player:draw()
+    love.graphics.setColor(1,1,1,1)
     if self.currentAnimation then
        self.currentAnimation.animation:draw(self.currentAnimation.sprite, self.x, self.y, 0, 1 , 1 , self.currentAnimation.sprite:getWidth()/(self.currentAnimation.frameN*3), self.currentAnimation.sprite:getHeight()/2)
     end
-    love.graphics.setColor(1,1,1,1)
+    
     --love.graphics.draw(self.playerSprite, self.x, self.y, 0, 0.5, 0.5, self.playerSprite:getWidth()/2, self.playerSprite:getHeight()/2)
     love.graphics.setColor(1,1,1)
 

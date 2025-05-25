@@ -63,7 +63,7 @@ function gameplay.enter(stateMachine)
     world:addCollisionClass('Platform')
     world:addCollisionClass('Player')
     world:addCollisionClass('PlayerAttack', {ignores = {'Player'}})
-    world:addCollisionClass('Enemy')
+    world:addCollisionClass('Enemy', {ignores = {'Player'}})
     world:addCollisionClass('EnemyAttack', {ignores = {'Enemy'}})
 
     if map.layers["PlayerSpawn"] then
@@ -161,7 +161,7 @@ function gameplay.draw()
 
         
 
-        love.graphics.setColor(1,1,1)
+        love.graphics.setColor(0,0,0)
         love.graphics.rectangle("fill",0 ,-1000 ,10000, 10000)
 
         love.graphics.draw(mappa, -1000, -540)
