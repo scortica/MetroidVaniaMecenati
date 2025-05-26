@@ -18,6 +18,7 @@ function EnemyShooter.new(params)
     self.width = params.width or 128
     self.height = params.height or 128
     self.scale = params.scale or 1
+    self.lp= params.lp or 5
 
     self.collider = world:newBSGRectangleCollider(params.x, params.y, 100/2, 141, 2)  -- collider del player windfield
 
@@ -28,6 +29,10 @@ function EnemyShooter.new(params)
     self.enemySprite = nil
     self.currentAnimation = nil
 
+    self.isActive=true
+
+    
+
 
     self.isAttacking = false
     self.attackHasHit = false
@@ -35,6 +40,8 @@ function EnemyShooter.new(params)
     self.attackDuration = 2
     self.bullet = nil
     --self.attackCollider = world:newRectangleCollider(params.x, params.y, 25, 25) -- collider dell'attacco windfield
+
+    self.collider:setObject(self)
 
     return self
 end
@@ -91,7 +98,15 @@ function EnemyShooter:shoot(player)
            
 end
 
+function EnemyShooter:checkDeath()
+    if self.lp <= 0 then
+        -- Logica per la morte del nemico
+        print("Nemico morto")
+        -- Rimuovi il collider e l'animazione, se necessario
+        self.isActive = false
 
+    end
+end
 
 -----------------------------------------------------------------------------------------------
 
@@ -167,6 +182,8 @@ function EnemyShooter:update(dt,player)
         self.bullet:update(dt)
     end
     -- Logica di movimento e gravità qui (se necessario)
+
+    self:checkDeath()
 
     self.currentAnimation.animation:update(dt)
 end

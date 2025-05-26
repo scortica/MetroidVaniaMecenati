@@ -43,6 +43,7 @@ function player.new(params)
     self.attackTimer = 0
     self.attackDuration = 0.5
     self.attackCollider = world:newRectangleCollider(params.x, params.y, 25, 25) -- collider dell'attacco windfield
+    self.attackDamage = params.attackDamage or 5
 
     self.isWalking = false
     self.isJump = false

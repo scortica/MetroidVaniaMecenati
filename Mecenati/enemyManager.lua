@@ -12,7 +12,6 @@ function EnemyManager
 
     self.ghosts = {}
     self.shooters = {}
-    self.melees = {}
 
     return self
 end
@@ -33,13 +32,27 @@ function EnemyManager:load()
         end
     end
 end
+
 function EnemyManager:update(dt, player)
-     for i, ghost in ipairs(self.ghosts) do
-        ghost:update(dt, player)
+    for i, ghost in ipairs(self.ghosts) do
+
+        if ghost.isActive then
+            ghost:update(dt, player)
+        else
+            -- Se il fantasma non è attivo, rimuovilo dalla lista
+            table.remove(self.ghosts, i)
+        end
     end
 
    for i, shooter in ipairs(self.shooters) do
-        shooter:update(dt, player)
+    
+        if shooter.isActive then
+            shooter:update(dt, player)
+        else
+            -- Se il fantasma non è attivo, rimuovilo dalla lista
+            table.remove(self.shooters, i)
+        end
+        
     end
 end
 
