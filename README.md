@@ -1,6 +1,6 @@
 PLAYER
-• Gestione parry collision
-• Fix attack collision
+• Gestione parry collision ✓
+• Fix attack collision X (ATTENDERE ANIMAZIONI)
 • Logica di HP 5/6 vite ✓
       - Danno toglie 1 vita ✓
       - Morte quando vite vanno a 0 X (AGGIUNGERE POSSIBILITÀ DI RESPAWN CON TASTO)
