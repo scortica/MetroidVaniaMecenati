@@ -106,8 +106,8 @@ function gameplay.enter(stateMachine)
                 player.isGrounded = false
             end
         end
-    end
-end)
+        end
+    end)
 
 player.collider:setPostSolve(function(collider_1, collider_2, contact, normalimpulse, tangentimpulse)
     if collider_1.collision_class == 'Player' and collider_2.collision_class == 'Platform' then 
@@ -120,6 +120,15 @@ player.attackCollider:setPreSolve(function(collider_1, collider_2, contact)
        if not player.attackHasHit then
             --Logica attacco Nemico
             player.attackHasHit = true
+
+            local enemy = collider_2:getObject()
+            print(collider_2:getObject())
+            enemy.lp = enemy.lp - player.attackDamage
+            player.crossPoints = player.crossPoints + 1
+
+            if debugText then
+                print("Attacked enemy! Remaining LP: " .. enemy.lp)
+            end
         end
     end
 end)

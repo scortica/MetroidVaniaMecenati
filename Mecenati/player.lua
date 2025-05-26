@@ -20,9 +20,12 @@ function player.new(params)
     self.height = params.height or 256
     self.speed = params.speed or 3
     self.gravity = 110
+    self.crossPoints = 0
     self.scale = params.scale or 1
     self.defaultSpeed = self.speed
-    self.lp= params.lp or 100
+    self.lp= params.lp or 5
+    self.isDead = false
+
     self.jumpNum = 0
     self.jumpResetTime = 0.095
     self.collider = world:newBSGRectangleCollider(params.x, params.y, 64, 128, 2)  -- collider del player windfield
@@ -35,14 +38,12 @@ function player.new(params)
     self.playerSprite = nil
     self.currentAnimation = nil
 
-    self.mouseX=nil
-    self.mouseY=nil
-
     self.isAttacking = false
     self.attackHasHit = false
     self.attackTimer = 0
     self.attackDuration = 0.5
     self.attackCollider = world:newRectangleCollider(params.x, params.y, 25, 25) -- collider dell'attacco windfield
+    self.attackDamage = params.attackDamage or 1
 
     self.isWalking = false
     self.isJump = false
@@ -72,8 +73,18 @@ function player:mousepressed(x, y, button, istouch, presses)
     end
 end
 
+function player:chargeCross()
+    if (self.crossPoints/4)>1 then
+        self.lp = self.lp + 1
+        self.crossPoints = self.crossPoints - 4
+    end
+end
 
-
+function player:death()
+    if self.lp<=0 then
+        self.isDead = true
+    end
+end
 
 ---------------------------------------
 ---------------------------------FUNZIONI LOVE-------------------------------------------------

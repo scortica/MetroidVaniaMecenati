@@ -17,9 +17,12 @@ function EnemyGhost.new(params)
     self.width = params.width or 128
     self.height = params.height or 128
     self.scale = params.scale or 1
-    self.lp= params.lp or 100
+    self.lp= params.lp or 3
+
+    self.isActive = true
 
     self.collider = world:newBSGRectangleCollider(params.x, params.y, 74, 117, 2)  -- collider del player windfield
+    self.collider:setObject(self)
 
     self.spriteSheetPath = 'Assets/Sprites/enemy/ghost_sheet.png'
     self.enemySprite = nil
@@ -85,6 +88,14 @@ local function distance(x1,x2,y1,y2)
     return math.sqrt((x2-x1)^2 + (y2-y1)^2)
 end
 
+function EnemyGhost:checkDeath()
+    if self.lp <= 0 then
+        -- Logica per la morte del nemico
+        print("Nemico morto")
+        -- Rimuovi il collider e l'animazione, se necessario
+        self.isActive = false
+    end
+end
 -----------------------------------------------------------------------------------------------
 
 
@@ -120,6 +131,12 @@ function EnemyGhost:update(dt,player)
     if distance(self.x,player.x ,self.y, player.y) < 20 then
         print("Distanza tra nemico e player: " .. distance(self.x,player.x, self.y, player.y))
     end
+
+    --if  then
+        
+    --end
+
+    self:checkDeath()
 
     -- Logica di movimento e gravità qui (se necessario)
 
