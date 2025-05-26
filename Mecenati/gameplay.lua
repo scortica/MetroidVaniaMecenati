@@ -75,8 +75,6 @@ function gameplay.enter(stateMachine)
     
     if player then 
         player:load() 
-        player.collider:setFixedRotation(true)
-        player.collider:setCollisionClass("Player")
     end
     platforms = {}
     if map.layers["Platform"] then
@@ -92,47 +90,7 @@ function gameplay.enter(stateMachine)
     if enemyManager then
         enemyManager:load()
     end
-    player.collider:setPreSolve(function(collider_1, collider_2, contact)
-
-    if collider_1.collision_class == 'Player' and collider_2.collision_class == 'Platform' then
-        if player.jumpBuffer <= 0 then
-            local px, py = collider_1:getPosition()  -- posizione del player.collider
-            local pw, ph = 25, 25 -- usa le dimensioni reali del player
-            local tx, ty = collider_2:getPosition() -- posizione della piattaforma
-            local tw, th = collider_2:getObject() and collider_2:getObject().width or 0, collider_2:getObject() and collider_2:getObject().height or 0  -- dimensioni della piattaforma
-            -- Se il player è sopra la piattaforma
-            if py + ph/2 <= ty - th/2 + 5 then 
-                player.isGrounded = true
-            else    
-                player.isGrounded = false
-            end
-        end
-        end
-    end)
-
-player.collider:setPostSolve(function(collider_1, collider_2, contact, normalimpulse, tangentimpulse)
-    if collider_1.collision_class == 'Player' and collider_2.collision_class == 'Platform' then 
-        player.grounded = false
-    end
-end)
-
-player.attackCollider:setPreSolve(function(collider_1, collider_2, contact)
-    if collider_1.collision_class == 'PlayerAttack' and collider_2.collision_class == 'Enemy' then
-       if not player.attackHasHit then
-            --Logica attacco Nemico
-            player.attackHasHit = true
-
-            local enemy = collider_2:getObject()
-            print(collider_2:getObject())
-            enemy.lp = enemy.lp - player.attackDamage
-            player.crossPoints = player.crossPoints + 1
-
-            if debugText then
-                print("Attacked enemy! Remaining LP: " .. enemy.lp)
-            end
-        end
-    end
-end)
+   
     mappa = love.graphics.newImage("Assets/Maps/background_1_livello.png")
    -- map:resize(love.graphics.getWidth(), love.graphics.getHeight())
    -- map:drawLayer(map.layers["Background"])
@@ -149,11 +107,7 @@ function gameplay.update(dt)
         else
             world:update(dt)
             if player then 
-                print(player.lp)
-                player.x = player.collider:getX()
-                player.y = player.collider:getY()
                 player:update(dt) 
-            
                 cam:lookAt(player.x, player.y)
             end
             if enemyManager then

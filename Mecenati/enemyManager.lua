@@ -40,6 +40,7 @@ function EnemyManager:update(dt, player)
             ghost:update(dt, player)
         else
             -- Se il fantasma non è attivo, rimuovilo dalla lista
+            ghost.collider:destroy() -- Distruggi il collider del fantasma
             table.remove(self.ghosts, i)
         end
     end
@@ -50,6 +51,10 @@ function EnemyManager:update(dt, player)
             shooter:update(dt, player)
         else
             -- Se il fantasma non è attivo, rimuovilo dalla lista
+            shooter.collider:destroy() -- Distruggi il collider del fantasma
+            if shooter.bullet then
+                shooter.bullet.collider:destroy() -- Distruggi il collider del proiettile se esiste
+            end
             table.remove(self.shooters, i)
         end
         

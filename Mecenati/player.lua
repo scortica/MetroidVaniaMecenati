@@ -1,14 +1,14 @@
-local player = {}
+local Player = {}
 
-player.__index = player
+Player.__index = Player
 require("globals")
 
 local anim8 =require("Libraries/anim8")
 local image,animation,grid
 
 
-function player.new(params)
-    local self = setmetatable({}, player)
+function Player.new(params)
+    local self = setmetatable({}, Player)
 
     params = params or {}
 
@@ -66,7 +66,7 @@ end
 
 local debugText = true
 
-function player:mousepressed(x, y, button, istouch, presses)
+function Player:mousepressed(x, y, button, istouch, presses)
 
     -- Se il player non è in attacco e il tasto sinistro del mouse è premuto
     -- attiva l'attacco e resetta il timer dell'attacco
@@ -87,15 +87,15 @@ function player:mousepressed(x, y, button, istouch, presses)
     end
 end
 
-function player:chargeCross()
+function Player:heal()
     if (self.crossPoints/4)>1 then
         self.lp = self.lp + 1
         self.crossPoints = self.crossPoints - 4
     end
 end
 
-function player:gotHit()
-    self.lp = self.lp - 1
+function Player:gotHit(damage)
+    self.lp = self.lp - damage
     if self.lp<=0 then
         self.isDead = true
     end
@@ -107,7 +107,12 @@ end
 
 ---------------------------------------LOAD----------------------------------------------------
 
-function player:load()
+function Player:load()
+
+
+    -- Inizzializzi i vari collider del player, dell'attacco e del parry
+    self.collider:setFixedRotation(true)
+    self.collider:setCollisionClass("Player")
     self.attackCollider:setType("dynamic")
     self.attackCollider:setFixedRotation(true)
     self.attackCollider:setGravityScale(0)
@@ -119,8 +124,49 @@ function player:load()
     self.parryCollider:setCollisionClass("PlayerParry")
     self.parryCollider:setActive(true)
 
+    --Verifica se il player si trova a terra o meno
+    self.collider:setPreSolve(function(collider_1, collider_2, contact)
+        if collider_1.collision_class == 'Player' and collider_2.collision_class == 'Platform' then
+            if self.jumpBuffer <= 0 then
+                local px, py = collider_1:getPosition()  -- posizione del player.collider
+                local pw, ph = 25, 25 -- usa le dimensioni reali del player
+                local tx, ty = collider_2:getPosition() -- posizione della piattaforma
+                local tw, th = collider_2:getObject() and collider_2:getObject().width or 0, collider_2:getObject() and collider_2:getObject().height or 0  -- dimensioni della piattaforma
+                -- Se il player è sopra la piattaforma
+                if py + ph/2 <= ty - th/2 + 5 then 
+                    self.isGrounded = true
+                else    
+                    self.isGrounded = false
+                end
+            end
+        end
+    end)
+     -- Se il player non è a terra, resetta il grounded
+    self.collider:setPostSolve(function(collider_1, collider_2, contact, normalimpulse, tangentimpulse)
+        if collider_1.collision_class == 'Player' and collider_2.collision_class == 'Platform' then 
+            self.grounded = false
+        end
+    end)
+    -- Logica per l'attacco del player
+    self.attackCollider:setPreSolve(function(collider_1, collider_2, contact)
+        if collider_1.collision_class == 'PlayerAttack' and collider_2.collision_class == 'Enemy' then
+            if not self.attackHasHit then
+                --Logica attacco Nemico
+                self.attackHasHit = true
 
-   self.parryCollider:setPreSolve(function(parry, other, contact)
+                local enemy = collider_2:getObject()
+                print(collider_2:getObject())
+                enemy:gotHit(self.attackDamage)
+                self.crossPoints = self.crossPoints + 1
+
+                if debugText then
+                    print("Attacked enemy! Remaining LP: " .. enemy.lp)
+                end
+            end
+        end
+    end)
+    -- Logica per il parry del player
+    self.parryCollider:setPreSolve(function(parry, other, contact)
         if other.collision_class == "EnemyAttack" then
             if self.parry and not self.succParry then
                 local object =  other:getObject()
@@ -188,7 +234,9 @@ function player:load()
 -------------------------------------------------------------------------------------------------------
 ----------------------------------------UPDATE-----------------------------------------------------------
 
-function player:update(dt)
+function Player:update(dt)
+    self.x = self.collider:getX()
+    self.y = self.collider:getY()
     local px, py = self.collider:getLinearVelocity()
     ------------------------------LOGICA ATTACCO---------------------------------------------------------
     -- Se il player è in attacco, attiva il collider dell'attacco
@@ -273,11 +321,11 @@ function player:update(dt)
     -- Se non premi nessun tasto, applica una forza al collider del player per fermarlo
 
 
-    if love.keyboard.isDown("a") and px >= -300 then
+    if love.keyboard.isDown("a") and px >= -500 then
         self.collider:applyForce(-10000, 0)
         self.dx = "Left"
         self.isWalking = true
-    elseif love.keyboard.isDown("d") and px <= 300  then
+    elseif love.keyboard.isDown("d") and px <= 500  then
         self.collider:applyForce(10000, 0)
         self.dx = "Right"
         self.isWalking = true
@@ -285,9 +333,9 @@ function player:update(dt)
         --VUOTO
     else
         if px > 0 then
-            self.collider:applyForce(-(px + 9300), 0)
+            self.collider:applyForce(-(px + 12000), 0)
         elseif px < 0 then
-            self.collider:applyForce(-(px - 9300), 0)
+            self.collider:applyForce(-(px - 12000), 0)
         end
         self.isWalking = false
 
@@ -447,31 +495,25 @@ end
 -----------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------DRAW----------------------------------------------------------------------------------------
 	
-function player:draw()
+function Player:draw()
     love.graphics.setColor(1,1,1,1)
     if self.currentAnimation then
         if self.dx == "Right" then
             self.currentAnimation.animation_r:draw(self.currentAnimation.sprite, self.x, self.y, 0, 1 , 1 , self.currentAnimation.sprite:getWidth()/(self.currentAnimation.frameN*3), self.currentAnimation.sprite:getHeight()/2)
         elseif self.dx == "Left" then
-            self.currentAnimation.animation_l:draw(self.currentAnimation.sprite, self.x, self.y, 0, 1 , 1 , self.currentAnimation.sprite:getWidth()/(self.currentAnimation.frameN*3), self.currentAnimation.sprite:getHeight()/2)
+            self.currentAnimation.animation_l:draw(self.currentAnimation.sprite, self.x - self.currentAnimation.sprite:getWidth()/(self.currentAnimation.frameN*3) , self.y, 0, 1 , 1 , self.currentAnimation.sprite:getWidth()/(self.currentAnimation.frameN*3), self.currentAnimation.sprite:getHeight()/2)
         end
     end
     
-    --love.graphics.draw(self.playerSprite, self.x, self.y, 0, 0.5, 0.5, self.playerSprite:getWidth()/2, self.playerSprite:getHeight()/2)
     love.graphics.setColor(1,1,1)
 
-    if debugText then
-        --print("Player width: " .. self.playerSprite:getWidth())
-        --print("Player height: " .. self.playerSprite:getHeight())
-
-    end
     
 end
 ---------------------------------------
 
 ---KEYBINDS----------------------------
 ---------------------------------------
-function player:keypressed(key, scancode, isrepeat)
+function Player:keypressed(key, scancode, isrepeat)
     if key == "space"  then 
                 self.isJump = true
                 self.isGrounded = false
@@ -480,4 +522,4 @@ end
 
 ---------------------------------------
 
-return player
+return Player

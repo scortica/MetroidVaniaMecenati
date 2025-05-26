@@ -14,7 +14,7 @@ function EnemyShooter.new(params)
     -- esempi di parametri o valori preimportati
     self.x = params.x or 800
     self.y = params.y or 500
-    self.dx = 0
+    self.dx = "Left"
     self.width = params.width or 128
     self.height = params.height or 128
     self.scale = params.scale or 1
@@ -83,28 +83,39 @@ function EnemyShooter:shoot(player)
         self.attackHasHit = false
         self.attackTimer = 0
         local angle = getLookAtPointRotation(self.x, self.y, player.x, player.y)
+        if self.bullet then
+            self.bullet.collider:destroy() -- Distruggi il vecchio collider se esiste
+        end
+        local bulletX = nil
+        self.currentAnimation = self.enemySprite.attack
+        if self.dx == "Left" then
+            self.currentAnimation.animation_l:gotoFrame(1)
+            self.currentAnimation.animation_l:resume()
+            bulletX = self.x - 50
+        else
+            self.currentAnimation.animation_r:gotoFrame(1)
+            self.currentAnimation.animation_r:resume()
+            bulletX = self.x + 50
+        end
+
         self.bullet = Bullet.new({
-            x = self.x - 50,
+            x = bulletX,
             y = self.y,
-            angle = angle
+            angle = angle,
+            shooter = self
         })
         self.bullet:load()
-         
-            self.currentAnimation = self.enemySprite.attack
-            self.currentAnimation.animation:gotoFrame(1)
-            self.currentAnimation.animation:resume()
+           
+            
        
     end
            
 end
 
-function EnemyShooter:checkDeath()
+function EnemyShooter:gotHit(damage)
+    self.lp = self.lp - damage
     if self.lp <= 0 then
-        -- Logica per la morte del nemico
-        print("Nemico morto")
-        -- Rimuovi il collider e l'animazione, se necessario
         self.isActive = false
-
     end
 end
 
@@ -124,13 +135,15 @@ function EnemyShooter:load()
         idle = {
             sprite = love.graphics.newImage(self.spriteSheetPath.idle),
             grid= nil,
-            animation = nil,
+            animation_r = nil,
+            animation_l = nil,
             frameN = 5
         },
         attack ={
             sprite = love.graphics.newImage(self.spriteSheetPath.attack),
             grid= nil,
-            animation = nil,
+            animation_r = nil,
+            animation_l = nil,
             frameN = 7
         }
     }
@@ -138,8 +151,10 @@ function EnemyShooter:load()
     self.enemySprite.idle.grid = anim8.newGrid(100,141, self.enemySprite.idle.sprite:getWidth(), self.enemySprite.idle.sprite:getHeight())
     self.enemySprite.attack.grid = anim8.newGrid(100,141, self.enemySprite.attack.sprite:getWidth(), self.enemySprite.attack.sprite:getHeight())
 
-    self.enemySprite.idle.animation = anim8.newAnimation( self.enemySprite.idle.grid('1-5',1),0.5)
-    self.enemySprite.attack.animation = anim8.newAnimation( self.enemySprite.attack.grid('1-7',1),0.07, "pauseAtEnd")
+    self.enemySprite.idle.animation_l = anim8.newAnimation( self.enemySprite.idle.grid('1-5',1),0.5)
+    self.enemySprite.idle.animation_r = anim8.newAnimation( self.enemySprite.idle.grid('1-5',1),0.5):flipH()
+    self.enemySprite.attack.animation_l = anim8.newAnimation( self.enemySprite.attack.grid('1-7',1),0.07, "pauseAtEnd")
+    self.enemySprite.attack.animation_r = anim8.newAnimation( self.enemySprite.attack.grid('1-7',1),0.07, "pauseAtEnd"):flipH()
 
     self.currentAnimation = self.enemySprite.idle
 
@@ -147,18 +162,10 @@ end
 
 function EnemyShooter:update(dt,player)
 
-
-    -- Aggiorna la posizione del collider dell'attacco in base alla posizione del player
-    --self.attackCollider:setPosition(self.collider:getPosition())
-    --self.attackCollider:setCollisionClass("EnemyAttack")
-    --self.attackCollider:setType("dynamic")
-
-    -- Aggiorna il timer dell'attacco
-
     self.x = self.collider:getX()
     self.y = self.collider:getY()
    
-
+    -- Aggiorna il timer dell'attacco
     if self.isAttacking then
         self.attackTimer = self.attackTimer + dt
         if self.attackTimer >= self.attackDuration then
@@ -166,12 +173,23 @@ function EnemyShooter:update(dt,player)
             self.attackHasHit = false
             self.attackTimer = 0
             self.currentAnimation = self.enemySprite.idle
-            self.currentAnimation.animation:gotoFrame(1)
-            self.currentAnimation.animation:resume()
+            if self.dx == "Left" then
+                self.currentAnimation.animation_l:gotoFrame(1)
+                self.currentAnimation.animation_l:resume()
+            else
+                self.currentAnimation.animation_r:gotoFrame(1)
+                self.currentAnimation.animation_r:resume()
+            end
         end
     end
 
     if distance(self.x,player.x ,self.y, player.y) < 500 then
+        local direction = player.x - self.x
+        if direction < 0 then
+            self.dx = "Left"
+        else
+            self.dx = "Right"
+        end
         self:shoot(player)
     elseif not self.isAttacking then
         if self.currentAnimation ~= self.enemySprite.idle then
@@ -181,27 +199,29 @@ function EnemyShooter:update(dt,player)
     if self.bullet then
         self.bullet:update(dt)
     end
-    -- Logica di movimento e gravità qui (se necessario)
 
-    self:checkDeath()
-
-    self.currentAnimation.animation:update(dt)
+    if self.dx == "Left" then
+        self.currentAnimation.animation_l:update(dt)
+    else
+        self.currentAnimation.animation_r:update(dt)
+    end
 end
 
 function EnemyShooter:draw()
 
     love.graphics.setColor(1,1,1,1)
-    -- Resetta il colore per evitare problemi di sovrapposizione
-    self.currentAnimation.animation:draw(self.currentAnimation.sprite, self.x, self.y , 0, 1, 1, 100/2 + 25, 141/2)
+    if self.dx == "Left" then
+        self.currentAnimation.animation_l:draw(self.currentAnimation.sprite, self.x, self.y , 0, 1, 1, 100/2 + 25, 141/2)
+    else
+        self.currentAnimation.animation_r:draw(self.currentAnimation.sprite, self.x + 50, self.y , 0, 1, 1, 100/2 + 25, 141/2)
+    end
+    
     
     if self.bullet then
         self.bullet:draw()
     end
-    -- Disegna il player
-    --love.graphics.draw(self.enemySprite, self.x, self.y, 0, 1, 1, self.enemySprite:getWidth()/2, self.enemySprite:getHeight()/2)
 
 end
-
 
 -----------------------------------------------------------------------------------------------
 
