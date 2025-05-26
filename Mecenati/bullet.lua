@@ -16,6 +16,8 @@ function Bullet.new(params)
     self.bulletSprite = nil
     self.angle = params.angle or 0
     self.rotation = params.angle
+    self.isActive = true
+
     self.collider = world:newCircleCollider(params.x, params.y, 5)
     self.collider:setObject(self)
 
@@ -41,26 +43,46 @@ function Bullet:load()
     self.collider:setFixedRotation(true)
     self.collider:setGravityScale(0)
     self.collider:setCollisionClass("EnemyAttack")
+
+
+
+    self.collider:setPreSolve(function(bullet, other, contact)
+        print(other.collision_class)
+        if other.collision_class == "Player" and bullet.collision_class == "EnemyAttack" then
+            local player = other:getObject()
+            
+            player:gotHit()
+            self.collider:destroy()
+            self.isActive = false
+        end
+        if other.collision_class == "Enemy" and bullet.collision_class == "PlayerAttack" then
+            local enemy = other:getObject()
+        end
+    end)
     
 end
 
 function Bullet:update(dt, enemies, player)
-    if enemies then
-        for _, enemy in ipairs(enemies) do
-            if distance(self.x, enemy.x, self.y, enemy.y ) < 0 then
-                enemy.active = false
+   if self.isActive then
+        if enemies then
+            for _, enemy in ipairs(enemies) do
+                if distance(self.x, enemy.x, self.y, enemy.y ) < 0 then
+                    enemy.active = false
+                end
             end
         end
+        
+        self.collider:setPosition(self.x, self.y)
+        self.x = self.x + math.cos ( self.angle - math.pi/2) * self.speed * dt
+        self.y = self.y + math.sin ( self.angle - math.pi/2) * self.speed * dt
     end
-    
-    self.collider:setPosition(self.x, self.y)
-    self.x = self.x + math.cos ( self.angle - math.pi/2) * self.speed * dt
-    self.y = self.y + math.sin ( self.angle - math.pi/2) * self.speed * dt
 end
 
 
 function Bullet:draw()
-    love.graphics.draw(self.bulletSprite, self.x, self.y, self.rotation + math.pi/2, nil, nil, self.bulletSprite:getWidth()/2, self.bulletSprite:getHeight()/2 )
+    if self.isActive then
+        love.graphics.draw(self.bulletSprite, self.x, self.y, self.rotation + math.pi/2, nil, nil, self.bulletSprite:getWidth()/2, self.bulletSprite:getHeight()/2 )
+    end
 end
 
 return Bullet

@@ -142,25 +142,27 @@ end)
 end
 
 function gameplay.update(dt)
-    if ispause then
-        
-        Pause:update(dt)
-    else
-        world:update(dt)
-        if player then 
-            player.x = player.collider:getX()
-            player.y = player.collider:getY()
-            player:update(dt) 
-        
-            cam:lookAt(player.x, player.y)
+    if player and not player.isDead then
+        if ispause then
+            
+            Pause:update(dt)
+        else
+            world:update(dt)
+            if player then 
+                print(player.lp)
+                player.x = player.collider:getX()
+                player.y = player.collider:getY()
+                player:update(dt) 
+            
+                cam:lookAt(player.x, player.y)
+            end
+            if enemyManager then
+                enemyManager:update(dt, player)
+            end
         end
-        if enemyManager then
-            enemyManager:update(dt, player)
-        end
+
+        UI_PLAYER_animation:update(dt)
     end
-
-    UI_PLAYER_animation:update(dt)
-
 end
 
 function gameplay.draw()
@@ -180,7 +182,7 @@ function gameplay.draw()
 
         
         
-        if player then
+        if player and not player.isDead then
             player:draw() 
         end
 

@@ -94,13 +94,14 @@ function player:chargeCross()
     end
 end
 
-function player:death()
+function player:gotHit()
+    self.lp = self.lp - 1
     if self.lp<=0 then
         self.isDead = true
     end
 end
 
----------------------------------------
+-----------------------------------------------------------------------------------------------
 ---------------------------------FUNZIONI LOVE-------------------------------------------------
 
 
