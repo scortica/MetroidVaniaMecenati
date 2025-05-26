@@ -15,6 +15,10 @@ function Bullet.new(params)
     self.spritePath = "Assets/Sprites/bullet/proiettile.png"
     self.bulletSprite = nil
     self.angle = params.angle or 0
+    self.rotation = params.angle
+    self.collider = world:newCircleCollider(params.x, params.y, 5)
+    self.collider:setObject(self)
+
     return self
 end
 
@@ -22,8 +26,22 @@ local function distance(x1,x2,y1,y2)
     return math.sqrt((x2-x1)^2 + (y2-y1)^2)
 end
 
+
+function Bullet:getParried()
+    self.speed = -self.speed
+    self.rotation = self.rotation - math.pi
+
+    self.collider:setCollisionClass("PlayerAttack")
+    
+end
+
 function Bullet:load()
     self.bulletSprite = love.graphics.newImage(self.spritePath)
+    self.collider:setType("dynamic")
+    self.collider:setFixedRotation(true)
+    self.collider:setGravityScale(0)
+    self.collider:setCollisionClass("EnemyAttack")
+    
 end
 
 function Bullet:update(dt, enemies, player)
@@ -35,14 +53,14 @@ function Bullet:update(dt, enemies, player)
         end
     end
     
-    
+    self.collider:setPosition(self.x, self.y)
     self.x = self.x + math.cos ( self.angle - math.pi/2) * self.speed * dt
     self.y = self.y + math.sin ( self.angle - math.pi/2) * self.speed * dt
 end
 
 
 function Bullet:draw()
-    love.graphics.draw(self.bulletSprite, self.x, self.y, self.angle + math.pi/2, nil, nil, self.bulletSprite:getWidth()/2, self.bulletSprite:getHeight()/2 )
+    love.graphics.draw(self.bulletSprite, self.x, self.y, self.rotation + math.pi/2, nil, nil, self.bulletSprite:getWidth()/2, self.bulletSprite:getHeight()/2 )
 end
 
 return Bullet

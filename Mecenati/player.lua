@@ -43,13 +43,23 @@ function player.new(params)
     self.attackTimer = 0
     self.attackDuration = 0.5
     self.attackCollider = world:newRectangleCollider(params.x, params.y, 25, 25) -- collider dell'attacco windfield
+
+    self.parryCollider = world:newRectangleCollider(params.x, params.y, 32 , 128)
+    self.parry = false
+    self.parryTimer = 0
+    self.parryCooldown = 0.5
+
     self.attackDamage = params.attackDamage or 1
+
 
     self.isWalking = false
     self.isJump = false
     self.jumpBuffer = 0
     self.jumpState = "idle"
     self.apexTimer = 0
+    self.succParry = false
+
+    self.collider:setObject(self)
     
     return self
 end
@@ -65,6 +75,10 @@ function player:mousepressed(x, y, button, istouch, presses)
         self.attackHasHit = false
 
          self.attackTimer = 0
+    end
+    if button == 2 then
+        self.parry = true
+        self.parryTimer = 0
     end
     -- Se il tasto destro del mouse è premuto,
     --------------------------------IMPLEMENTARE LOGICA PARRY---------------------------------------
@@ -97,7 +111,23 @@ function player:load()
     self.attackCollider:setFixedRotation(true)
     self.attackCollider:setGravityScale(0)
     self.attackCollider:setCollisionClass("PlayerAttack")
-    self.attackCollider:isActive(false)
+    self.attackCollider:setActive(false)
+    self.parryCollider:setType("dynamic")
+    self.parryCollider:setFixedRotation(true)
+    self.parryCollider:setGravityScale(0)
+    self.parryCollider:setCollisionClass("PlayerParry")
+    self.parryCollider:setActive(true)
+
+
+   self.parryCollider:setPreSolve(function(parry, other, contact)
+        if other.collision_class == "EnemyAttack" then
+            if self.parry and not self.succParry then
+                local object =  other:getObject()
+                object:getParried()
+                self.succParry = true
+            end
+        end
+    end)
     
     self.playerSprite = {
         idle = {
@@ -160,7 +190,6 @@ function player:load()
 function player:update(dt)
     local px, py = self.collider:getLinearVelocity()
     ------------------------------LOGICA ATTACCO---------------------------------------------------------
-
     -- Se il player è in attacco, attiva il collider dell'attacco
     -- e posizionalo in base alla direzione del player
     -- Se il player non è in attacco, disattiva il collider dell'attacco
@@ -185,6 +214,17 @@ function player:update(dt)
             self.attackCollider:setActive(false)
         end
     end
+    -------------------------------------------------------------------------------------------------------
+    ------------------------------LOGICA PARRY-------------------------------------------------------------
+    if self.parry then
+        self.parryTimer = self.parryTimer + dt
+        if self.parryTimer >= self.parryCooldown then
+            self.parry = false
+            self.succParry = false
+        end
+    end
+
+
     -------------------------------------------------------------------------------------------------------
     ------------------------------LOGICA SALTO-------------------------------------------------------------
     -- Se il player è a terra, resetta il numero di salti
@@ -233,16 +273,13 @@ function player:update(dt)
 
 
     if love.keyboard.isDown("a") and px >= -300 then
-        --self.dx = self.speed * -1
         self.collider:applyForce(-10000, 0)
         self.dx = "Left"
         self.isWalking = true
     elseif love.keyboard.isDown("d") and px <= 300  then
-        --self.dx = self.speed
         self.collider:applyForce(10000, 0)
         self.dx = "Right"
         self.isWalking = true
-
     elseif love.keyboard.isDown("a") or love.keyboard.isDown("d") then
         --VUOTO
     else
@@ -255,13 +292,28 @@ function player:update(dt)
 
     end
 
+    if self.dx == "Right" then
+        self.parryCollider:setPosition(self.collider:getX() + 50, self.collider:getY())
+    elseif self.dx == "Left" then
+        self.parryCollider:setPosition(self.collider:getX() - 50, self.collider:getY())
+    end
+
+
+-----------------------------------------LOGICA ANIMAZIONI----------------------------------------------------
+---
+---
+---
+---
 ---------------------------------------------ATTACCO----------------------------------------------------------
     
     if self.isAttacking then
         --self.currentAnimation = self.playerSprite.attack.animation
 
+    
 
-------------------------------------------------SALTO-------------------------------------------------------
+
+
+------------------------------------------------SALTO--------------------------------------------------------
 
     elseif not self.isGrounded then
         if py < -20 then

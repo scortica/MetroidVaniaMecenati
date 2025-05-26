@@ -62,9 +62,10 @@ function gameplay.enter(stateMachine)
 
     world:addCollisionClass('Platform')
     world:addCollisionClass('Player')
-    world:addCollisionClass('PlayerAttack', {ignores = {'Player'}})
-    world:addCollisionClass('Enemy', {ignores = {'Player'}})
-    world:addCollisionClass('EnemyAttack', {ignores = {'Enemy'}})
+    world:addCollisionClass('PlayerAttack', {ignores = {'Player', 'Platform'}})
+    world:addCollisionClass('PlayerParry', {ignores = {'Player' , 'PlayerAttack', 'Platform'}})
+    world:addCollisionClass('Enemy', {ignores = {'Player', 'PlayerParry'}})
+    world:addCollisionClass('EnemyAttack', {ignores = {'Enemy', 'PlayerAttack'}})
 
     if map.layers["PlayerSpawn"] then
         for i, obj in pairs(map.layers["PlayerSpawn"].objects) do
