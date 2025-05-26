@@ -243,9 +243,15 @@ function player:update(dt)
         self.isWalking = false
 
     end
+
+---------------------------------------------ATTACCO----------------------------------------------------------
     
     if self.isAttacking then
         --self.currentAnimation = self.playerSprite.attack.animation
+
+
+------------------------------------------------SALTO-------------------------------------------------------
+
     elseif not self.isGrounded then
         if py < -20 then
             -- Ascending: frames 2-4, no loop
@@ -255,11 +261,11 @@ function player:update(dt)
                 if self.dx == "Right" then
                     self.currentAnimation.animation_r = anim8.newAnimation(self.playerSprite.jump.grid('2-4',1), 0.10, "pauseAtEnd")
                     self.currentAnimation.animation_r:gotoFrame(1)
-                    self.currentAnimation.animation_r:pause()
+                    self.currentAnimation.animation_r:resume()
                 elseif self.dx == "Left" then
                     self.currentAnimation.animation_l = anim8.newAnimation(self.playerSprite.jump.grid('2-4',1), 0.10, "pauseAtEnd"):flipH()
                     self.currentAnimation.animation_l:gotoFrame(1)
-                    self.currentAnimation.animation_l:pause()
+                    self.currentAnimation.animation_l:resume()
                 end
             end
         elseif math.abs(py) <= 20 then
@@ -286,11 +292,11 @@ function player:update(dt)
                 if self.dx == "Right" then
                     self.currentAnimation.animation_r = anim8.newAnimation(self.playerSprite.jump.grid('6-7',1), 0.12, "pauseAtEnd")
                     self.currentAnimation.animation_r:gotoFrame(1)
-                    self.currentAnimation.animation_r:pause()
+                    self.currentAnimation.animation_r:resume()
                 elseif self.dx == "Left" then
                     self.currentAnimation.animation_l = anim8.newAnimation(self.playerSprite.jump.grid('6-7',1), 0.12, "pauseAtEnd"):flipH()
                     self.currentAnimation.animation_l:gotoFrame(1)
-                    self.currentAnimation.animation_l:pause()
+                    self.currentAnimation.animation_l:resume()
                 end
             end
         elseif py > 20 then
@@ -301,11 +307,11 @@ function player:update(dt)
                 if self.dx == "Right" then
                     self.currentAnimation.animation_r = anim8.newAnimation(self.playerSprite.jump.grid('6-7',1), 0.12, "pauseAtEnd")
                     self.currentAnimation.animation_r:gotoFrame(1)
-                    self.currentAnimation.animation_r:pause()
+                    self.currentAnimation.animation_r:resume()
                 elseif self.dx == "Left" then
                     self.currentAnimation.animation_l = anim8.newAnimation(self.playerSprite.jump.grid('6-7',1), 0.12, "pauseAtEnd"):flipH()
                     self.currentAnimation.animation_l:gotoFrame(1)
-                    self.currentAnimation.animation_l:pause()
+                    self.currentAnimation.animation_l:resume()
                 end
             end
         end
@@ -338,16 +344,15 @@ function player:update(dt)
                 end
             end
         end
+
+------------------------------------------------CAMMINATA-------------------------------------------------------
+
     elseif self.isWalking then 
         self.currentAnimation = self.playerSprite.walk
-        if self.dx == "Right" then
-            self.currentAnimation.animation_r:gotoFrame(1)
-            self.currentAnimation.animation_r:resume()
-        elseif  self.dx == "Left" then
-            self.currentAnimation.animation_l:gotoFrame(1)
-            self.currentAnimation.animation_l:resume()
-        end
     else
+
+--------------------------------------------------IDLE-----------------------------------------------------
+    
         if self.currentAnimation ~= self.playerSprite.idle then
             self.currentAnimation = self.playerSprite.idle
             if self.dx == "Right" then
