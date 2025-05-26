@@ -15,7 +15,7 @@ function player.new(params)
     -- esempi di parametri o valori preimportati
     self.x = params.x or 800
     self.y = params.y or 500
-    self.dx = 0
+    self.dx = "Right"
     self.width = params.width or 128
     self.height = params.height or 256
     self.speed = params.speed or 3
@@ -28,10 +28,10 @@ function player.new(params)
     self.collider = world:newBSGRectangleCollider(params.x, params.y, 64, 128, 2)  -- collider del player windfield
     self.isGrounded = false
 
-    self.spriteSheetPath = {idle='Assets/Sprites/player/player_idle_sheet.png',
-                            walk='Assets/Sprites/player/player_run_sheet.png',
+    self.spriteSheetPath = {idle='Assets/Sprites/player/player_r_idle_sheet.png',
+                            walk='Assets/Sprites/player/player_r_run_sheet.png',
                             attack=' ',
-                            jump='Assets/Sprites/player/player_jump_sheet1.png'}
+                            jump='Assets/Sprites/player/player_r_jump_sheet.png'}
     self.playerSprite = nil
     self.currentAnimation = nil
 
@@ -92,25 +92,29 @@ function player:load()
         idle = {
             sprite = love.graphics.newImage(self.spriteSheetPath.idle),
             grid= nil,
-            animation = nil,
+            animation_r = nil,
+            animation_l = nil,
             frameN = 5
         },
         walk = {
             sprite = love.graphics.newImage(self.spriteSheetPath.walk),
             grid= nil,
-            animation = nil,
+            animation_r = nil,
+            animation_l = nil,
             frameN = 8
         },
         attack ={
             sprite = nil,--love.graphics.newImage(self.spriteSheetPath.attack),
             grid= nil,
-            animation = nil,
+            animation_r = nil,
+            animation_l = nil,
             frameN = nil
         },
         jump = {
             sprite = love.graphics.newImage(self.spriteSheetPath.jump),
             grid= nil,
-            animation = nil,
+            animation_r = nil,
+            animation_l = nil,
             frameN = 9
         }
     }
@@ -124,10 +128,15 @@ function player:load()
     self.playerSprite.jump.grid = anim8.newGrid(152,128, self.playerSprite.jump.sprite:getWidth(), self.playerSprite.jump.sprite:getHeight())
 
 
-    self.playerSprite.idle.animation = anim8.newAnimation(self.playerSprite.idle.grid('1-5',1),0.3)
-    self.playerSprite.walk.animation = anim8.newAnimation(self.playerSprite.walk.grid('1-8',1),0.15)
-    --self.playerSprite.attack.animation = anim8.newAnimation(self.playerSprite.attack.grid('1-2',1),0.3)
-    self.playerSprite.jump.animation = anim8.newAnimation(self.playerSprite.jump.grid('2-9',1),0.15)
+    self.playerSprite.idle.animation_r = anim8.newAnimation(self.playerSprite.idle.grid('1-5', 1),0.3)
+    self.playerSprite.walk.animation_r = anim8.newAnimation(self.playerSprite.walk.grid('1-8',1),0.15)
+    --self.playerSprite.attack.animation_r = anim8.newAnimation(self.playerSprite.attack.grid('1-2',1),0.3)
+    self.playerSprite.jump.animation_r = anim8.newAnimation(self.playerSprite.jump.grid('2-9',1),0.15)
+
+    self.playerSprite.idle.animation_l = anim8.newAnimation(self.playerSprite.idle.grid('1-5', 1),0.3):flipH()
+    self.playerSprite.walk.animation_l = anim8.newAnimation(self.playerSprite.walk.grid('1-8',1),0.15):flipH()
+    --self.playerSprite.attack.animation_l = anim8.newAnimation(self.playerSprite.attack.grid('1-2',1),0.3):flipH()
+    self.playerSprite.jump.animation_l = anim8.newAnimation(self.playerSprite.jump.grid('2-9',1),0.15):flipH()
 
 
     self.currentAnimation = self.playerSprite.idle
@@ -177,7 +186,7 @@ function player:update(dt)
     -- altrimenti, non saltare
     if self.isJump then
         
-        if self.jumpNum < 1 --[[and py > -30 and py < 30 ]]then
+        if self.jumpNum < 2 --[[and py > -30 and py < 30 ]]then
             self.collider:applyLinearImpulse(0, -7000)
             self.isGrounded = false
             self.jumpNum = self.jumpNum + 1
@@ -243,18 +252,30 @@ function player:update(dt)
             if self.jumpState ~= "ascend" then
                 self.jumpState = "ascend"
                 self.currentAnimation = self.playerSprite.jump
-                self.currentAnimation.animation = anim8.newAnimation(self.playerSprite.jump.grid('2-4',1), 0.10, "pauseAtEnd")
-                self.currentAnimation.animation:gotoFrame(1)
-                self.currentAnimation.animation:resume()
+                if self.dx == "Right" then
+                    self.currentAnimation.animation_r = anim8.newAnimation(self.playerSprite.jump.grid('2-4',1), 0.10, "pauseAtEnd")
+                    self.currentAnimation.animation_r:gotoFrame(1)
+                    self.currentAnimation.animation_r:pause()
+                elseif self.dx == "Left" then
+                    self.currentAnimation.animation_l = anim8.newAnimation(self.playerSprite.jump.grid('2-4',1), 0.10, "pauseAtEnd"):flipH()
+                    self.currentAnimation.animation_l:gotoFrame(1)
+                    self.currentAnimation.animation_l:pause()
+                end
             end
         elseif math.abs(py) <= 20 then
             -- Apex: frame 5
             if self.jumpState ~= "apex" then
                 self.jumpState = "apex"
                 self.currentAnimation = self.playerSprite.jump
-                self.currentAnimation.animation = anim8.newAnimation(self.playerSprite.jump.grid(5,1), 1)
-            self.currentAnimation.animation:gotoFrame(1)
-            self.currentAnimation.animation:pause()
+                if self.dx == "Right" then
+                    self.currentAnimation.animation_r = anim8.newAnimation(self.playerSprite.jump.grid(5,1), 1)
+                    self.currentAnimation.animation_r:gotoFrame(1)
+                    self.currentAnimation.animation_r:pause()
+                elseif self.dx == "Left" then
+                    self.currentAnimation.animation_l = anim8.newAnimation(self.playerSprite.jump.grid(5,1), 1):flipH()
+                    self.currentAnimation.animation_l:gotoFrame(1)
+                    self.currentAnimation.animation_l:pause()
+                end
                 self.apexTimer = 0
             end
             self.apexTimer = self.apexTimer + dt
@@ -262,18 +283,30 @@ function player:update(dt)
             if self.apexTimer > 0.18 then
                 self.jumpState = "descend"
                 self.currentAnimation = self.playerSprite.jump
-                self.currentAnimation.animation = anim8.newAnimation(self.playerSprite.jump.grid('6-7',1), 0.12, "pauseAtEnd")
-                self.currentAnimation.animation:gotoFrame(1)
-                self.currentAnimation.animation:resume()
+                if self.dx == "Right" then
+                    self.currentAnimation.animation_r = anim8.newAnimation(self.playerSprite.jump.grid('6-7',1), 0.12, "pauseAtEnd")
+                    self.currentAnimation.animation_r:gotoFrame(1)
+                    self.currentAnimation.animation_r:pause()
+                elseif self.dx == "Left" then
+                    self.currentAnimation.animation_l = anim8.newAnimation(self.playerSprite.jump.grid('6-7',1), 0.12, "pauseAtEnd"):flipH()
+                    self.currentAnimation.animation_l:gotoFrame(1)
+                    self.currentAnimation.animation_l:pause()
+                end
             end
         elseif py > 20 then
             -- Descending: frames 6-7, no loop
             if self.jumpState ~= "descend" then
                 self.jumpState = "descend"
                 self.currentAnimation = self.playerSprite.jump
-                self.currentAnimation.animation = anim8.newAnimation(self.playerSprite.jump.grid('6-7',1), 0.12, "pauseAtEnd")
-                self.currentAnimation.animation:gotoFrame(1)
-                self.currentAnimation.animation:resume()
+                if self.dx == "Right" then
+                    self.currentAnimation.animation_r = anim8.newAnimation(self.playerSprite.jump.grid('6-7',1), 0.12, "pauseAtEnd")
+                    self.currentAnimation.animation_r:gotoFrame(1)
+                    self.currentAnimation.animation_r:pause()
+                elseif self.dx == "Left" then
+                    self.currentAnimation.animation_l = anim8.newAnimation(self.playerSprite.jump.grid('6-7',1), 0.12, "pauseAtEnd"):flipH()
+                    self.currentAnimation.animation_l:gotoFrame(1)
+                    self.currentAnimation.animation_l:pause()
+                end
             end
         end
     elseif self.isGrounded and not self.isWalking then
@@ -281,31 +314,62 @@ function player:update(dt)
             self.jumpState = "land"
             self.landingTimer = 0
             self.currentAnimation = self.playerSprite.jump
-            self.currentAnimation.animation = anim8.newAnimation(self.playerSprite.jump.grid(8,1), 1)
-            self.currentAnimation.animation:gotoFrame(1)
-            self.currentAnimation.animation:pause()
+            if self.dx == "Right" then
+                self.currentAnimation.animation_r = anim8.newAnimation(self.playerSprite.jump.grid(8,1), 1)
+                self.currentAnimation.animation_r:gotoFrame(1)
+                self.currentAnimation.animation_r:pause()
+            elseif self.dx == "Left" then
+                self.currentAnimation.animation_l = anim8.newAnimation(self.playerSprite.jump.grid(8,1), 1):flipH()
+                self.currentAnimation.animation_l:gotoFrame(1)
+                self.currentAnimation.animation_l:pause()
+            end
         end
         self.landingTimer = (self.landingTimer or 0) + dt
         if self.landingTimer > 0.12 then
             if self.currentAnimation ~= self.playerSprite.idle then
                 self.jumpState = "idle"
                 self.currentAnimation = self.playerSprite.idle
-                self.currentAnimation.animation:gotoFrame(1)
-                self.currentAnimation.animation:resume()
+                if self.dx == "Right" then
+                    self.currentAnimation.animation_r:gotoFrame(1)
+                    self.currentAnimation.animation_r:resume()
+                elseif  self.dx == "Left" then
+                    self.currentAnimation.animation_l:gotoFrame(1)
+                    self.currentAnimation.animation_l:resume()
+                end
             end
         end
     elseif self.isWalking then 
         self.currentAnimation = self.playerSprite.walk
+        if self.dx == "Right" then
+            self.currentAnimation.animation_r:gotoFrame(1)
+            self.currentAnimation.animation_r:resume()
+        elseif  self.dx == "Left" then
+            self.currentAnimation.animation_l:gotoFrame(1)
+            self.currentAnimation.animation_l:resume()
+        end
     else
         if self.currentAnimation ~= self.playerSprite.idle then
             self.currentAnimation = self.playerSprite.idle
-            self.currentAnimation.animation:gotoFrame(1)
-        self.currentAnimation.animation:resume()
+            if self.dx == "Right" then
+                self.currentAnimation.animation_r:gotoFrame(1)
+                self.currentAnimation.animation_r:resume()
+            elseif  self.dx == "Left" then
+                self.currentAnimation.animation_l:gotoFrame(1)
+                self.currentAnimation.animation_l:resume()
+            end
         end
     end
 
+
+
     if self.currentAnimation then
-        self.currentAnimation.animation:update(dt)
+        if self.dx == "Right" then
+            self.currentAnimation.animation_r:update(dt)
+        elseif  self.dx == "Left" then
+            self.currentAnimation.animation_l:update(dt)
+        end
+        
+
     end
         
     
@@ -317,7 +381,11 @@ end
 function player:draw()
     love.graphics.setColor(1,1,1,1)
     if self.currentAnimation then
-       self.currentAnimation.animation:draw(self.currentAnimation.sprite, self.x, self.y, 0, 1 , 1 , self.currentAnimation.sprite:getWidth()/(self.currentAnimation.frameN*3), self.currentAnimation.sprite:getHeight()/2)
+        if self.dx == "Right" then
+            self.currentAnimation.animation_r:draw(self.currentAnimation.sprite, self.x, self.y, 0, 1 , 1 , self.currentAnimation.sprite:getWidth()/(self.currentAnimation.frameN*3), self.currentAnimation.sprite:getHeight()/2)
+        elseif self.dx == "Left" then
+            self.currentAnimation.animation_l:draw(self.currentAnimation.sprite, self.x, self.y, 0, 1 , 1 , self.currentAnimation.sprite:getWidth()/(self.currentAnimation.frameN*3), self.currentAnimation.sprite:getHeight()/2)
+        end
     end
     
     --love.graphics.draw(self.playerSprite, self.x, self.y, 0, 0.5, 0.5, self.playerSprite:getWidth()/2, self.playerSprite:getHeight()/2)
