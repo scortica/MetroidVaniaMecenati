@@ -122,7 +122,9 @@ player.attackCollider:setPreSolve(function(collider_1, collider_2, contact)
             player.attackHasHit = true
 
             local enemy = collider_2:getObject()
+            print(collider_2:getObject())
             enemy.lp = enemy.lp - player.attackDamage
+            player.crossPoints = player.crossPoints + 1
 
             if debugText then
                 print("Attacked enemy! Remaining LP: " .. enemy.lp)
