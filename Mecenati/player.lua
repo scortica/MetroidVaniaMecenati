@@ -155,16 +155,18 @@ function Player:load()
                 self.attackHasHit = true
 
                 local enemy = collider_2:getObject()
-                print(collider_2:getObject())
+
                 enemy:gotHit(self.attackDamage)
                 self.crossPoints = self.crossPoints + 1
 
                 if debugText then
-                    print("Attacked enemy! Remaining LP: " .. enemy.lp)
+                    print("Attacked enemy! Remaining LP: " .. enemy.lp .. " Life Points: " .. self.lp)
                 end
             end
         end
     end)
+
+    
     -- Logica per il parry del player
     self.parryCollider:setPreSolve(function(parry, other, contact)
         if other.collision_class == "EnemyAttack" then
