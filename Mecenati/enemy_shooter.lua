@@ -207,7 +207,7 @@ function EnemyShooter:update(dt,player)
     end
 end
 
-function EnemyShooter:draw()
+function EnemyShooter :draw()
 
     love.graphics.setColor(1,1,1,1)
     if self.dx == "Left" then

@@ -153,11 +153,16 @@ function Player:load()
             if not self.attackHasHit then
                 self.attackHasHit = true
                 local enemy = collider_2:getObject()
+
                 enemy:gotHit(self.attackDamage)
                 self.crossPoints = self.crossPoints + 1
+
+
             end
         end
     end)
+
+    
     -- Logica per il parry del player
     self.parryCollider:setPreSolve(function(parry, other, contact)
         if other.collision_class == "EnemyAttack" then
