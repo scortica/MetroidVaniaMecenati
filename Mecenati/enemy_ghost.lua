@@ -110,8 +110,8 @@ function EnemyGhost:load()
     self.image = love.graphics.newImage(self.spriteSheetPath)
     self.collider:setCollisionClass("Enemy")
     self.collider:setFixedRotation(true)
-    self.grid= anim8.newGrid(74,117, self.image:getWidth(), self.image:getHeight())
-    self.animation = anim8.newAnimation(self.grid('1-5',1),0.5)
+    self.grid= anim8.newGrid(99,134, self.image:getWidth(), self.image:getHeight())
+    self.animation = anim8.newAnimation(self.grid('1-2',1),0.5)
 end
 
 function EnemyGhost:update(dt,player)
