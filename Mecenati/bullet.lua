@@ -74,7 +74,7 @@ end
 
 
 function Bullet:draw()
-        love.graphics.draw(self.bulletSprite, self.x, self.y, self.rotation + math.pi/2, nil, nil, self.bulletSprite:getWidth()/2, self.bulletSprite:getHeight()/2 )
+        love.graphics.draw(self.bulletSprite, self.x, self.y, self.rotation + math.pi/2, 2, 2, self.bulletSprite:getWidth()/2, self.bulletSprite:getHeight()/2 )
 end
 
 return Bullet

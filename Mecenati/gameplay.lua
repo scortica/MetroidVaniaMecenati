@@ -24,6 +24,7 @@ local enemyManager = nil
 
 local UI_PLAYER_image,UI_PLAYER_animation,UI_PLAYER_grid
 local UI_LP_image,UI_LP_animation,UI_LP_grid
+local UI_Cross_image,UI_Cross_animation,UI_Cross_grid
 
 
 --------------------------------------------------
@@ -40,6 +41,15 @@ function gameplay.enter(stateMachine)
     UI_PLAYER_image = love.graphics.newImage("Assets/Sprites/UI/iconUI.png")
     UI_PLAYER_grid = anim8.newGrid(123, 108, UI_PLAYER_image:getWidth(), UI_PLAYER_image:getHeight())
     UI_PLAYER_animation = anim8.newAnimation(UI_PLAYER_grid('1-5', 1), 0.2)
+
+    UI_Cross_image = love.graphics.newImage("Assets/Sprites/UI/crossUI.png")
+    UI_Cross_grid = anim8.newGrid(112, 128, UI_Cross_image:getWidth(), UI_Cross_image:getHeight())
+    UI_Cross_animation = anim8.newAnimation(UI_Cross_grid(16, 1), 1)
+
+    UI_LP_image = love.graphics.newImage("Assets/Sprites/UI/lpUI.png")
+    UI_LP_grid = anim8.newGrid(16, 16, UI_LP_image:getWidth(), UI_LP_image:getHeight())
+    UI_LP_animation = anim8.newAnimation(UI_LP_grid(5, 1), 1)
+    
 
     stateMachineRef = stateMachine
     Pause.load({
@@ -91,7 +101,7 @@ function gameplay.enter(stateMachine)
         enemyManager:load()
     end
    
-    mappa = love.graphics.newImage("Assets/Maps/Background/Background_2.png")
+    mappa = love.graphics.newImage("Assets/Maps/Background/Background_1.png")
    -- map:resize(love.graphics.getWidth(), love.graphics.getHeight())
    -- map:drawLayer(map.layers["Background"])
    -- map:drawLayer(map.layers["Block"])
@@ -107,6 +117,16 @@ function gameplay.update(dt)
         else
             world:update(dt)
             if player then 
+                if player.healing then
+                local maxCross = 16 - player.crossPoints - 4
+                local minCross = maxCross + 4
+                print(maxCross .. " " .. minCross)
+                UI_Cross_animation = anim8.newAnimation(UI_Cross_grid(maxCross .. "-" .. minCross, 1), 1)
+
+                player.healing = false
+            else
+                UI_Cross_animation = anim8.newAnimation(UI_Cross_grid(16-player.crossPoints, 1), 1)
+            end
                 player:update(dt) 
                 cam:lookAt(player.x, player.y)
             end
@@ -115,7 +135,12 @@ function gameplay.update(dt)
             end
         end
 
+        
+        
+        UI_Cross_animation:update(dt)
         UI_PLAYER_animation:update(dt)
+        UI_LP_animation:update(dt)
+        UI_Cross_animation:update(dt)
     end
 end
 
@@ -130,7 +155,7 @@ function gameplay.draw()
         love.graphics.setColor(1,1,1)
         --love.graphics.rectangle("fill",0 ,-1000 ,10000, 10000)
 
-        love.graphics.draw(mappa, 0, 490)
+        love.graphics.draw(mappa, 0, -369)  --490
         --love.graphics.draw(mappa, 2000, -369)
         --love.graphics.draw(mappa, 4000, -369)
         --map:drawLayer(map.layers["Background"])
@@ -150,7 +175,11 @@ function gameplay.draw()
 
     cam:detach()
 
-    UI_PLAYER_animation:draw(UI_PLAYER_image, 10, 10)
+    UI_PLAYER_animation:draw(UI_PLAYER_image, 10, 10, 0, 1.5, 1.5)
+    for i = 1, player.maxLp, 1 do
+        UI_LP_animation:draw(UI_LP_image, 20 + (30*i), 10, 0, 2, 2)
+    end
+    UI_Cross_animation:draw(UI_Cross_image, 30, 160, 0 ,1.5, 1.5)
 
     if ispause then
         Pause:draw()

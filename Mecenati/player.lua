@@ -24,7 +24,9 @@ function Player.new(params)
     self.scale = params.scale or 1
     self.defaultSpeed = self.speed
     self.lp= params.lp or 5
+    self.maxLp = 5
     self.isDead = false
+    self.healing = false
 
     self.jumpNum = 0
     self.jumpResetTime = 0.095
@@ -88,9 +90,12 @@ function Player:mousepressed(x, y, button, istouch, presses)
 end
 
 function Player:heal()
-    if (self.crossPoints/4)>1 then
-        self.lp = self.lp + 1
-        self.crossPoints = self.crossPoints - 4
+    if self.lp < self.maxLp then
+        if (self.crossPoints/4)>1 then
+            self.healing = true
+            self.lp = self.lp + 1
+            self.crossPoints = self.crossPoints - 4
+        end
     end
 end
 
@@ -155,9 +160,10 @@ function Player:load()
                 local enemy = collider_2:getObject()
 
                 enemy:gotHit(self.attackDamage)
-                self.crossPoints = self.crossPoints + 1
-
-
+                if self.crossPoints < 15 then
+                    self.crossPoints = self.crossPoints + 1
+                    print(self.crossPoints)
+                end
             end
         end
     end)
@@ -285,7 +291,7 @@ function Player:update(dt)
     if self.isJump then
         
         if self.jumpNum < 2 --[[and py > -30 and py < 30 ]]then
-            self.collider:applyLinearImpulse(0, -7000)
+            self.collider:applyLinearImpulse(0, -10000)
             self.isGrounded = false
             self.jumpNum = self.jumpNum + 1
             self.jumpBuffer = 0.1 -- ignore ground for 0.1 seconds
@@ -299,10 +305,10 @@ function Player:update(dt)
 
      if py < 0 then
         -- Going up: normal gravity
-        self.collider:setGravityScale(1)
+        self.collider:setGravityScale(1.75)
     elseif py > 0 then
         -- Falling: increase gravity for faster fall
-        self.collider:setGravityScale(4)
+        self.collider:setGravityScale(3)
     else
         -- On ground or not moving vertically
         self.collider:setGravityScale(1)
@@ -331,9 +337,9 @@ function Player:update(dt)
         --VUOTO
     else
         if px > 0 then
-            self.collider:applyForce(-(px + 12000), 0)
+            self.collider:applyForce(-(px + 15000), 0)
         elseif px < 0 then
-            self.collider:applyForce(-(px - 12000), 0)
+            self.collider:applyForce(-(px - 15000), 0)
         end
         self.isWalking = false
 
@@ -512,9 +518,13 @@ end
 ---KEYBINDS----------------------------
 ---------------------------------------
 function Player:keypressed(key, scancode, isrepeat)
-    if key == "space"  then 
-                self.isJump = true
-                self.isGrounded = false
+    if key == "space"  then
+        self.isJump = true
+        self.isGrounded = false
+    end
+    if key == "f" then
+     
+        self:heal()
     end
 end
 
