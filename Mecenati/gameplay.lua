@@ -26,11 +26,15 @@ local UI_PLAYER_image,UI_PLAYER_animation,UI_PLAYER_grid
 local UI_LP_image,UI_LP_animation,UI_LP_grid
 local UI_Cross_image,UI_Cross_animation,UI_Cross_grid
 
+-- Stato animazione boccette LP
+local lpBottles = {}
+local lastPlayerLp = nil
+local bottleAnimDuration = 0.25 -- durata animazione svuotamento (in secondi)
 
 --------------------------------------------------
 
 --------------------------------------------------
--- FUNZIONI LOVE
+-- FUNZIONI 
 --------------------------------------------------
 
 --------------------------------------------------
@@ -48,8 +52,9 @@ function gameplay.enter(stateMachine)
 
     UI_LP_image = love.graphics.newImage("Assets/Sprites/UI/lpUI.png")
     UI_LP_grid = anim8.newGrid(16, 16, UI_LP_image:getWidth(), UI_LP_image:getHeight())
-    UI_LP_animation = anim8.newAnimation(UI_LP_grid(5, 1), 1)
-    
+    UI_LP_animation = anim8.newAnimation(UI_LP_grid('1-5', 1), 1)
+
+    --------------------------------------------------
 
     stateMachineRef = stateMachine
     Pause.load({
@@ -65,6 +70,10 @@ function gameplay.enter(stateMachine)
             end
         end
     })
+
+    --------------------------------------------------
+    
+
     cam = camera()
 
     map = sti('Assets/Maps/mappa.lua')
@@ -96,10 +105,14 @@ function gameplay.enter(stateMachine)
         end
     end
 
+    --------------------------------------------------
+
     enemyManager = EnemyManager.new()
     if enemyManager then
         enemyManager:load()
     end
+
+    --------------------------------------------------
    
     mappa = love.graphics.newImage("Assets/Maps/Background/Background_1.png")
    -- map:resize(love.graphics.getWidth(), love.graphics.getHeight())
@@ -107,6 +120,14 @@ function gameplay.enter(stateMachine)
    -- map:drawLayer(map.layers["Block"])
    -- cam:lookAt(player.x, player.y)
     
+    -- Inizializza lpBottles
+    lpBottles = {}
+    if player and player.maxLp then
+        for i = 1, player.maxLp do
+            lpBottles[i] = {state = "idle", frame = 5, timer = 0}
+        end
+        lastPlayerLp = player.lp
+    end
 end
 
 function gameplay.update(dt)
@@ -141,6 +162,56 @@ function gameplay.update(dt)
         UI_PLAYER_animation:update(dt)
         UI_LP_animation:update(dt)
         UI_Cross_animation:update(dt)
+
+        -- Aggiorna animazione boccette LP
+        if player and player.maxLp and player.lp and lpBottles then
+            -- Se il player ha perso vita
+            if lastPlayerLp and player.lp < lastPlayerLp then
+                for i = player.lp + 1, lastPlayerLp do
+                    if lpBottles[i] then
+                        lpBottles[i].state = "draining"
+                        lpBottles[i].frame = 5
+                        lpBottles[i].timer = 0
+                    end
+                end
+            end
+            -- Se il player ha guadagnato vita, anima la boccetta da vuota a piena
+            if lastPlayerLp and player.lp > lastPlayerLp then
+                for i = lastPlayerLp + 1, player.lp do
+                    if lpBottles[i] then
+                        lpBottles[i].state = "filling"
+                        lpBottles[i].frame = 1
+                        lpBottles[i].timer = 0
+                    end
+                end
+            end
+            lastPlayerLp = player.lp
+            -- Aggiorna animazione svuotamento e riempimento
+            for i = 1, player.maxLp do
+                local bottle = lpBottles[i]
+                if bottle then
+                    if bottle.state == "draining" then
+                        bottle.timer = bottle.timer + dt
+                        local progress = math.min(bottle.timer / bottleAnimDuration, 1)
+                        -- Frame da 5 (pieno) a 1 (vuoto)
+                        bottle.frame = math.max(1, math.floor(5 - 4 * progress + 0.5))
+                        if progress >= 1 then
+                            bottle.state = "idle"
+                            bottle.frame = 1
+                        end
+                    elseif bottle.state == "filling" then
+                        bottle.timer = bottle.timer + dt
+                        local progress = math.min(bottle.timer / bottleAnimDuration, 1)
+                        -- Frame da 1 (vuoto) a 5 (pieno)
+                        bottle.frame = math.min(5, math.floor(1 + 4 * progress + 0.5))
+                        if progress >= 1 then
+                            bottle.state = "idle"
+                            bottle.frame = 5
+                        end
+                    end
+                end
+            end
+        end
     end
 end
 
@@ -176,10 +247,19 @@ function gameplay.draw()
     cam:detach()
 
     UI_PLAYER_animation:draw(UI_PLAYER_image, 10, 10, 0, 1.5, 1.5)
-    for i = 1, player.maxLp, 1 do
-        UI_LP_animation:draw(UI_LP_image, 20 + (30*i), 10, 0, 2, 2)
-    end
+
     UI_Cross_animation:draw(UI_Cross_image, 30, 160, 0 ,1.5, 1.5)
+
+    -- Disegna le boccette LP con animazione
+    if player and player.maxLp and lpBottles then
+        for i = 1, player.maxLp do
+            local bottle = lpBottles[i]
+            if bottle then
+                UI_LP_animation:gotoFrame(bottle.frame)
+                UI_LP_animation:draw(UI_LP_image, 20 + (30 * i), 1300, 0, 2, 2)
+            end
+        end
+    end
 
     if ispause then
         Pause:draw()
