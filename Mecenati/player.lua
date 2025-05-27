@@ -151,17 +151,10 @@ function Player:load()
     self.attackCollider:setPreSolve(function(collider_1, collider_2, contact)
         if collider_1.collision_class == 'PlayerAttack' and collider_2.collision_class == 'Enemy' then
             if not self.attackHasHit then
-                --Logica attacco Nemico
                 self.attackHasHit = true
-
                 local enemy = collider_2:getObject()
-                print(collider_2:getObject())
                 enemy:gotHit(self.attackDamage)
                 self.crossPoints = self.crossPoints + 1
-
-                if debugText then
-                    print("Attacked enemy! Remaining LP: " .. enemy.lp)
-                end
             end
         end
     end)

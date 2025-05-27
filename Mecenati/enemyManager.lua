@@ -26,8 +26,6 @@ function EnemyManager:load()
                 local enemy = Enemy_shooter.new({x = obj.x, y = obj.y, speed = 100})
                 table.insert(self.shooters, enemy)
                 enemy:load()
-            --elseif  then
-
             end
         end
     end

@@ -57,7 +57,7 @@ function gameplay.enter(stateMachine)
     })
     cam = camera()
 
-    map = sti('Assets/Maps/MappaProva5.lua')
+    map = sti('Assets/Maps/mappa.lua')
     world = wf.newWorld(0, 500, true)
 
     world:addCollisionClass('Platform')
@@ -91,7 +91,7 @@ function gameplay.enter(stateMachine)
         enemyManager:load()
     end
    
-    mappa = love.graphics.newImage("Assets/Maps/background_1_livello.png")
+    mappa = love.graphics.newImage("Assets/Maps/Background/Background_2.png")
    -- map:resize(love.graphics.getWidth(), love.graphics.getHeight())
    -- map:drawLayer(map.layers["Background"])
    -- map:drawLayer(map.layers["Block"])
@@ -127,10 +127,12 @@ function gameplay.draw()
 
         
 
-        love.graphics.setColor(0,0,0)
-        love.graphics.rectangle("fill",0 ,-1000 ,10000, 10000)
+        love.graphics.setColor(1,1,1)
+        --love.graphics.rectangle("fill",0 ,-1000 ,10000, 10000)
 
-        love.graphics.draw(mappa, -1000, -540)
+        love.graphics.draw(mappa, 0, 490)
+        --love.graphics.draw(mappa, 2000, -369)
+        --love.graphics.draw(mappa, 4000, -369)
         --map:drawLayer(map.layers["Background"])
         map:drawLayer(map.layers["Block"])
 
