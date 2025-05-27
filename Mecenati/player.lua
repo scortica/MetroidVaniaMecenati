@@ -325,14 +325,21 @@ function Player:update(dt)
     -- Se non premi nessun tasto, applica una forza al collider del player per fermarlo
 
 
-    if love.keyboard.isDown("a") and px >= -500 then
-        self.collider:applyForce(-10000, 0)
-        self.dx = "Left"
-        self.isWalking = true
-    elseif love.keyboard.isDown("d") and px <= 500  then
-        self.collider:applyForce(10000, 0)
-        self.dx = "Right"
-        self.isWalking = true
+    
+    if love.keyboard.isDown("a") then
+        if px >= -500 then
+            self.collider:applyForce(-10000, 0)
+            self.dx = "Left"
+            self.isWalking = true
+        end
+    elseif love.keyboard.isDown("d")  then
+        if  px <= 500 then
+        
+            self.collider:applyForce(10000, 0)
+            self.dx = "Right"
+            self.isWalking = true
+         end
+        
     elseif love.keyboard.isDown("a") or love.keyboard.isDown("d") then
         --VUOTO
     else
