@@ -17,6 +17,9 @@ function EnemyGhost.new(params)
     self.width = params.width or 128
     self.height = params.height or 128
     self.scale = params.scale or 1
+    self.speed = params.speed or 100
+    self.isFollowing = false
+
     self.lp= params.lp or 3
 
     self.isActive = true
@@ -72,11 +75,17 @@ local function distance(x1,x2,y1,y2)
     return math.sqrt((x2-x1)^2 + (y2-y1)^2)
 end
 
-function EnemyGhost:attack()
-    
+function EnemyGhost:attack(player, distance, dt)
+    local xDist = (player.x - self.x) / distance
+    local yDist = (player.y - self.y) / distance
+
+    self.x = self.x + xDist * self.speed * dt
+    self.y = self.y + yDist * self.speed * dt
+
+
    --Logica Attacco
    --Calcola la posizione del player rispetto a se stesso
-   --Si muove a veloocità costante verso il player in linea retta
+   --Si muove a velocità costante verso il player in linea retta
    --Attiva l'animazione di attacco e il collider dell'attacco (se necessario)
 
 end
@@ -118,11 +127,13 @@ function EnemyGhost:update(dt,player)
             self.attackTimer = 0
         end
     end
-
-    if distance(self.x,player.x ,self.y, player.y) < 500 then
-        self:attack()
+    local dist = distance(self.x,player.x ,self.y, player.y)
+    if  dist < 500 then
+        self.isFollowing = true
     end
-
+    if self.isFollowing then
+        self:attack(player, dist, dt)
+    end
 
 
 
