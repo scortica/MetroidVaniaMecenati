@@ -52,6 +52,9 @@ function Player.new(params)
     self.parryCooldown = 0.5
 
     self.attackDamage = params.attackDamage or 1
+    self.hitted = false
+    self.hitTimer = 0
+    self.hitCooldown = 0.5
 
 
     self.isWalking = false
@@ -144,6 +147,43 @@ function Player:load()
                     self.isGrounded = false
                 end
             end
+        elseif collider_1.collision_class == 'Player' and collider_2.collision_class == 'EnemyAttack' then
+            if not self.hitted then
+                self.hitted = true
+                self.lp = self.lp - 1  
+                local dir
+                if self.dx == "Right" then
+                    dir = 1
+                else
+                    dir = -1
+                end
+                self.collider:applyLinearImpulse(dir * 100, 0)
+                --[[
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                SISTEMARE QUESTO
+                
+                
+                
+                
+                
+                
+                
+                
+                ]]
+
+            end
+            
         end
     end)
      -- Se il player non è a terra, resetta il grounded
@@ -277,6 +317,16 @@ function Player:update(dt)
         end
     end
 
+    ------------------------------ATTACCO SUBITO-----------------------------------------------------------
+    
+    if self.hitted then
+        if self.hitTimer > self.hitCooldown then
+            self.hitted = false
+            self.hitTimer = 0
+        else
+            self.hitTimer = self.hitTimer + dt
+        end
+    end
 
     -------------------------------------------------------------------------------------------------------
     ------------------------------LOGICA SALTO-------------------------------------------------------------
