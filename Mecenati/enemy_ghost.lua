@@ -83,9 +83,10 @@ function EnemyGhost:attack(player, distance, dt)
     local xDist = (player.x - self.x) / distance
     local yDist = (player.y - self.y) / distance
 
-    self.x = self.x + xDist * self.speed * dt
-    self.y = self.y + yDist * self.speed * dt
-
+    if distance > 50 then
+        self.x = self.x + xDist * self.speed * dt
+        self.y = self.y + yDist * self.speed * dt
+    end
     if self.dx == "Left" then
         self.currentAnimation = self.animationatk_l
     else
