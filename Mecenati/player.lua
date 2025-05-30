@@ -157,7 +157,7 @@ function Player:load()
                 else
                     dir = -1
                 end
-                self.collider:applyLinearImpulse(dir * 500, -100])
+                self.collider:applyLinearImpulse(dir * 500, -100)
                 --[[
                 
                 

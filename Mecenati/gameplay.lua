@@ -212,6 +212,10 @@ function gameplay.update(dt)
                 end
             end
         end
+    else
+        if player and player.isDead then
+            
+        end
     end
 end
 
