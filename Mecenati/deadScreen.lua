@@ -1,26 +1,26 @@
-local pause = {}
+local DeadScreen = {}
 local callbacks = {}
 
 local uiButtons = nil
-local pauseMenu = nil
+local DeadScreenMenu = nil
 local function isMouseOverButton(button, x, y)
     return (x >= button.x and x <= button.x + button.width) and
            (y >= button.y and y <= button.y + button.height)
 end
 
-function pause.load(cb)
+function DeadScreen.load(cb)
     
 end
 
-function pause.update(dt)
+function DeadScreen.update(dt)
     -- Update the game logic here
 end
 
-function pause.draw()
+function DeadScreen.draw()
     
 end
 
---[[function pause.mousemoved(x, y, dx, dy, istouch)
+--[[function DeadScreen.mousemoved(x, y, dx, dy, istouch)
     local transformedX = (x - SETTINGS.DISPLAY.OFFSETX) / SETTINGS.DISPLAY.SCALE
     local transformedY = (y - SETTINGS.DISPLAY.OFFSETY) / SETTINGS.DISPLAY.SCALE
 
@@ -53,7 +53,7 @@ end
 
 end]]
 
---[[function pause.mousepressed(x, y, button, istouch, presses)
+--[[function DeadScreen.mousepressed(x, y, button, istouch, presses)
 
     if button == 1 then -- Left mouse button
 
@@ -76,7 +76,7 @@ end]]
     end
 end]]
 
---[[function pause.mousereleased(x, y, button, istouch, presses)
+--[[function DeadScreen.mousereleased(x, y, button, istouch, presses)
     local transformedX = (x - SETTINGS.DISPLAY.OFFSETX) / SETTINGS.DISPLAY.SCALE
     local transformedY = (y - SETTINGS.DISPLAY.OFFSETY) / SETTINGS.DISPLAY.SCALE
 
@@ -105,7 +105,7 @@ end]]
 end]]
 
 
-function pause.keyreleased(key, scancode)
+function DeadScreen.keyreleased(key, scancode)
 
     if key == "escape" then
             if callbacks.onResume then callbacks.onResume() end
@@ -117,4 +117,4 @@ function pause.keyreleased(key, scancode)
         end
 end
 
-return pause
+return DeadScreen

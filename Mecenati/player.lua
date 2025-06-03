@@ -35,7 +35,7 @@ function Player.new(params)
 
     self.spriteSheetPath = {idle='Assets/Sprites/player/player_r_idle_sheet.png',
                             walk='Assets/Sprites/player/player_r_run_sheet.png',
-                            attack=' ',
+                            attack='Assets/Sprites/player/player_r_atk_sheet.png',
                             jump='Assets/Sprites/player/player_r_jump_sheet.png'}
     self.playerSprite = nil
     self.currentAnimation = nil
@@ -154,9 +154,13 @@ function Player:load()
                     self.isGrounded = false
                 end
             end
+        -----------------------Player subisce attacco----------------------------------------------------------
         elseif collider_1.collision_class == 'Player' and collider_2.collision_class == 'EnemyAttack' then
             if not self.hitted then
                 self.hitted = true
+
+            
+
                 self.lp = self.lp - 1
                 if self.lp<=0 then
                     self.isDead = true
@@ -245,7 +249,7 @@ function Player:load()
             frameN = 8
         },
         attack ={
-            sprite = nil,--love.graphics.newImage(self.spriteSheetPath.attack),
+            sprite = love.graphics.newImage(self.spriteSheetPath.attack),
             grid= nil,
             animation_r = nil,
             animation_l = nil,
@@ -265,18 +269,18 @@ function Player:load()
     
     self.playerSprite.idle.grid = anim8.newGrid(139,131, self.playerSprite.idle.sprite:getWidth(), self.playerSprite.idle.sprite:getHeight())
     self.playerSprite.walk.grid = anim8.newGrid(139,131, self.playerSprite.walk.sprite:getWidth(), self.playerSprite.walk.sprite:getHeight())
-    --self.playerSprite.attack.grid = anim8.newGrid(139,131, self.playerSprite.attack.sprite:getWidth(), self.playerSprite.attack.sprite:getHeight())
+    self.playerSprite.attack.grid = anim8.newGrid(300,131, self.playerSprite.attack.sprite:getWidth(), self.playerSprite.attack.sprite:getHeight())
     self.playerSprite.jump.grid = anim8.newGrid(152,128, self.playerSprite.jump.sprite:getWidth(), self.playerSprite.jump.sprite:getHeight())
 
 
     self.playerSprite.idle.animation_r = anim8.newAnimation(self.playerSprite.idle.grid('1-5', 1),0.3)
     self.playerSprite.walk.animation_r = anim8.newAnimation(self.playerSprite.walk.grid('1-8',1),0.15)
-    --self.playerSprite.attack.animation_r = anim8.newAnimation(self.playerSprite.attack.grid('1-2',1),0.3)
+    self.playerSprite.attack.animation_r = anim8.newAnimation(self.playerSprite.attack.grid('5-10',1),0.3)
     self.playerSprite.jump.animation_r = anim8.newAnimation(self.playerSprite.jump.grid('2-9',1),0.15)
 
     self.playerSprite.idle.animation_l = anim8.newAnimation(self.playerSprite.idle.grid('1-5', 1),0.3):flipH()
     self.playerSprite.walk.animation_l = anim8.newAnimation(self.playerSprite.walk.grid('1-8',1),0.15):flipH()
-    --self.playerSprite.attack.animation_l = anim8.newAnimation(self.playerSprite.attack.grid('1-2',1),0.3):flipH()
+    self.playerSprite.attack.animation_l = anim8.newAnimation(self.playerSprite.attack.grid('5-10',1),0.3):flipH()
     self.playerSprite.jump.animation_l = anim8.newAnimation(self.playerSprite.jump.grid('2-9',1),0.15):flipH()
 
 
@@ -426,7 +430,10 @@ function Player:update(dt)
 ---------------------------------------------ATTACCO----------------------------------------------------------
     
     if self.isAttacking then
-        --self.currentAnimation = self.playerSprite.attack.animation
+
+
+        
+        self.currentAnimation = self.playerSprite.attack.animation
 
     
 
