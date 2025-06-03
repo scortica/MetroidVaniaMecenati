@@ -102,6 +102,13 @@ function Player:heal()
     end
 end
 
+function Player:chargeCross()
+    if self.crossPoints < 15 then
+        self.crossPoints = self.crossPoints + 1
+        print(self.crossPoints)
+    end
+end
+
 function Player:gotHit(damage)
     self.lp = self.lp - damage
     if self.lp<=0 then
@@ -151,14 +158,21 @@ function Player:load()
         elseif collider_1.collision_class == 'Player' and collider_2.collision_class == 'EnemyAttack' then
             if not self.hitted then
                 self.hitted = true
-                --self:gotHit(collider_2:getObject().damage)  
+
+            
+
+                self.lp = self.lp - 1
+                if self.lp<=0 then
+                    self.isDead = true
+                end
                 local dir
                 if self.dx == "Right" then
-                    dir = 1
-                else
                     dir = -1
+                else
+                    dir = 1
                 end
-                self.collider:applyLinearImpulse(dir * 500, -100)
+                self.collider:applyLinearImpulse(0, -5000)
+                self.collider:applyForce(dir * 100000, 0)
                 --[[
                 
                 
@@ -201,10 +215,7 @@ function Player:load()
                 local enemy = collider_2:getObject()
 
                 enemy:gotHit(self.attackDamage)
-                if self.crossPoints < 15 then
-                    self.crossPoints = self.crossPoints + 1
-                    print(self.crossPoints)
-                end
+                self:chargeCross()
             end
         end
     end)
@@ -217,6 +228,7 @@ function Player:load()
                 local object =  other:getObject()
                 object:getParried()
                 self.succParry = true
+                self:chargeCross()
             end
         end
     end)
