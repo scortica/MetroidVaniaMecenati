@@ -56,6 +56,11 @@ function Player.new(params)
     self.hitTimer = 0
     self.hitCooldown = 0.5
 
+    self.knockbackPending = false
+    self.knockbackDir = 0
+    self.knockbackStrength = 6000 -- adjust as needed
+    self.knockbackUp = -3000 
+
 
     self.isWalking = false
     self.isJump = false
@@ -149,7 +154,6 @@ function Player:load()
     self.attackCollider:setGravityScale(0)
     self.attackCollider:setCollisionClass("PlayerAttack")
     self.attackCollider:setActive(false)
-    self.attackCollider:setSensor(true)
     self.parryCollider:setType("dynamic")
     self.parryCollider:setFixedRotation(true)
     self.parryCollider:setGravityScale(0)
@@ -174,22 +178,27 @@ function Player:load()
         -----------------------Player subisce attacco----------------------------------------------------------
         elseif collider_1.collision_class == 'Player' and collider_2.collision_class == 'EnemyAttack' then
             if not self.hitted then
-                self.hitted = true
+                local enemyObj = collider_2:getObject()
 
+                self.hitted = true
+                self.hitTimer = 0
             
 
                 self.lp = self.lp - 1
                 if self.lp<=0 then
                     self.isDead = true
                 end
-                local dir
-                if self.dx == "Right" then
-                    dir = -1
+                if enemyObj and enemyObj.x then
+                    if enemyObj.x < self.x then
+                        self.knockbackDir = 1   -- Enemy is to the left, knockback to the right
+                    else
+                        self.knockbackDir = -1  -- Enemy is to the right, knockback to the left
+                    end
                 else
-                    dir = 1
+                    -- fallback to previous logic if position is not available
+                    self.knockbackDir = (self.dx == "Right") and -1 or 1
                 end
-                self.collider:applyLinearImpulse(0, -5000)
-                self.collider:applyForce(dir * 100000, 0)
+                self.knockbackPending = true
                 --[[
                 
                 
@@ -226,13 +235,13 @@ function Player:load()
     end)
     -- Logica per l'attacco del player
     self.attackCollider:setPreSolve(function(collider_1, collider_2, contact)
-        print("attackCollider preSolve" .. " " .. collider_1.collision_class .. " " .. collider_2.collision_class)
         if collider_1.collision_class == 'PlayerAttack' and collider_2.collision_class == 'Enemy' then
             if not self.attackHasHit then
                 self.attackHasHit = true
                 local enemy = collider_2:getObject()
 
                 enemy:gotHit(self.attackDamage)
+                enemy:knockback(self.x)
                 self:chargeCross()
             end
         end
@@ -317,14 +326,13 @@ function Player:update(dt)
     -- Se il player è in attacco, attiva il collider dell'attacco
     -- e posizionalo in base alla direzione del player
     -- Se il player non è in attacco, disattiva il collider dell'attacco
-    if self.isAttacking then
+    if self.isAttacking and not self.attackHasHit then
         if self.dx == "Left" then
             self.attackCollider:setPosition(self.x - 90, self.y)
         else
             self.attackCollider:setPosition(self.x + 90, self.y)
         end
         self.attackCollider:setActive(true)
-       
     else
         self.attackCollider:setActive(false)
     end
@@ -351,12 +359,16 @@ function Player:update(dt)
     ------------------------------ATTACCO SUBITO-----------------------------------------------------------
     
     if self.hitted then
+        self.hitTimer = self.hitTimer + dt
         if self.hitTimer > self.hitCooldown then
             self.hitted = false
             self.hitTimer = 0
-        else
-            self.hitTimer = self.hitTimer + dt
         end
+    end
+
+    if self.knockbackPending then
+        self.collider:applyLinearImpulse(self.knockbackDir * self.knockbackStrength, self.knockbackUp)
+        self.knockbackPending = false
     end
 
     -------------------------------------------------------------------------------------------------------

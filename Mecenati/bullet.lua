@@ -56,6 +56,7 @@ function Bullet:load()
         if other.collision_class == "Enemy" and bullet.collision_class == "PlayerAttack" then
             local enemy = other:getObject()
             enemy:gotHit(self.damage)
+            enemy:knockback(self.x)
             self.collider:destroy()
             self.shooter.bullet = nil
         end
