@@ -157,7 +157,10 @@ function Player:load()
         elseif collider_1.collision_class == 'Player' and collider_2.collision_class == 'EnemyAttack' then
             if not self.hitted then
                 self.hitted = true
-                self:gotHit(collider_2:getObject().damage)
+                self.lp = self.lp - 1
+                if self.lp<=0 then
+                    self.isDead = true
+                end
                 local dir
                 if self.dx == "Right" then
                     dir = -1
