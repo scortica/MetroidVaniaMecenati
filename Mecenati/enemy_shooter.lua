@@ -20,7 +20,7 @@ function EnemyShooter.new(params)
     self.scale = params.scale or 1
     self.lp= params.lp or 5
 
-    self.collider = world:newBSGRectangleCollider(params.x, params.y, 100/2, 141, 2)  -- collider del player windfield
+    self.collider = world:newRectangleCollider(params.x, params.y, 100/2, 141)  -- collider del player windfield
 
     self.spriteSheetPath = {
         idle = 'Assets/Sprites/enemy/shooter_idle_sheet.png',

@@ -44,7 +44,7 @@ function Player.new(params)
     self.attackHasHit = false
     self.attackTimer = 0
     self.attackDuration = 0.5
-    self.attackCollider = world:newRectangleCollider(params.x, params.y, 25, 25) -- collider dell'attacco windfield
+    self.attackCollider = world:newRectangleCollider(params.x, params.y, 175, 75) -- collider dell'attacco windfield
 
     self.parryCollider = world:newRectangleCollider(params.x, params.y, 32 , 128)
     self.parry = false
@@ -79,7 +79,23 @@ function Player:mousepressed(x, y, button, istouch, presses)
         self.isAttacking = true
         self.attackHasHit = false
 
-         self.attackTimer = 0
+        self.attackTimer = 0
+
+        self.currentAnimation = self.playerSprite.attack
+
+        if self.dx == "Right" then
+
+            self.currentAnimation.animation_r:gotoFrame(2)
+            self.currentAnimation.animation_r:resume()
+            
+            
+        elseif self.dx == "Left" then
+
+            self.currentAnimation.animation_l:gotoFrame(2)
+            self.currentAnimation.animation_l:resume()
+            
+      
+        end
     end
     if button == 2 then
         self.parry = true
@@ -133,6 +149,7 @@ function Player:load()
     self.attackCollider:setGravityScale(0)
     self.attackCollider:setCollisionClass("PlayerAttack")
     self.attackCollider:setActive(false)
+    self.attackCollider:setSensor(true)
     self.parryCollider:setType("dynamic")
     self.parryCollider:setFixedRotation(true)
     self.parryCollider:setGravityScale(0)
@@ -209,6 +226,7 @@ function Player:load()
     end)
     -- Logica per l'attacco del player
     self.attackCollider:setPreSolve(function(collider_1, collider_2, contact)
+        print("attackCollider preSolve" .. " " .. collider_1.collision_class .. " " .. collider_2.collision_class)
         if collider_1.collision_class == 'PlayerAttack' and collider_2.collision_class == 'Enemy' then
             if not self.attackHasHit then
                 self.attackHasHit = true
@@ -253,7 +271,7 @@ function Player:load()
             grid= nil,
             animation_r = nil,
             animation_l = nil,
-            frameN = nil
+            frameN = 6
         },
         jump = {
             sprite = love.graphics.newImage(self.spriteSheetPath.jump),
@@ -269,18 +287,18 @@ function Player:load()
     
     self.playerSprite.idle.grid = anim8.newGrid(139,131, self.playerSprite.idle.sprite:getWidth(), self.playerSprite.idle.sprite:getHeight())
     self.playerSprite.walk.grid = anim8.newGrid(139,131, self.playerSprite.walk.sprite:getWidth(), self.playerSprite.walk.sprite:getHeight())
-    self.playerSprite.attack.grid = anim8.newGrid(300,131, self.playerSprite.attack.sprite:getWidth(), self.playerSprite.attack.sprite:getHeight())
+    self.playerSprite.attack.grid = anim8.newGrid(260,131, self.playerSprite.attack.sprite:getWidth(), self.playerSprite.attack.sprite:getHeight())
     self.playerSprite.jump.grid = anim8.newGrid(152,128, self.playerSprite.jump.sprite:getWidth(), self.playerSprite.jump.sprite:getHeight())
 
 
     self.playerSprite.idle.animation_r = anim8.newAnimation(self.playerSprite.idle.grid('1-5', 1),0.3)
     self.playerSprite.walk.animation_r = anim8.newAnimation(self.playerSprite.walk.grid('1-8',1),0.15)
-    self.playerSprite.attack.animation_r = anim8.newAnimation(self.playerSprite.attack.grid('5-10',1),0.3)
+    self.playerSprite.attack.animation_r = anim8.newAnimation(self.playerSprite.attack.grid('1-6',1),0.1)
     self.playerSprite.jump.animation_r = anim8.newAnimation(self.playerSprite.jump.grid('2-9',1),0.15)
 
     self.playerSprite.idle.animation_l = anim8.newAnimation(self.playerSprite.idle.grid('1-5', 1),0.3):flipH()
     self.playerSprite.walk.animation_l = anim8.newAnimation(self.playerSprite.walk.grid('1-8',1),0.15):flipH()
-    self.playerSprite.attack.animation_l = anim8.newAnimation(self.playerSprite.attack.grid('5-10',1),0.3):flipH()
+    self.playerSprite.attack.animation_l = anim8.newAnimation(self.playerSprite.attack.grid('1-6',1),0.1):flipH()
     self.playerSprite.jump.animation_l = anim8.newAnimation(self.playerSprite.jump.grid('2-9',1),0.15):flipH()
 
 
@@ -301,9 +319,9 @@ function Player:update(dt)
     -- Se il player non è in attacco, disattiva il collider dell'attacco
     if self.isAttacking then
         if self.dx == "Left" then
-            self.attackCollider:setPosition(self.x - 25, self.y)
+            self.attackCollider:setPosition(self.x - 90, self.y)
         else
-            self.attackCollider:setPosition(self.x + 25, self.y)
+            self.attackCollider:setPosition(self.x + 90, self.y)
         end
         self.attackCollider:setActive(true)
        
@@ -433,7 +451,9 @@ function Player:update(dt)
 
 
         
-        self.currentAnimation = self.playerSprite.attack.animation
+   
+
+    
 
     
 

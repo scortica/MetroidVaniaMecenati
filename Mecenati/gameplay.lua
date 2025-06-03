@@ -83,7 +83,7 @@ function gameplay.enter(stateMachine)
     world:addCollisionClass('Player')
     world:addCollisionClass('PlayerAttack', {ignores = {'Player', 'Platform'}})
     world:addCollisionClass('PlayerParry', {ignores = {'Player' , 'PlayerAttack', 'Platform'}})
-    world:addCollisionClass('Enemy', {ignores = {'Player', 'PlayerParry'}})
+    world:addCollisionClass('Enemy', {ignores = {'Player', 'PlayerParry', 'Enemy'}})
     world:addCollisionClass('EnemyAttack', {ignores = {'Enemy', 'PlayerAttack'}})
 
     if map.layers["PlayerSpawn"] then
@@ -260,7 +260,7 @@ function gameplay.draw()
             local bottle = lpBottles[i]
             if bottle then
                 UI_LP_animation:gotoFrame(bottle.frame)
-                UI_LP_animation:draw(UI_LP_image, 20 + (30 * i), SETTINGS.DISPLAY.HEIGHT - 100, 0, 2, 2)
+                UI_LP_animation:draw(UI_LP_image, 20 + (30 * i), SETTINGS.DISPLAY.HEIGHT, 0, 2, 2)
             end
         end
     end
