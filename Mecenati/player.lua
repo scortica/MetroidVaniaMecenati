@@ -23,7 +23,7 @@ function Player.new(params)
     self.crossPoints = 0
     self.scale = params.scale or 1
     self.defaultSpeed = self.speed
-    self.lp= params.lp or 1
+    self.lp= params.lp or 5
     self.maxLp = 5
     self.isDead = false
     self.healing = false
@@ -126,7 +126,6 @@ end
 function Player:chargeCross()
     if self.crossPoints < 15 then
         self.crossPoints = self.crossPoints + 1
-        print(self.crossPoints)
     end
 end
 

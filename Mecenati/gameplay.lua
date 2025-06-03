@@ -160,7 +160,6 @@ function gameplay.update(dt)
                 if player.healing then
                 local maxCross = 16 - player.crossPoints - 4
                 local minCross = maxCross + 4
-                print(maxCross .. " " .. minCross)
                 UI_Cross_animation = anim8.newAnimation(UI_Cross_grid(maxCross .. "-" .. minCross, 1), 1)
 
                 player.healing = false

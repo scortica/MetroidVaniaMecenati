@@ -1,14 +1,29 @@
 --if (love.system.getOS() == 'OS X' ) and (jit.arch == 'arm64' or jit.arch == 'arm') then jit.off() end
 
 require("globals")
+require ("Libraries/anim8")
+
 
 local state_machine = require("stateMachine")
+local image = love.graphics.newImage("Assets/Animation/animation.png")
+
+local animation = nil
+
+--[[function playAnimation()
+    if not animation then
+        
+    end
+
+    animation:play()    
+end]]
 
 function love.load()
+    --local grid = anim8.newGrid(3840, 2160, image:getWidth(), image:getHeight())
+    --animation = anim8.newAnimation(grid('1-9', 1), 0.2, "pauseAtEnd")
     state_machine.changeState("initialize")
 end
 
-function love.update(dt)
+function love.update(dt) 
     state_machine.update(dt)
 end
 
