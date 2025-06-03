@@ -19,6 +19,7 @@ function EnemyGhost.new(params)
     self.scale = params.scale or 1
     self.speed = params.speed or 100
     self.isFollowing = false
+    self.damage = 1
 
     self.lp= params.lp or 3
 

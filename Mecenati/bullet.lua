@@ -50,9 +50,6 @@ function Bullet:load()
 
     self.collider:setPreSolve(function(bullet, other, contact)
         if other.collision_class == "Player" and bullet.collision_class == "EnemyAttack" then
-            local player = other:getObject()
-            
-            player:gotHit(self.damage)
             self.collider:destroy()
             self.shooter.bullet = nil
         end
