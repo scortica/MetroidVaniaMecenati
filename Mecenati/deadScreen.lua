@@ -1,22 +1,47 @@
 local DeadScreen = {}
 local callbacks = {}
 
-local uiButtons = nil
-local DeadScreenMenu = nil
-local function isMouseOverButton(button, x, y)
-    return (x >= button.x and x <= button.x + button.width) and
-           (y >= button.y and y <= button.y + button.height)
-end
+local DeadScreenMenu = love.graphics.newImage("Assets/Sprites/UI/deadTextUII.png")
+local esc = love.graphics.newImage("Assets/Sprites/UI/esc.png")
+local menu = love.graphics.newImage("Assets/Sprites/UI/menuUI.png")
+local restart = love.graphics.newImage("Assets/Sprites/UI/restartUI.png")
+
+local stateMachineRef = nil
+
+local debugText = false -- Set to true to enable debug messages
 
 function DeadScreen.load(cb)
-    
+    callbacks = cb or {}
 end
 
 function DeadScreen.update(dt)
-    -- Update the game logic here
+    
+    if debugText then
+        print("DeadScreen.update called")
+    end
+    
+    if love.keyboard.isDown("escape") then
+        if debugText then
+            print("Escape key pressed, returning to main menu")
+        end
+        if callbacks.onMainMenu then callbacks.onMainMenu() end
+    end
+
+    if love.keyboard.isDown("r") then
+        if debugText then
+            print("Escape key pressed, returning to main menu")
+        end
+        if callbacks.onMainMenu then callbacks.onRetry() end
+    end
+
 end
 
 function DeadScreen.draw()
+    -- Draw the dead screen background
+    love.graphics.draw(DeadScreenMenu, (SETTINGS.DISPLAY.WIDTH/2)-(DeadScreenMenu:getWidth()/3.5) , (SETTINGS.DISPLAY.HEIGHT/2)-(DeadScreenMenu:getHeight()/2) , 0, SETTINGS.DISPLAY.SCALE, SETTINGS.DISPLAY.SCALE)
+    love.graphics.draw(menu, (SETTINGS.DISPLAY.WIDTH/2)-(esc:getWidth()/4)-22 , (SETTINGS.DISPLAY.HEIGHT/2)-(esc:getHeight()/2) + 200, 0, SETTINGS.DISPLAY.SCALE, SETTINGS.DISPLAY.SCALE)
+    love.graphics.draw(restart, (SETTINGS.DISPLAY.WIDTH/2)-(esc:getWidth()/4) , (SETTINGS.DISPLAY.HEIGHT/2)-(esc:getHeight()/2) + 300, 0, SETTINGS.DISPLAY.SCALE, SETTINGS.DISPLAY.SCALE)
+
     
 end
 
@@ -108,13 +133,12 @@ end]]
 function DeadScreen.keyreleased(key, scancode)
 
     if key == "escape" then
-            if callbacks.onResume then callbacks.onResume() end
-        end
+            
+    end
     if key == "f11" then
-            -- Toggle fullscreen mode
-            local isFullscreen = love.window.getFullscreen()
-            love.window.setFullscreen(not isFullscreen)
-        end
+        local isFullscreen = love.window.getFullscreen()
+        love.window.setFullscreen(not isFullscreen)
+    end
 end
 
 return DeadScreen

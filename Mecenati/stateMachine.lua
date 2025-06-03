@@ -6,7 +6,8 @@ local states = {
     gameplay = require("gameplay"),             -- require the gameplay.lua file
     credits = require("credits"),             -- require the credits.lua file
     keybinds = require("keybinds"),
-    pause = require("pause")
+    pause = require("pause"),
+    dead = require("deadScreen")
 }
 
 local currentState = nil
