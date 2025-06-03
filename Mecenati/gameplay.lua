@@ -11,6 +11,7 @@ local camera = require("Libraries/camera")
 local wf = require("Libraries/windfield")
 local Pause = require("pause")
 local EnemyManager = require("enemyManager")
+local DeadScreen = require("deadScreen")
 --------------------------------------------------
 
 --------------------------------------------------
@@ -65,6 +66,24 @@ function gameplay.enter(stateMachine)
             ispause = false
             if stateMachineRef then
                 stateMachineRef.changeState("mainMenu")
+            else
+                print("Error: state_machine_ref is nil")
+            end
+        end
+    })
+
+    DeadScreen.load({
+        onMainMenu = function()
+            if stateMachineRef then
+                stateMachineRef.changeState("mainMenu")
+            else
+                print("Error: state_machine_ref is nil")
+            end
+        end,
+
+        onRetry = function()
+            if stateMachineRef then
+                gameplay.enter(stateMachineRef)
             else
                 print("Error: state_machine_ref is nil")
             end
@@ -214,7 +233,11 @@ function gameplay.update(dt)
         end
     else
         if player and player.isDead then
-            
+            if stateMachineRef then
+                DeadScreen.update(dt)
+            else
+                print("Error: stateMachineRef is nil")
+            end
         end
     end
 end
@@ -222,53 +245,56 @@ end
 function gameplay.draw()
     -- Draw the game here
     
+    if player and not player.isDead then
+        cam:attach()
 
-    cam:attach()
 
-        
 
-        love.graphics.setColor(1,1,1)
-        --love.graphics.rectangle("fill",0 ,-1000 ,10000, 10000)
+            love.graphics.setColor(1,1,1)
+            --love.graphics.rectangle("fill",0 ,-1000 ,10000, 10000)
 
-        love.graphics.draw(mappa, 0, -369)  --490
-        --love.graphics.draw(mappa, 2000, -369)
-        --love.graphics.draw(mappa, 4000, -369)
-        --map:drawLayer(map.layers["Background"])
-        map:drawLayer(map.layers["Block"])
+            love.graphics.draw(mappa, 0, -369)  --490
+            --love.graphics.draw(mappa, 2000, -369)
+            --love.graphics.draw(mappa, 4000, -369)
+            --map:drawLayer(map.layers["Background"])
+            map:drawLayer(map.layers["Block"])
 
-        
-        
-        if player and not player.isDead then
-            player:draw() 
-        end
 
-        if enemyManager then
-            enemyManager:draw()
-        end
 
-        world:draw()
+            if player and not player.isDead then
+                player:draw() 
+            end
 
-    cam:detach()
+            if enemyManager then
+                enemyManager:draw()
+            end
 
-    UI_PLAYER_animation:draw(UI_PLAYER_image, 10, 10, 0, 1.5, 1.5)
+            world:draw()
 
-    UI_Cross_animation:draw(UI_Cross_image, 30, 160, 0 ,1.5, 1.5)
+        cam:detach()
 
-    -- Disegna le boccette LP con animazione
-    if player and player.maxLp and lpBottles then
-        for i = 1, player.maxLp do
-            local bottle = lpBottles[i]
-            if bottle then
-                UI_LP_animation:gotoFrame(bottle.frame)
-                UI_LP_animation:draw(UI_LP_image, 20 + (30 * i), SETTINGS.DISPLAY.HEIGHT, 0, 2, 2)
+        UI_PLAYER_animation:draw(UI_PLAYER_image, 10, 10, 0, 1.5, 1.5)
+
+        UI_Cross_animation:draw(UI_Cross_image, 30, 160, 0 ,1.5, 1.5)
+
+        -- Disegna le boccette LP con animazione
+        if player and player.maxLp and lpBottles then
+            for i = 1, player.maxLp do
+                local bottle = lpBottles[i]
+                if bottle then
+                    UI_LP_animation:gotoFrame(bottle.frame)
+                    UI_LP_animation:draw(UI_LP_image, 20 + (30 * i), SETTINGS.DISPLAY.HEIGHT - 100, 0, 2, 2)
+                end
             end
         end
-    end
 
-    if ispause then
-        Pause:draw()
+        if ispause then
+            Pause:draw()
+        end
+    else if player and player.isDead then
+        DeadScreen.draw()
+        end
     end
-
 
 end
 

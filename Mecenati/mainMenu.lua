@@ -134,7 +134,7 @@ function mainMenu.draw()
 
     -- Title
     love.graphics.setColor(1, 1, 1)
-    love.graphics.print("GAME TITLE: MetroidVania", 100, 50)
+    love.graphics.print("GAME TITLE: AVERAGE NIGHT IN LONDON", 100, 50)
 
     -- Draw play button
     if uiButtons then

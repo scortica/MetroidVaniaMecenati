@@ -23,7 +23,7 @@ function Player.new(params)
     self.crossPoints = 0
     self.scale = params.scale or 1
     self.defaultSpeed = self.speed
-    self.lp= params.lp or 5
+    self.lp= params.lp or 1
     self.maxLp = 5
     self.isDead = false
     self.healing = false

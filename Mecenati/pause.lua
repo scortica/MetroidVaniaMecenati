@@ -133,7 +133,7 @@ function pause.mousemoved(x, y, dx, dy, istouch)
 
 end
 
-function pause.mousepressed(x, y, button, istouch, presses)
+function pause.mousepressed(x, y, button, istouch, presses) 
 
     if button == 1 then -- Left mouse button
 
@@ -152,7 +152,7 @@ function pause.mousepressed(x, y, button, istouch, presses)
             elseif isMouseOverButton(uiButtons.keybinds, transformedX, transformedY) then
                 uiButtons.keybinds.currentColor = uiButtons.keybinds.pressedColor
             end
-        end
+        end 
     end
 end
 
