@@ -1,0 +1,8 @@
+meccaniche boss
+
+-camminata fantasma(senza fluttuare)
+-colpo di ascia con dimensioni che vanno fino all'ampiezza massima dell'ascia
+-onda d'urto che blocca il player per qualche istante/reca danno (con salto)
+-si cura?
+-fase 2 non credo
+-morte
