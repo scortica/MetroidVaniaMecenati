@@ -119,6 +119,16 @@ function EnemyShooter:gotHit(damage)
     end
 end
 
+function EnemyShooter:knockback(fromX)
+    local dir = 1
+    if fromX < self.x then
+        dir = 1   -- Player is to the left, knockback to the right
+    else
+        dir = -1  -- Player is to the right, knockback to the left
+    end
+        self.collider:applyLinearImpulse(dir *  4000, -1500)
+end
+
 -----------------------------------------------------------------------------------------------
 
 
@@ -129,6 +139,7 @@ function EnemyShooter:load()
     self.image = love.graphics.newImage(self.spriteSheetPath.idle)
     self.collider:setCollisionClass("Enemy")
     self.collider:setFixedRotation(true)
+    self.collider:setLinearDamping(10) 
    
 
     self.enemySprite = {
