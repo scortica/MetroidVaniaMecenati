@@ -24,7 +24,8 @@ function EnemyShooter.new(params)
 
     self.spriteSheetPath = {
         idle = 'Assets/Sprites/enemy/shooter_idle_sheet.png',
-        attack = 'Assets/Sprites/enemy/shooter_shoot_sheet.png'
+        attack = 'Assets/Sprites/enemy/shooter_shoot_sheet.png',
+        death = 'Assets/Sprites/enemy/shooter_death_sheet.png'
     }
     self.enemySprite = nil
     self.currentAnimation = nil
@@ -39,7 +40,19 @@ function EnemyShooter.new(params)
     self.attackTimer = 0
     self.attackDuration = 2
     self.bullet = nil
-    --self.attackCollider = world:newRectangleCollider(params.x, params.y, 25, 25) -- collider dell'attacco windfield
+
+    self.knockbackVelX = 0
+    self.knockbackVelY = 0
+    self.knockbackTimer = 0
+    self.knockbackDuration = 0.2
+
+    self.flashTimer = 0
+    self.flashDuration = 0.05
+
+
+    self.isDying = false
+    self.deathTimer = 0
+    self.deathDuration = 0.8
 
     self.collider:setObject(self)
 
@@ -51,6 +64,16 @@ local debugText = true
 
 ---------------------------------FUNZIONI ENEMY------------------------------------------------
 -----------------------------------------------------------------------------------------------
+local whiteFlashShader = love.graphics.newShader[[
+    extern number flashAmount;
+    vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords)
+    {
+        vec4 texColor = Texel(texture, texture_coords) * color;
+        texColor.rgb = mix(texColor.rgb, vec3(1.0), flashAmount);
+        return texColor;
+    }
+]]
+
 local function atan2(y, x)
     if x > 0 then
         return math.atan(y / x)
@@ -114,19 +137,28 @@ end
 
 function EnemyShooter:gotHit(damage)
     self.lp = self.lp - damage
-    if self.lp <= 0 then
-        self.isActive = false
+    self.flashTimer = self.flashDuration
+    if self.lp <= 0 and not self.isDying then
+        self.isDying = true
+        self.deathTimer = 0
+        self.flashTimer = 0
+        if self.dx == "Left" then
+            self.currentAnimation = self.enemySprite.death
+            self.currentAnimation.animation_l:gotoFrame(1)
+            self.currentAnimation.animation_l:resume()
+        else
+            self.currentAnimation = self.enemySprite.death
+            self.currentAnimation.animation_r:gotoFrame(1)
+            self.currentAnimation.animation_r:resume()
+        end
     end
 end
 
 function EnemyShooter:knockback(fromX)
-    local dir = 1
-    if fromX < self.x then
-        dir = 1   -- Player is to the left, knockback to the right
-    else
-        dir = -1  -- Player is to the right, knockback to the left
-    end
-        self.collider:applyLinearImpulse(dir *  4000, -1500)
+   local dir = (fromX < self.x) and 1 or -1
+    self.knockbackVelX = dir * 400
+    self.knockbackVelY = -200
+    self.knockbackTimer = self.knockbackDuration
 end
 
 -----------------------------------------------------------------------------------------------
@@ -156,16 +188,26 @@ function EnemyShooter:load()
             animation_r = nil,
             animation_l = nil,
             frameN = 7
+        },
+        death ={
+            sprite = love.graphics.newImage(self.spriteSheetPath.death),
+            grid= nil,
+            animation_r = nil,
+            animation_l = nil,
+            frameN = 8
         }
     }
 
     self.enemySprite.idle.grid = anim8.newGrid(100,141, self.enemySprite.idle.sprite:getWidth(), self.enemySprite.idle.sprite:getHeight())
     self.enemySprite.attack.grid = anim8.newGrid(100,141, self.enemySprite.attack.sprite:getWidth(), self.enemySprite.attack.sprite:getHeight())
+    self.enemySprite.death.grid = anim8.newGrid(99, 145, self.enemySprite.death.sprite:getWidth(), self.enemySprite.death.sprite:getHeight())
 
     self.enemySprite.idle.animation_l = anim8.newAnimation( self.enemySprite.idle.grid('1-5',1),0.5)
     self.enemySprite.idle.animation_r = anim8.newAnimation( self.enemySprite.idle.grid('1-5',1),0.5):flipH()
     self.enemySprite.attack.animation_l = anim8.newAnimation( self.enemySprite.attack.grid('1-7',1),0.07, "pauseAtEnd")
     self.enemySprite.attack.animation_r = anim8.newAnimation( self.enemySprite.attack.grid('1-7',1),0.07, "pauseAtEnd"):flipH()
+    self.enemySprite.death.animation_l = anim8.newAnimation(self.enemySprite.death.grid('1-8', 1), 0.1, "pauseAtEnd")
+    self.enemySprite.death.animation_r = anim8.newAnimation(self.enemySprite.death.grid('1-8', 1), 0.1, "pauseAtEnd"):flipH()
 
     self.currentAnimation = self.enemySprite.idle
 
@@ -175,6 +217,46 @@ function EnemyShooter:update(dt,player)
 
     self.x = self.collider:getX()
     self.y = self.collider:getY()
+
+
+
+    if self.isDying then
+        self.deathTimer = self.deathTimer + dt
+        if self.dx == "Left" then
+            self.currentAnimation.animation_l:update(dt)
+        else
+            self.currentAnimation.animation_r:update(dt)
+        end
+        if self.deathTimer >= self.deathDuration then
+            self.isActive = false
+        end
+        return
+    end
+
+    if self.knockbackTimer > 0 then
+        self.x = self.x + self.knockbackVelX * dt
+        self.y = self.y + self.knockbackVelY * dt
+        self.knockbackTimer = self.knockbackTimer - dt
+        self.knockbackVelX = self.knockbackVelX * 0.9
+        self.knockbackVelY = self.knockbackVelY * 0.9
+        if self.knockbackTimer <= 0 then
+            self.knockbackVelX = 0
+            self.knockbackVelY = 0
+        end
+        self.collider:setPosition(self.x, self.y)
+        if self.dx == "Left" then
+            self.currentAnimation.animation_l:update(dt)
+        else
+            self.currentAnimation.animation_r:update(dt)
+        end
+            return
+    end
+
+    if self.flashTimer > 0 then
+        self.flashTimer = self.flashTimer - dt
+    end
+
+    
    
     -- Aggiorna il timer dell'attacco
     if self.isAttacking then
@@ -193,6 +275,8 @@ function EnemyShooter:update(dt,player)
             end
         end
     end
+
+    
 
     if distance(self.x,player.x ,self.y, player.y) < 500 then
         local direction = player.x - self.x
@@ -220,14 +304,25 @@ end
 
 function EnemyShooter :draw()
 
+    print("flashTimer", self.flashTimer)
+    if self.flashTimer > 0 then
+        whiteFlashShader:send("flashAmount", 1)
+        love.graphics.setShader(whiteFlashShader)
+    else
+        whiteFlashShader:send("flashAmount", 0)
+        love.graphics.setShader()
+    end
+
     love.graphics.setColor(1,1,1,1)
     if self.dx == "Left" then
         self.currentAnimation.animation_l:draw(self.currentAnimation.sprite, self.x, self.y , 0, 1, 1, 100/2 + 25, 141/2)
     else
         self.currentAnimation.animation_r:draw(self.currentAnimation.sprite, self.x + 50, self.y , 0, 1, 1, 100/2 + 25, 141/2)
     end
-    
-    
+
+    love.graphics.setShader()
+    love.graphics.setColor(1,1,1,1)
+
     if self.bullet then
         self.bullet:draw()
     end

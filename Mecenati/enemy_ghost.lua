@@ -59,7 +59,7 @@ function EnemyGhost.new(params)
 
     self.isDying = false
     self.deathTimer = 0
-    self.deathDuration = 2
+    self.deathDuration = 1
     self.animationdeath_l = nil
     self.animationdeath_r = nil
     --self.attackCollider = world:newRectangleCollider(params.x, params.y, 25, 25) -- collider dell'attacco windfield
@@ -172,14 +172,17 @@ function EnemyGhost:load()
     self.animation_r = anim8.newAnimation(self.grid('1-2',1),0.5):flipH()
     self.animationatk_l = anim8.newAnimation(self.grid('3-4',1),0.5)
     self.animationatk_r = anim8.newAnimation(self.grid('3-4',1),0.5):flipH()
-    self.animationdeath_l = anim8.newAnimation(self.grid('5-24',1),0.1)
-    self.animationdeath_r = anim8.newAnimation(self.grid('5-24',1),0.1)
+    self.animationdeath_l = anim8.newAnimation(self.grid('5-24',1),0.05)
+    self.animationdeath_r = anim8.newAnimation(self.grid('5-24',1),0.05)
     self.currentAnimation = self.animation_l
 
 end
 
 function EnemyGhost:update(dt,player)
 
+    if self.flashTimer > 0 then
+        self.flashTimer = self.flashTimer - dt
+    end
     if self.isDying then
         self.deathTimer = self.deathTimer + dt
         self.currentAnimation:update(dt)
@@ -228,9 +231,7 @@ function EnemyGhost:update(dt,player)
         end
     end
 
-    if self.flashTimer > 0 then
-        self.flashTimer = self.flashTimer - dt
-    end
+  
 
     local dist = distance(self.x,player.x ,self.y, player.y)
     if  dist < 500 then

@@ -382,7 +382,7 @@ function Player:update(dt)
     -- altrimenti, non saltare
     if self.isJump then
         
-        if self.jumpNum < 2 --[[and py > -30 and py < 30 ]]then
+        if self.jumpNum < 1 --[[and py > -30 and py < 30 ]]then
             self.collider:applyLinearImpulse(0, -10000)
             self.isGrounded = false
             self.jumpNum = self.jumpNum + 1
