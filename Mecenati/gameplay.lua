@@ -12,6 +12,7 @@ local wf = require("Libraries/windfield")
 local Pause = require("pause")
 local EnemyManager = require("enemyManager")
 local DeadScreen = require("deadScreen")
+local CameraAnchor = require("cameraAnchor")
 --------------------------------------------------
 
 --------------------------------------------------
@@ -22,6 +23,13 @@ local ispause = false
 local player = nil
 local enemy_ghost = nil
 local enemyManager = nil
+local anchor = nil
+
+hitFreezeTimer = 0
+hitFreezeDuration = 0.08
+camShakeTime = 0
+camShakeDuration = 0.15 -- seconds
+camShakeMagnitude = 12 --pixels
 
 local UI_PLAYER_image,UI_PLAYER_animation,UI_PLAYER_grid
 local UI_LP_image,UI_LP_animation,UI_LP_grid
@@ -123,6 +131,10 @@ function gameplay.enter(stateMachine)
             table.insert(platforms, platform)
         end
     end
+    if player then
+        anchor = CameraAnchor.new(player.x, player.y, 3)
+    end
+    
 
     --------------------------------------------------
 
@@ -151,12 +163,17 @@ end
 
 function gameplay.update(dt)
     if player and not player.isDead then
+         if hitFreezeTimer > 0 then
+            hitFreezeTimer = hitFreezeTimer - dt
+            return -- skip updates during freeze
+        end
         if ispause then
             
             Pause:update(dt)
+            return
         else
             world:update(dt)
-            if player then 
+            if player and anchor then 
                 if player.healing then
                 local maxCross = 16 - player.crossPoints - 4
                 local minCross = maxCross + 4
@@ -167,7 +184,14 @@ function gameplay.update(dt)
                 UI_Cross_animation = anim8.newAnimation(UI_Cross_grid(16-player.crossPoints, 1), 1)
             end
                 player:update(dt) 
-                cam:lookAt(player.x, player.y)
+                anchor:update(dt, player.x, player.y)
+                local shakeX, shakeY = 0, 0
+                if camShakeTime > 0 then
+                    camShakeTime = camShakeTime - dt
+                    shakeX = love.math.random(-camShakeMagnitude, camShakeMagnitude)
+                    shakeY = love.math.random(-camShakeMagnitude, camShakeMagnitude)
+                end
+                cam:lookAt(anchor.x + shakeX, anchor.y + shakeY)
             end
             if enemyManager then
                 enemyManager:update(dt, player)
@@ -246,10 +270,7 @@ function gameplay.draw()
     
     if player and not player.isDead then
         cam:attach()
-
-
-
-            love.graphics.setColor(1,1,1)
+        love.graphics.setColor(1,1,1)
             --love.graphics.rectangle("fill",0 ,-1000 ,10000, 10000)
 
             love.graphics.draw(mappa, 0, -369)  --490

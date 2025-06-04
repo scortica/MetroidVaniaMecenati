@@ -198,30 +198,8 @@ function Player:load()
                     self.knockbackDir = (self.dx == "Right") and -1 or 1
                 end
                 self.knockbackPending = true
-                --[[
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                SISTEMARE QUESTO
-                
-                
-                
-                
-                
-                
-                
-                
-                ]]
-
+                hitFreezeTimer = hitFreezeDuration + 0.1
+                camShakeTime = camShakeDuration
             end
             
         end
@@ -242,6 +220,7 @@ function Player:load()
                 enemy:gotHit(self.attackDamage)
                 enemy:knockback(self.x)
                 self:chargeCross()
+                hitFreezeTimer = hitFreezeDuration
             end
         end
     end)
@@ -255,6 +234,7 @@ function Player:load()
                 object:getParried()
                 self.succParry = true
                 self:chargeCross()
+                hitFreezeTimer = hitFreezeDuration + 0.1
             end
         end
     end)

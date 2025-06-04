@@ -304,7 +304,6 @@ end
 
 function EnemyShooter :draw()
 
-    print("flashTimer", self.flashTimer)
     if self.flashTimer > 0 then
         whiteFlashShader:send("flashAmount", 1)
         love.graphics.setShader(whiteFlashShader)
