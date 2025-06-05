@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "MappaDefinitiva.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -30,12 +30,12 @@
             "scale": 0.33,
             "selectedLayer": 7,
             "viewCenter": {
-                "x": 6674.242424242424,
-                "y": 1618.181818181818
+                "x": 17316.666666666664,
+                "y": 1145.4545454545455
             }
         },
         "MappaDefinitiva.tmx#TS_tileset1": {
-            "scaleInDock": 1
+            "scaleInDock": 0.75
         },
         "Mappappappappa.tmx": {
             "scale": 0.04363800252388678,
@@ -83,11 +83,12 @@
     "map.tileWidth": 64,
     "map.width": 420,
     "openFiles": [
+        "MappaDefinitiva.tmx"
     ],
     "project": "MappaDefinitiva.tiled-project",
     "recentFiles": [
-        "C:/Users/amico/AppData/Local/Temp/01f95d47-b677-4966-9002-13f051fd5303_Maps.zip.303/Maps/Mappappappappa.tmx",
         "MappaDefinitiva.tmx",
+        "C:/Users/amico/AppData/Local/Temp/01f95d47-b677-4966-9002-13f051fd5303_Maps.zip.303/Maps/Mappappappappa.tmx",
         "Mappappappappa.tmx"
     ],
     "tileset.embedInMap": true,
