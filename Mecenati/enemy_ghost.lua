@@ -179,7 +179,7 @@ function EnemyGhost:load()
 end
 
 function EnemyGhost:update(dt,player)
-
+    
     if self.flashTimer > 0 then
         self.flashTimer = self.flashTimer - dt
     end

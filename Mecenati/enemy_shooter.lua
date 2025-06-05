@@ -40,11 +40,15 @@ function EnemyShooter.new(params)
     self.attackTimer = 0
     self.attackDuration = 2
     self.bullet = nil
+    self.shootCooldown = 2
+    self.shootCooldownTimer = 0
 
     self.knockbackVelX = 0
     self.knockbackVelY = 0
     self.knockbackTimer = 0
     self.knockbackDuration = 0.2
+    self.hitIdleTimer = 0
+    self.hitIdleDuration = 0.25
 
     self.flashTimer = 0
     self.flashDuration = 0.05
@@ -98,6 +102,9 @@ local function distance(x1,x2,y1,y2)
     return math.sqrt((x2-x1)^2 + (y2-y1)^2)
 end
 
+local function angleBetween(x1, y1, x2, y2)
+    return atan2(y2 - y1, x2 - x1)
+end
 
 function EnemyShooter:shoot(player)
     -- Se il player è in un raggio di 100 pixel, attacca   
@@ -138,6 +145,7 @@ end
 function EnemyShooter:gotHit(damage)
     self.lp = self.lp - damage
     self.flashTimer = self.flashDuration
+    self.hitIdleTimer = self.hitIdleDuration
     if self.lp <= 0 and not self.isDying then
         self.isDying = true
         self.deathTimer = 0
@@ -153,6 +161,8 @@ function EnemyShooter:gotHit(damage)
         end
     end
 end
+
+
 
 function EnemyShooter:knockback(fromX)
    local dir = (fromX < self.x) and 1 or -1
@@ -219,6 +229,10 @@ function EnemyShooter:update(dt,player)
     self.y = self.collider:getY()
 
 
+    if self.shootCooldownTimer > 0 then
+        self.shootCooldownTimer = self.shootCooldownTimer - dt
+    end
+
 
     if self.isDying then
         self.deathTimer = self.deathTimer + dt
@@ -232,6 +246,8 @@ function EnemyShooter:update(dt,player)
         end
         return
     end
+
+    
 
     if self.knockbackTimer > 0 then
         self.x = self.x + self.knockbackVelX * dt
@@ -256,6 +272,17 @@ function EnemyShooter:update(dt,player)
         self.flashTimer = self.flashTimer - dt
     end
 
+    if self.hitIdleTimer > 0 then
+        self.hitIdleTimer = self.hitIdleTimer - dt
+        self.isAttacking = false
+        self.currentAnimation = self.enemySprite.idle
+        if self.dx == "Left" then
+            self.currentAnimation.animation_l:update(dt)
+        else
+            self.currentAnimation.animation_r:update(dt)
+        end
+        return
+    end
     
    
     -- Aggiorna il timer dell'attacco
@@ -278,14 +305,25 @@ function EnemyShooter:update(dt,player)
 
     
 
-    if distance(self.x,player.x ,self.y, player.y) < 500 then
+    if distance(self.x, player.x, self.y, player.y) < 500 then
         local direction = player.x - self.x
         if direction < 0 then
             self.dx = "Left"
         else
             self.dx = "Right"
         end
-        self:shoot(player)
+
+        -- Angle check
+        local facingAngle = (self.dx == "Left") and math.pi or 0
+        local toPlayerAngle = angleBetween(self.x, self.y, player.x, player.y)
+        local diff = atan2(math.sin(toPlayerAngle - facingAngle), math.cos(toPlayerAngle - facingAngle))
+        local fov = math.rad(60) / 2 -- ±30°
+
+        if math.abs(diff) < fov and self.shootCooldownTimer <= 0 then
+            self:shoot(player)
+            self.shootCooldownTimer = self.shootCooldown
+        end
+
     elseif not self.isAttacking then
         if self.currentAnimation ~= self.enemySprite.idle then
             self.currentAnimation = self.enemySprite.idle

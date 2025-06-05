@@ -27,6 +27,7 @@ function Player.new(params)
     self.maxLp = 5
     self.isDead = false
     self.healing = false
+    self.healTimer = 0
 
     self.jumpNum = 0
     self.jumpResetTime = 0.095
@@ -36,7 +37,10 @@ function Player.new(params)
     self.spriteSheetPath = {idle='Assets/Sprites/player/player_r_idle_sheet.png',
                             walk='Assets/Sprites/player/player_r_run_sheet.png',
                             attack='Assets/Sprites/player/player_r_atk_sheet.png',
-                            jump='Assets/Sprites/player/player_r_jump_sheet.png'}
+                            jump='Assets/Sprites/player/player_r_jump_sheet.png',
+                            parry='Assets/Sprites/player/player_r_parry_sheet.png',
+                            heal='Assets/Sprites/player/player_r_heal_sheet.png'
+                        }
     self.playerSprite = nil
     self.currentAnimation = nil
 
@@ -103,8 +107,17 @@ function Player:mousepressed(x, y, button, istouch, presses)
         end
     end
     if button == 2 then
-        self.parry = true
+       self.parry = true
         self.parryTimer = 0
+        -- Reset parry animation to frame 1
+        self.currentAnimation = self.playerSprite.parry
+        if self.dx == "Right" then
+            self.currentAnimation.animation_r:gotoFrame(1)
+            self.currentAnimation.animation_r:resume()
+        elseif self.dx == "Left" then
+            self.currentAnimation.animation_l:gotoFrame(1)
+            self.currentAnimation.animation_l:resume()
+        end
     end
     -- Se il tasto destro del mouse è premuto,
     --------------------------------IMPLEMENTARE LOGICA PARRY---------------------------------------
@@ -114,9 +127,10 @@ function Player:mousepressed(x, y, button, istouch, presses)
 end
 
 function Player:heal()
-    if self.lp < self.maxLp then
+    if self.lp < self.maxLp and not self.healing then
         if (self.crossPoints/4)>1 then
             self.healing = true
+            self.healTimer = 0
             self.lp = self.lp + 1
             self.crossPoints = self.crossPoints - 4
         end
@@ -168,9 +182,9 @@ function Player:load()
                 local tx, ty = collider_2:getPosition() -- posizione della piattaforma
                 local tw, th = collider_2:getObject() and collider_2:getObject().width or 0, collider_2:getObject() and collider_2:getObject().height or 0  -- dimensioni della piattaforma
                 -- Se il player è sopra la piattaforma
-                if py + ph/2 <= ty - th/2 + 5 then 
+                if py + ph/2 <= ty - th/2 + 5 then
                     self.isGrounded = true
-                else    
+                else
                     self.isGrounded = false
                 end
             end
@@ -267,6 +281,20 @@ function Player:load()
             animation_r = nil,
             animation_l = nil,
             frameN = 9
+        },
+        parry = {
+            sprite = love.graphics.newImage(self.spriteSheetPath.parry),
+            grid= nil,
+            animation_r = nil,
+            animation_l = nil,
+            frameN = 4
+        },
+        heal = {
+            sprite = love.graphics.newImage(self.spriteSheetPath.heal),
+            grid= nil,
+            animation_r = nil,
+            animation_l = nil,
+            frameN = 7
         }
     }
 
@@ -277,17 +305,23 @@ function Player:load()
     self.playerSprite.walk.grid = anim8.newGrid(139,131, self.playerSprite.walk.sprite:getWidth(), self.playerSprite.walk.sprite:getHeight())
     self.playerSprite.attack.grid = anim8.newGrid(260,131, self.playerSprite.attack.sprite:getWidth(), self.playerSprite.attack.sprite:getHeight())
     self.playerSprite.jump.grid = anim8.newGrid(152,128, self.playerSprite.jump.sprite:getWidth(), self.playerSprite.jump.sprite:getHeight())
+    self.playerSprite.parry.grid = anim8.newGrid(180,135, self.playerSprite.parry.sprite:getWidth(), self.playerSprite.parry.sprite:getHeight())
+    self.playerSprite.heal.grid = anim8.newGrid(139,131, self.playerSprite.heal.sprite:getWidth(), self.playerSprite.heal.sprite:getHeight())
 
 
     self.playerSprite.idle.animation_r = anim8.newAnimation(self.playerSprite.idle.grid('1-5', 1),0.3)
     self.playerSprite.walk.animation_r = anim8.newAnimation(self.playerSprite.walk.grid('1-8',1),0.15)
     self.playerSprite.attack.animation_r = anim8.newAnimation(self.playerSprite.attack.grid('1-6',1),0.1)
     self.playerSprite.jump.animation_r = anim8.newAnimation(self.playerSprite.jump.grid('2-9',1),0.15)
+    self.playerSprite.parry.animation_r = anim8.newAnimation(self.playerSprite.parry.grid('1-4',1),0.1)
+    self.playerSprite.heal.animation_r = anim8.newAnimation(self.playerSprite.heal.grid('1-7',1),0.15)
 
     self.playerSprite.idle.animation_l = anim8.newAnimation(self.playerSprite.idle.grid('1-5', 1),0.3):flipH()
     self.playerSprite.walk.animation_l = anim8.newAnimation(self.playerSprite.walk.grid('1-8',1),0.15):flipH()
     self.playerSprite.attack.animation_l = anim8.newAnimation(self.playerSprite.attack.grid('1-6',1),0.1):flipH()
     self.playerSprite.jump.animation_l = anim8.newAnimation(self.playerSprite.jump.grid('2-9',1),0.15):flipH()
+    self.playerSprite.parry.animation_l = anim8.newAnimation(self.playerSprite.parry.grid('1-4',1),0.1):flipH()
+    self.playerSprite.heal.animation_l = anim8.newAnimation(self.playerSprite.heal.grid('1-7',1),0.15):flipH()
 
 
     self.currentAnimation = self.playerSprite.idle
@@ -397,32 +431,34 @@ function Player:update(dt)
     -- Se non premi nessun tasto, applica una forza al collider del player per fermarlo
 
 
-    
-    if love.keyboard.isDown("a") then
-        if px >= -500 then
-            self.collider:applyForce(-10000, 0)
-            self.dx = "Left"
-            self.isWalking = true
-        end
-    elseif love.keyboard.isDown("d")  then
-        if  px <= 500 then
-        
-            self.collider:applyForce(10000, 0)
-            self.dx = "Right"
-            self.isWalking = true
-         end
-        
-    elseif love.keyboard.isDown("a") or love.keyboard.isDown("d") then
-        --VUOTO
-    else
-        if px > 0 then
-            self.collider:applyForce(-(px + 15000), 0)
-        elseif px < 0 then
-            self.collider:applyForce(-(px - 15000), 0)
-        end
-        self.isWalking = false
+    if not self.healing then
+        if love.keyboard.isDown("a") then
+            if px >= -500 then
+                self.collider:applyForce(-30000, 0)
+                self.dx = "Left"
+                self.isWalking = true
+            end
+        elseif love.keyboard.isDown("d")  then
+            if  px <= 500 then
+            
+                self.collider:applyForce(30000, 0)
+                self.dx = "Right"
+                self.isWalking = true
+            end
+            
+        elseif love.keyboard.isDown("a") or love.keyboard.isDown("d") then
+            --VUOTO
+        else
+            if px > 0 then
+                self.collider:applyForce(-(px + 25000), 0)
+            elseif px < 0 then
+                self.collider:applyForce(-(px - 25000), 0)
+            end
+            self.isWalking = false
 
+        end
     end
+    
 
     if self.dx == "Right" then
         self.parryCollider:setPosition(self.collider:getX() + 50, self.collider:getY())
@@ -442,13 +478,37 @@ function Player:update(dt)
 
 
         
-   
+------------------------------------------------PARRY--------------------------------------------------------
 
-    
+    elseif self.parry then
+       -- self.currentAnimation = self.playerSprite.parry
+        if self.dx == "Right" then
+            self.currentAnimation.animation_r:update(dt)
+        elseif self.dx == "Left" then
+            self.currentAnimation.animation_l:update(dt)
+        end
+        -- Optionally, reset to idle after parry cooldown
+        if self.parryTimer >= self.parryCooldown then
+            self.currentAnimation = self.playerSprite.idle
+        end
+        return -- skip other animation logic while parrying
+------------------------------------------------CURA--------------------------------------------------------
 
-    
-
-
+    elseif self.healing then
+        self.currentAnimation = self.playerSprite.heal
+        if self.dx == "Right" then
+            self.currentAnimation.animation_r:update(dt)
+        elseif self.dx == "Left" then
+            self.currentAnimation.animation_l:update(dt)
+        end
+        -- End healing after animation finishes (assuming 7 frames at 0.15s each)
+        self.healTimer = (self.healTimer or 0) + dt
+        if self.healTimer > 7 * 0.15 then
+            self.healing = false
+            self.healTimer = 0
+            self.currentAnimation = self.playerSprite.idle
+        end
+        return -- skip other animation logic while healing
 
 ------------------------------------------------SALTO--------------------------------------------------------
 
@@ -577,8 +637,6 @@ function Player:update(dt)
 
     end
         
-    
-
 end
 -----------------------------------------------------------------------------------------------------------------------------------------
 ---------------------------------------------DRAW----------------------------------------------------------------------------------------

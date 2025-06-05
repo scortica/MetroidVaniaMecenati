@@ -103,7 +103,7 @@ function gameplay.enter(stateMachine)
 
     cam = camera()
 
-    map = sti('Assets/Maps/mappa.lua')
+    map = sti('Assets/Maps/Mappa.lua')
     world = wf.newWorld(0, 500, true)
 
     world:addCollisionClass('Platform')
@@ -144,12 +144,6 @@ function gameplay.enter(stateMachine)
     end
 
     --------------------------------------------------
-   
-    mappa = love.graphics.newImage("Assets/Maps/Background/Background_1.png")
-   -- map:resize(love.graphics.getWidth(), love.graphics.getHeight())
-   -- map:drawLayer(map.layers["Background"])
-   -- map:drawLayer(map.layers["Block"])
-   -- cam:lookAt(player.x, player.y)
     
     -- Inizializza lpBottles
     lpBottles = {}
@@ -178,8 +172,6 @@ function gameplay.update(dt)
                 local maxCross = 16 - player.crossPoints - 4
                 local minCross = maxCross + 4
                 UI_Cross_animation = anim8.newAnimation(UI_Cross_grid(maxCross .. "-" .. minCross, 1), 1)
-
-                player.healing = false
             else
                 UI_Cross_animation = anim8.newAnimation(UI_Cross_grid(16-player.crossPoints, 1), 1)
             end
