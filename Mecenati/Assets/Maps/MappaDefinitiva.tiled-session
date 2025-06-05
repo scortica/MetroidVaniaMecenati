@@ -1,0 +1,98 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "file.lastUsedOpenFilter": "Tutti i file (*)",
+    "fileStates": {
+        "C:/Users/amico/AppData/Local/Temp/01f95d47-b677-4966-9002-13f051fd5303_Maps.zip.303/Maps/Mappappappappa.tmx": {
+            "scale": 0.25,
+            "selectedLayer": 10,
+            "viewCenter": {
+                "x": 19326,
+                "y": 1004
+            }
+        },
+        "C:/Users/amico/AppData/Local/Temp/01f95d47-b677-4966-9002-13f051fd5303_Maps.zip.303/Maps/Mappappappappa.tmx#Sprite-0001": {
+            "scaleInDock": 1
+        },
+        "C:/Users/amico/AppData/Local/Temp/01f95d47-b677-4966-9002-13f051fd5303_Maps.zip.303/Maps/Mappappappappa.tmx#Tiles": {
+            "scaleInDock": 1
+        },
+        "C:/Users/amico/AppData/Local/Temp/01f95d47-b677-4966-9002-13f051fd5303_Maps.zip.303/Maps/Mappappappappa.tmx#void": {
+            "scaleInDock": 1
+        },
+        "MappaDefinitiva.tmx": {
+            "scale": 0.33,
+            "selectedLayer": 7,
+            "viewCenter": {
+                "x": 6674.242424242424,
+                "y": 1618.181818181818
+            }
+        },
+        "MappaDefinitiva.tmx#TS_tileset1": {
+            "scaleInDock": 1
+        },
+        "Mappappappappa.tmx": {
+            "scale": 0.04363800252388678,
+            "selectedLayer": 9,
+            "viewCenter": {
+                "x": 13623.44666611584,
+                "y": 435.40031397174243
+            }
+        },
+        "Mappappappappa.tmx#Sprite-0001": {
+            "scaleInDock": 1
+        },
+        "Mappappappappa.tmx#Tiles": {
+            "scaleInDock": 1
+        },
+        "Mappappappappa.tmx#legnoso": {
+            "scaleInDock": 1
+        },
+        "Mappappappappa.tmx#ponte": {
+            "scaleInDock": 1
+        },
+        "Mappappappappa.tmx#staccionata": {
+            "scaleInDock": 1
+        },
+        "Mappappappappa.tmx#terra2": {
+            "scaleInDock": 1
+        },
+        "Mappappappappa.tmx#terrrrrra": {
+            "scaleInDock": 1
+        },
+        "Mappappappappa.tmx#travediagonale": {
+            "scaleInDock": 1
+        },
+        "Mappappappappa.tmx#travediagonale2": {
+            "scaleInDock": 1
+        },
+        "Mappappappappa.tmx#void": {
+            "scaleInDock": 1
+        }
+    },
+    "last.imagePath": "C:/Users/amico/Desktop/MetroidVaniaMecenati/Mecenati/Assets/Maps/Tilez",
+    "map.height": 34,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 64,
+    "map.tileWidth": 64,
+    "map.width": 420,
+    "openFiles": [
+    ],
+    "project": "MappaDefinitiva.tiled-project",
+    "recentFiles": [
+        "C:/Users/amico/AppData/Local/Temp/01f95d47-b677-4966-9002-13f051fd5303_Maps.zip.303/Maps/Mappappappappa.tmx",
+        "MappaDefinitiva.tmx",
+        "Mappappappappa.tmx"
+    ],
+    "tileset.embedInMap": true,
+    "tileset.tileSize": {
+        "height": 64,
+        "width": 64
+    }
+}
