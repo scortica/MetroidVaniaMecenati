@@ -10,6 +10,7 @@ local sti = require("Libraries/sti")
 local camera = require("Libraries/camera")
 local wf = require("Libraries/windfield")
 local Pause = require("pause")
+local Keybinds = require("keybinds")
 local EnemyManager = require("enemyManager")
 local DeadScreen = require("deadScreen")
 local CameraAnchor = require("cameraAnchor")
@@ -20,6 +21,7 @@ local CameraAnchor = require("cameraAnchor")
 --------------------------------------------------
 local debugText = true
 local ispause = false
+local iskeybind = false
 local player = nil
 local enemyManager = nil
 local anchor = nil
@@ -35,6 +37,7 @@ camShakeMagnitude = 12 --pixels
 local UI_PLAYER_image,UI_PLAYER_animation,UI_PLAYER_grid
 local UI_LP_image,UI_LP_animation,UI_LP_grid
 local UI_Cross_image,UI_Cross_animation,UI_Cross_grid
+local UI_HealingAvailable
 
 -- Stato animazione boccette LP
 local lpBottles = {}
@@ -75,6 +78,8 @@ end
 --------------------------------------------------
 function gameplay.enter(stateMachine)
 
+    UI_HealingAvailable=love.graphics.newImage("Assets/Sprites/UI/Healing.png")
+
     UI_PLAYER_image = love.graphics.newImage("Assets/Sprites/UI/iconUI.png")
     UI_PLAYER_grid = anim8.newGrid(123, 108, UI_PLAYER_image:getWidth(), UI_PLAYER_image:getHeight())
     UI_PLAYER_animation = anim8.newAnimation(UI_PLAYER_grid('1-5', 1), 0.2)
@@ -93,15 +98,32 @@ function gameplay.enter(stateMachine)
     Pause.load({
         onResume = function()
             ispause = false
+            iskeybind = false
         end,
         onMainMenu = function()
             ispause = false
+            iskeybind = false
             if stateMachineRef then
                 gameplay.reset()
                 stateMachineRef.changeState("mainMenu")
             else
                 print("Error: state_machine_ref is nil")
             end
+        end,
+        onKeybinds = function()
+            ispause = true
+            iskeybind = true
+        end,
+    })
+
+    Keybinds.load({
+        onPause = function()
+            ispause = true
+            iskeybind = false
+        end,
+        onResume = function ()
+            ispause = false
+            iskeybind = false
         end
     })
 
@@ -125,6 +147,7 @@ function gameplay.enter(stateMachine)
         end
     })
 
+    
     --------------------------------------------------
     
 
@@ -203,6 +226,13 @@ function gameplay.enter(stateMachine)
     end
 end
 
+
+
+
+
+
+
+
 function gameplay.update(dt)
     if player and not player.isDead then
         checkPlayerCheckpoint()
@@ -211,8 +241,13 @@ function gameplay.update(dt)
             return -- skip updates during freeze
         end
         if ispause then
+            if ispause then
+                Pause:update(dt)
+            end
             
-            Pause:update(dt)
+            if iskeybind then
+                Keybinds:update(dt)
+            end
             return
         else
             world:update(dt)
@@ -345,6 +380,10 @@ function gameplay.draw()
 
         UI_Cross_animation:draw(UI_Cross_image, 30, 160, 0 ,1.5, 1.5)
 
+        if player.crossPoints>=4 then
+            love.graphics.draw(UI_HealingAvailable, 30, 400)
+        end
+
         -- Disegna le boccette LP con animazione
         if player and player.maxLp and lpBottles then
             for i = 1, player.maxLp do
@@ -356,9 +395,14 @@ function gameplay.draw()
             end
         end
 
-        if ispause then
+        if ispause and not iskeybind then
             Pause:draw()
         end
+
+        if iskeybind then
+            Keybinds:draw()
+        end
+
     else if player and player.isDead then
         DeadScreen.draw()
         end
@@ -401,7 +445,11 @@ end
 function gameplay.keyreleased(key, scancode)
    
     if key == "escape" then
-        ispause = not ispause
+        if iskeybind then
+            iskeybind = false
+        else 
+            ispause = not ispause
+        end
     end
     
 

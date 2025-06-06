@@ -1,6 +1,8 @@
 local pause = {}
 local callbacks = {}
 
+local keybinds = require("keybinds")
+ 
 local uiButtons = nil
 local pauseMenu = nil
 local function isMouseOverButton(button, x, y)
@@ -174,11 +176,7 @@ function pause.mousereleased(x, y, button, istouch, presses)
         elseif isMouseOverButton(uiButtons.keybinds, transformedX, transformedY) then
             uiButtons.keybinds.currentColor = uiButtons.keybinds.releasedColor    
              ------------------MODIFICARE PER METTERE KEYBINDS------------------
-            --[[if stateMachineRef then
-                stateMachineRef.changeState("keybinds")
-            else
-                print("Error: state_machine_ref is nil")
-            end]]
+            if callbacks.onKeybinds then callbacks.onKeybinds() end -- Call the onKeybinds callbacks
 
         end
     end
