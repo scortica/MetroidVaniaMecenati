@@ -15,6 +15,7 @@ function Player.new(params)
     -- esempi di parametri o valori preimportati
     self.x = params.x or 800
     self.y = params.y or 500
+    self.lastCheckpoint = nil
     self.dx = "Right"
     self.width = params.width or 128
     self.height = params.height or 256

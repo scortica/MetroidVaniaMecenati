@@ -21,10 +21,10 @@ local CameraAnchor = require("cameraAnchor")
 local debugText = true
 local ispause = false
 local player = nil
-local enemy_ghost = nil
 local enemyManager = nil
 local anchor = nil
-local checkPoint = {}
+local initialSpawn = nil
+local checkpointSpawn = nil
 
 hitFreezeTimer = 0
 hitFreezeDuration = 0.08
@@ -46,7 +46,30 @@ local bottleAnimDuration = 0.25 -- durata animazione svuotamento (in secondi)
 --------------------------------------------------
 -- FUNZIONI 
 --------------------------------------------------
+---
+function gameplay.reset()
+    player = nil
+    world = nil
+    map = nil
+    enemyManager = nil
+    cam = nil
+    anchor = nil
+    initialSpawn = nil
+    checkpointSpawn = nil
+    lastPlayerLp = nil
+    lpBottles = {}
 
+end
+
+local function checkPlayerCheckpoint()
+    if checkpointSpawn and player then
+        local dx = player.x - checkpointSpawn.x
+        local dy = player.y - checkpointSpawn.y
+        if math.abs(dx) < 32 and math.abs(dy) < 32 then -- 32 is the checkpoint "radius"
+            player.lastCheckpoint = {x = checkpointSpawn.x, y = checkpointSpawn.y}
+        end
+    end
+end
 --------------------------------------------------
 -- FUNZIONI LOVE
 --------------------------------------------------
@@ -74,6 +97,7 @@ function gameplay.enter(stateMachine)
         onMainMenu = function()
             ispause = false
             if stateMachineRef then
+                gameplay.reset()
                 stateMachineRef.changeState("mainMenu")
             else
                 print("Error: state_machine_ref is nil")
@@ -84,6 +108,7 @@ function gameplay.enter(stateMachine)
     DeadScreen.load({
         onMainMenu = function()
             if stateMachineRef then
+                gameplay.reset()
                 stateMachineRef.changeState("mainMenu")
             else
                 print("Error: state_machine_ref is nil")
@@ -113,22 +138,31 @@ function gameplay.enter(stateMachine)
     world:addCollisionClass('PlayerParry', {ignores = {'Player' , 'PlayerAttack', 'Platform'}})
     world:addCollisionClass('Enemy', {ignores = {'Player', 'PlayerParry', 'Enemy'}})
     world:addCollisionClass('EnemyAttack', {ignores = {'Enemy', 'PlayerAttack', 'EnemyAttack'}})
-    if not player then
-        if map.layers["PlayerSpawn"] then
-            for i, obj in pairs(map.layers["PlayerSpawn"].objects) do
-                if obj.name == "Player" then
-                    player = Player.new({x = obj.x,y = obj.y, speed = 150})
-                    player:load()
-                else
-                    local checkpoint = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
-                    table.insert(checkPoint,checkpoint)
-                end            
+
+
+    
+
+    if map.layers["PlayerSpawn"] then
+        for i, obj in pairs(map.layers["PlayerSpawn"].objects) do
+            if obj.name == "Spawn" then
+                initialSpawn = {x = obj.x, y = obj.y}
+            elseif obj.name == "CheckPoint" then
+                checkpointSpawn = {x = obj.x, y = obj.y}
             end
         end
+    end
+
+    if not player then
+        if initialSpawn then
+            player = Player.new({x = initialSpawn.x, y = initialSpawn.y, speed = 150})
+            player:load()
+            player.lastCheckpoint = {x = initialSpawn.x, y = initialSpawn.y}
+        end
     else
-        if player.hasCheckpoint then
-            player.x = checkPoint.getX()
-            player.y = checkPoint.getY()
+        -- On reload (retry), respawn at last checkpoint
+        if player.lastCheckpoint then
+            player.x = player.lastCheckpoint.x
+            player.y = player.lastCheckpoint.y
         end
     end
     
@@ -168,6 +202,7 @@ end
 
 function gameplay.update(dt)
     if player and not player.isDead then
+        checkPlayerCheckpoint()
          if hitFreezeTimer > 0 then
             hitFreezeTimer = hitFreezeTimer - dt
             return -- skip updates during freeze
