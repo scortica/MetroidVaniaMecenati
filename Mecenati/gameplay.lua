@@ -117,6 +117,7 @@ function gameplay.enter(stateMachine)
 
         onRetry = function()
             if stateMachineRef then
+                gameplay.reset()
                 gameplay.enter(stateMachineRef)
             else
                 print("Error: state_machine_ref is nil")
@@ -156,6 +157,8 @@ function gameplay.enter(stateMachine)
         if initialSpawn then
             player = Player.new({x = initialSpawn.x, y = initialSpawn.y, speed = 150})
             player:load()
+            player.lp = 5
+            player.isDead = false
             player.lastCheckpoint = {x = initialSpawn.x, y = initialSpawn.y}
         end
     else

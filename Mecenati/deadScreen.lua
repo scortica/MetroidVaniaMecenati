@@ -8,7 +8,7 @@ local restart = love.graphics.newImage("Assets/Sprites/UI/restartUI.png")
 
 local stateMachineRef = nil
 
-local debugText = false -- Set to true to enable debug messages
+local debugText = true -- Set to true to enable debug messages
 
 function DeadScreen.load(cb)
     callbacks = cb or {}
@@ -29,9 +29,9 @@ function DeadScreen.update(dt)
 
     if love.keyboard.isDown("r") then
         if debugText then
-            print("Escape key pressed, returning to main menu")
+            print("R key pressed, restarting the game")
         end
-        if callbacks.onMainMenu then callbacks.onRetry() end
+        if callbacks.onRetry then callbacks.onRetry() end
     end
 
 end
