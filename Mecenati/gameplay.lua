@@ -117,7 +117,8 @@ function gameplay.enter(stateMachine)
 
         onRetry = function()
             if stateMachineRef then
-                gameplay.reset()
+                player.lp = 5
+                player.isDead = false
                 gameplay.enter(stateMachineRef)
             else
                 print("Error: state_machine_ref is nil")
