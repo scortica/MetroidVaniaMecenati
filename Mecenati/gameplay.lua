@@ -24,6 +24,7 @@ local player = nil
 local enemy_ghost = nil
 local enemyManager = nil
 local anchor = nil
+local checkPoint = {}
 
 hitFreezeTimer = 0
 hitFreezeDuration = 0.08
@@ -112,16 +113,26 @@ function gameplay.enter(stateMachine)
     world:addCollisionClass('PlayerParry', {ignores = {'Player' , 'PlayerAttack', 'Platform'}})
     world:addCollisionClass('Enemy', {ignores = {'Player', 'PlayerParry', 'Enemy'}})
     world:addCollisionClass('EnemyAttack', {ignores = {'Enemy', 'PlayerAttack', 'EnemyAttack'}})
-
-    if map.layers["PlayerSpawn"] then
-        for i, obj in pairs(map.layers["PlayerSpawn"].objects) do
-            player = Player.new({x = obj.x,y = obj.y, speed = 150})
+    if not player then
+        if map.layers["PlayerSpawn"] then
+            for i, obj in pairs(map.layers["PlayerSpawn"].objects) do
+                if obj.name == "Player" then
+                    player = Player.new({x = obj.x,y = obj.y, speed = 150})
+                    player:load()
+                else
+                    local checkpoint = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
+                    table.insert(checkPoint,checkpoint)
+                end            
+            end
+        end
+    else
+        if player.hasCheckpoint then
+            player.x = checkPoint.getX()
+            player.y = checkPoint.getY()
         end
     end
     
-    if player then 
-        player:load() 
-    end
+   
     platforms = {}
     if map.layers["Platform"] then
         for i, obj in pairs(map.layers["Platform"].objects) do
@@ -265,11 +276,18 @@ function gameplay.draw()
         love.graphics.setColor(1,1,1)
             --love.graphics.rectangle("fill",0 ,-1000 ,10000, 10000)
 
-            love.graphics.draw(mappa, 0, -369)  --490
             --love.graphics.draw(mappa, 2000, -369)
             --love.graphics.draw(mappa, 4000, -369)
-            --map:drawLayer(map.layers["Background"])
-            map:drawLayer(map.layers["Block"])
+           local bgGroup = map.layers["Background"]
+            if bgGroup and bgGroup.type == "group" and bgGroup.layers then
+                for _, layer in ipairs(bgGroup.layers) do
+                    if layer.type == "imagelayer" or layer.type == "tilelayer" then
+                        map:drawLayer(layer)
+                    end
+                end
+            end
+            
+            --map:drawLayer(map.layers["Block"])
 
 
 
