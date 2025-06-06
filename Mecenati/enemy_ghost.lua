@@ -109,6 +109,9 @@ local function distance(x1,x2,y1,y2)
 end
 
 function EnemyGhost:attack(player, distance, dt)
+
+    self.isAttacking = true
+
     local xDist = (player.x - self.x) / distance
     local yDist = (player.y - self.y) / distance
 
@@ -223,13 +226,17 @@ function EnemyGhost:update(dt,player)
 
     -- Aggiorna il timer dell'attacco
     if self.isAttacking then
+        self.attackCollider:setActive(true)
         self.attackTimer = self.attackTimer + dt
         if self.attackTimer >= self.attackDuration then
             self.isAttacking = false
             self.attackHasHit = false
             self.attackTimer = 0
         end
+    else
+        self.attackCollider:setActive(false) 
     end
+
 
   
 
@@ -247,8 +254,10 @@ function EnemyGhost:update(dt,player)
         else
             self.dx = "Right"
         end
-    
-        self:attack(player, dist, dt)
+        if not self.isAttacking then
+             self:attack(player, dist, dt)
+        end
+       
     end
 
     self.currentAnimation:update(dt)

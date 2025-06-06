@@ -1,31 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="420" height="34" tilewidth="64" tileheight="64" infinite="0" nextlayerid="17" nextobjectid="217">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="420" height="34" tilewidth="64" tileheight="64" infinite="0" nextlayerid="17" nextobjectid="223">
  <editorsettings>
-  <export target="Mappa.lua" format="lua"/>
+  <export target="mappa.lua" format="lua"/>
  </editorsettings>
  <tileset firstgid="1" name="TS_tileset1" tilewidth="64" tileheight="64" tilecount="27" columns="3">
   <image source="Tilez/Tiles.png" width="192" height="576"/>
  </tileset>
- <group id="11" name="Background">
-  <imagelayer id="2" name="bg">
-   <image source="Tilez/sfondo.png" width="26880" height="2210"/>
-  </imagelayer>
-  <imagelayer id="4" name="cimitero1" offsetx="-18.6667" offsety="-50.6667">
-   <image source="alberi.tombe.png" width="3775" height="2164"/>
-  </imagelayer>
-  <imagelayer id="8" name="chapel" offsetx="7889.21" offsety="1619.03">
-   <image source="chiesa.cimi.png" width="512" height="498"/>
-  </imagelayer>
-  <imagelayer id="5" name="cimitero2" offsetx="3313.18" offsety="-242.576">
-   <image source="alberi.tombe.png" width="3775" height="2164"/>
-  </imagelayer>
-  <imagelayer id="9" name="città1" offsetx="15292" offsety="-1112">
-   <image source="villaggio.png" width="8988" height="3226"/>
-  </imagelayer>
-  <imagelayer id="10" name="città2" offsetx="19149.9" offsety="-1095.76">
-   <image source="villaggio.png" width="8988" height="3226"/>
-  </imagelayer>
- </group>
+ <imagelayer id="2" name="bg">
+  <image source="Tilez/sfondo.png" width="26880" height="2210"/>
+ </imagelayer>
+ <imagelayer id="4" name="cimitero1" offsetx="-18.6667" offsety="-50.6667">
+  <image source="alberi.tombe.png" width="3775" height="2164"/>
+ </imagelayer>
+ <imagelayer id="8" name="chapel" offsetx="7889.21" offsety="1619.03">
+  <image source="chiesa.cimi.png" width="512" height="498"/>
+ </imagelayer>
+ <imagelayer id="5" name="cimitero2" offsetx="3313.18" offsety="-242.576">
+  <image source="alberi.tombe.png" width="3775" height="2164"/>
+ </imagelayer>
+ <imagelayer id="9" name="città1" offsetx="15292" offsety="-1112">
+  <image source="villaggio.png" width="8988" height="3226"/>
+ </imagelayer>
+ <imagelayer id="10" name="città2" offsetx="19149.9" offsety="-1095.76">
+  <image source="villaggio.png" width="8988" height="3226"/>
+ </imagelayer>
  <layer id="7" name="Bloc_BG2" width="420" height="34">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -151,7 +149,7 @@
   <object id="9" x="1152" y="1280" width="64" height="64"/>
   <object id="10" x="896" y="1280" width="128" height="64"/>
   <object id="11" x="832" y="896" width="128" height="32"/>
-  <object id="215" x="1024" y="895" width="128" height="32"/>
+  <object id="215" x="1024" y="896" width="128" height="31"/>
   <object id="216" x="960" y="896" width="64" height="63"/>
   <object id="12" x="64" y="640" width="2176" height="64"/>
   <object id="13" x="1984" y="1744" width="128" height="32"/>
@@ -204,10 +202,7 @@
   <object id="65" x="3456" y="1920" width="3072" height="64"/>
   <object id="66" x="6528" y="1984" width="128" height="64"/>
   <object id="67" x="6656" y="2048" width="192" height="64"/>
-  <object id="68" x="6848" y="2112" width="5376" height="64"/>
-  <object id="69" x="7520" y="2000" width="96" height="32"/>
-  <object id="70" x="7520" y="1872" width="96" height="31"/>
-  <object id="71" x="7360" y="1664" width="256" height="38.4"/>
+  <object id="68" x="6848" y="2114" width="5376" height="62"/>
   <object id="72" x="8608" y="1920" width="96" height="64"/>
   <object id="73" x="8608" y="1088" width="32" height="832"/>
   <object id="74" x="8640" y="1536" width="256" height="32"/>
@@ -236,7 +231,7 @@
   <object id="97" x="13888" y="2048" width="448" height="36"/>
   <object id="98" x="14592" y="2076" width="64" height="36"/>
   <object id="99" x="14656" y="2080" width="64" height="32"/>
-  <object id="100" x="14720" y="2112" width="12160" height="64"/>
+  <object id="100" x="14720" y="2113" width="12160" height="63"/>
   <object id="101" x="16256" y="960" width="128" height="31"/>
   <object id="102" x="16350" y="991" width="34" height="33"/>
   <object id="103" x="16384" y="1024" width="512" height="31"/>
@@ -252,18 +247,18 @@
   <object id="114" x="18928" y="799" width="16" height="33"/>
   <object id="115" x="18816" y="799" width="16" height="33"/>
   <object id="116" x="19904" y="2081" width="64" height="31"/>
-  <object id="117" x="19968" y="2048" width="512" height="33"/>
+  <object id="117" x="19968" y="2049" width="512" height="32"/>
   <object id="118" x="20457" y="2081" width="23" height="30"/>
-  <object id="119" x="20288" y="225" width="192" height="1695"/>
+  <object id="119" x="20288" y="225" width="192" height="1694"/>
   <object id="120" x="20257" y="256" width="31" height="384"/>
   <object id="121" x="20352" y="191" width="128" height="34"/>
   <object id="122" x="19840" y="1" width="640" height="190"/>
   <object id="123" x="18368" y="0" width="1472" height="64"/>
   <object id="124" x="19072" y="64" width="768" height="64"/>
-  <object id="125" x="20256" y="1792" width="32" height="128"/>
+  <object id="125" x="20256" y="1792" width="32" height="127"/>
   <object id="126" x="20224" y="1824" width="32" height="64"/>
   <object id="127" x="20096" y="1856" width="128" height="31"/>
-  <object id="128" x="19584" y="704" width="64" height="1280"/>
+  <object id="128" x="19584" y="704" width="64" height="1279"/>
   <object id="129" x="19648" y="704" width="192" height="31"/>
   <object id="130" x="19648" y="735" width="95" height="33"/>
   <object id="131" x="19392" y="704" width="192" height="31"/>
@@ -285,8 +280,8 @@
   <object id="150" x="19648" y="1823" width="160" height="33"/>
   <object id="151" x="19648" y="1856" width="64" height="64"/>
   <object id="152" x="19712" y="1856" width="64" height="31"/>
-  <object id="153" x="19648" y="1920" width="31" height="64"/>
-  <object id="154" x="19553" y="1503" width="31" height="481"/>
+  <object id="153" x="19648" y="1920" width="31" height="63"/>
+  <object id="154" x="19553" y="1503" width="31" height="480"/>
   <object id="155" x="19648" y="1536" width="31" height="256"/>
   <object id="156" x="19648" y="1503" width="64" height="33"/>
   <object id="157" x="19776" y="1408" width="64" height="31"/>
@@ -316,18 +311,15 @@
   <object id="179" name="CheckPoint" x="25586" y="1780" width="194" height="327"/>
  </objectgroup>
  <objectgroup id="15" name="EnemySpawn">
-  <object id="180" name="Ghost" x="25246" y="1800" width="140" height="284"/>
-  <object id="182" name="Ghost" x="25042" y="1795" width="140" height="284"/>
-  <object id="183" name="Ghost" x="24838" y="1795" width="140" height="284"/>
+  <object id="180" name="Ghost" x="25249" y="1866" width="120" height="233"/>
+  <object id="182" name="Ghost" x="25042" y="1860" width="119" height="235"/>
+  <object id="183" name="Ghost" x="24839" y="1858" width="125" height="240"/>
   <object id="184" name="Shooter" x="106" y="1116" width="58" height="117"/>
   <object id="186" name="Shooter" x="1249" y="1182" width="58" height="117"/>
   <object id="190" name="Shooter" x="971" y="1629" width="58" height="117"/>
-  <object id="192" name="Shooter" x="4355" y="1795" width="58" height="117"/>
-  <object id="193" name="Shooter" x="7459" y="1544" width="58" height="117"/>
   <object id="197" name="Shooter" x="8661" y="1402" width="58" height="117"/>
+  <object id="217" name="Shooter" x="7240" y="1987" width="58" height="117"/>
   <object id="198" name="Shooter" x="9535" y="1606" width="58" height="117"/>
-  <object id="199" name="Shooter" x="10561" y="1668" width="58" height="117"/>
-  <object id="200" name="Shooter" x="11007" y="1474" width="58" height="117"/>
   <object id="201" name="Shooter" x="11491" y="1794" width="58" height="117"/>
   <object id="202" name="Shooter" x="14594" y="1946" width="58" height="117"/>
   <object id="208" name="Shooter" x="19052" y="583" width="58" height="117"/>
@@ -337,10 +329,13 @@
   <object id="187" name="Shooter" x="1863" y="1520" width="40" height="91"/>
   <object id="185" name="Ghost" x="247" y="932" width="54" height="117"/>
   <object id="188" name="Ghost" x="2010" y="1615" width="54" height="117"/>
-  <object id="194" name="Ghost" x="7124" y="1981" width="54" height="117"/>
-  <object id="195" name="Ghost" x="7850" y="1981" width="54" height="117"/>
+  <object id="194" name="Ghost" x="7464" y="1537" width="54" height="117"/>
+  <object id="195" name="Boss" x="4763" y="1755" width="101" height="126"/>
   <object id="196" name="Ghost" x="9088" y="993" width="54" height="117"/>
   <object id="203" name="Ghost" x="12670" y="1778" width="54" height="117"/>
+  <object id="218" name="Ghost" x="11013" y="1463" width="54" height="117"/>
+  <object id="219" name="Ghost" x="10565" y="1660" width="54" height="117"/>
+  <object id="220" name="Ghost" x="8589" y="1857" width="54" height="117"/>
   <object id="204" name="Ghost" x="14040" y="1823" width="54" height="117"/>
   <object id="207" name="Ghost" x="17301" y="651" width="54" height="117"/>
   <object id="205" name="Ghost" x="19592" y="542" width="54" height="117"/>

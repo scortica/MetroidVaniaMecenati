@@ -141,6 +141,8 @@ function gameplay.enter(stateMachine)
             if stateMachineRef then
                 player.lp = 5
                 player.isDead = false
+                player.x = player.lastCheckpoint.x or initialSpawn.x
+                player.y = player.lastCheckpoint.y or initialSpawn.y
                 gameplay.enter(stateMachineRef)
             else
                 print("Error: state_machine_ref is nil")
@@ -348,21 +350,19 @@ function gameplay.draw()
     if player and not player.isDead then
         cam:attach()
         love.graphics.setColor(1,1,1)
-            --love.graphics.rectangle("fill",0 ,-1000 ,10000, 10000)
 
-            --love.graphics.draw(mappa, 2000, -369)
-            --love.graphics.draw(mappa, 4000, -369)
-           local bgGroup = map.layers["Background"]
-            if bgGroup and bgGroup.type == "group" and bgGroup.layers then
-                for _, layer in ipairs(bgGroup.layers) do
-                    if layer.type == "imagelayer" or layer.type == "tilelayer" then
-                        map:drawLayer(layer)
-                    end
-                end
-            end
+            map:drawLayer(map.layers["bg"])
+            map:drawLayer(map.layers["cimitero1"])
+            map:drawLayer(map.layers["chapel"])
+            map:drawLayer(map.layers["cimitero2"])
+            map:drawLayer(map.layers["città1"])
+            map:drawLayer(map.layers["città2"])
             
-            --map:drawLayer(map.layers["Block"])
+            map:drawLayer(map.layers["Bloc_BG2"])
+            map:drawLayer(map.layers["Block_BG"])
+            map:drawLayer(map.layers["Block"])
 
+            map:drawLayer(map.layers["Church"])
 
 
             if player and not player.isDead then
@@ -420,7 +420,9 @@ end
 ---
 
 function gameplay.mousemoved(x, y, dx, dy, istouch)
-    Pause.mousemoved(x, y, dx, dy, istouch)
+    if ispause then
+        Pause.mousemoved(x, y, dx, dy, istouch)
+    end
 end
 
 function gameplay.mousepressed(x, y, button, istouch, presses)
@@ -434,7 +436,9 @@ function gameplay.mousepressed(x, y, button, istouch, presses)
 end
 
 function gameplay.mousereleased(x, y, button, istouch, presses)
-    Pause.mousereleased(x, y, button, istouch, presses)
+    if ispause then
+        Pause.mousereleased(x, y, button, istouch, presses)
+    end
 end
 function  gameplay.keypressed(key, scancode, isrepeat)
     if player then

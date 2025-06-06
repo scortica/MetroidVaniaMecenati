@@ -129,7 +129,7 @@ end
 
 function Player:heal()
     if self.lp < self.maxLp and not self.healing then
-        if (self.crossPoints/4)>1 then
+        if self.crossPoints >= 4 then
             self.healing = true
             self.healTimer = 0
             self.lp = self.lp + 1
@@ -195,6 +195,12 @@ function Player:load()
                 local enemyObj = collider_2:getObject()
 
                 self.hitted = true
+                print(enemyObj)
+                if enemyObj == "EnemyGhost" then
+                    enemyObj.attackHasHit = true
+                    enemyObj.attackTimer = 0
+                end
+                
                 self.hitTimer = 0
             
 
