@@ -252,7 +252,9 @@ function Player:load()
         if other.collision_class == "EnemyAttack" then
             if self.parry and not self.succParry then
                 local object =  other:getObject()
-                object:getParried()
+                if object and object.getParried then
+                    object:getParried()
+                end
                 self.succParry = true
                 self:chargeCross()
                 hitFreezeTimer = hitFreezeDuration + 0.1

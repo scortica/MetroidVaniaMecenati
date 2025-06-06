@@ -10,11 +10,13 @@ local left=love.graphics.newImage("Assets/Sprites/UI/MoveLeft.png")
 local right=love.graphics.newImage("Assets/Sprites/UI/MoveRight.png")
 local jump=love.graphics.newImage("Assets/Sprites/UI/Jump.png")
 local heal=love.graphics.newImage("Assets/Sprites/UI/Heal.png")
-
+local pauseMenu = nil
 
 
 function keybinds.load(cb)
     callbacks = cb or {}
+
+    pauseMenu = love.graphics.newImage("Assets/Pause/PauseCornice.png")
 
 end
 
@@ -23,6 +25,13 @@ function keybinds.update(dt)
 end
 
 function keybinds.draw()
+
+    love.graphics.setColor(50/255, 60/255, 57/255, 0.5)
+    love.graphics.rectangle("fill", 0, 0, SETTINGS.DISPLAY.WIDTH, SETTINGS.DISPLAY.HEIGHT)
+
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.draw(pauseMenu, 0, 0, 0, 0.5, 0.5)
+    
     -- Draw the game here
     love.graphics.draw(atk, 400, 200)
     love.graphics.draw(parry, 400, 300)
@@ -32,6 +41,8 @@ function keybinds.draw()
     love.graphics.draw(heal, 400, 700)
 
 end
+
+
 
 function keybinds.keyreleased(key, scancode)
 
