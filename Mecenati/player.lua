@@ -195,7 +195,6 @@ function Player:load()
                 local enemyObj = collider_2:getObject()
 
                 self.hitted = true
-                print(enemyObj)
                 if enemyObj == "EnemyGhost" then
                     enemyObj.attackHasHit = true
                     enemyObj.attackTimer = 0

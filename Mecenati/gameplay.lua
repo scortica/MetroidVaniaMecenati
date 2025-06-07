@@ -26,7 +26,8 @@ local player = nil
 local enemyManager = nil
 local anchor = nil
 local initialSpawn = nil
-local checkpointSpawn = nil
+local checkpointSpawn = {}
+local savedCheckpoint = nil
 
 hitFreezeTimer = 0
 hitFreezeDuration = 0.08
@@ -44,6 +45,9 @@ local lpBottles = {}
 local lastPlayerLp = nil
 local bottleAnimDuration = 0.25 -- durata animazione svuotamento (in secondi)
 
+local keyObject = nil
+local keySprite = love.graphics.newImage("Assets/Sprites/player.png")
+local doorCollider = nil
 --------------------------------------------------
 
 --------------------------------------------------
@@ -68,8 +72,9 @@ local function checkPlayerCheckpoint()
     if checkpointSpawn and player then
         local dx = player.x - checkpointSpawn.x
         local dy = player.y - checkpointSpawn.y
-        if math.abs(dx) < 32 and math.abs(dy) < 32 then -- 32 is the checkpoint "radius"
-            player.lastCheckpoint = {x = checkpointSpawn.x, y = checkpointSpawn.y}
+        if math.abs(dx) < 50 and math.abs(dy) < 10000 then -- 32 is the checkpoint "radius"
+            savedCheckpoint = {x = checkpointSpawn.x, y = checkpointSpawn.y + 64}
+            checkpointSpawn = nil
         end
     end
 end
@@ -139,10 +144,8 @@ function gameplay.enter(stateMachine)
 
         onRetry = function()
             if stateMachineRef then
-                player.lp = 5
-                player.isDead = false
-                player.x = player.lastCheckpoint.x or initialSpawn.x
-                player.y = player.lastCheckpoint.y or initialSpawn.y
+                -- Save the last checkpoint before resetting
+                gameplay.reset()
                 gameplay.enter(stateMachineRef)
             else
                 print("Error: state_machine_ref is nil")
@@ -179,20 +182,16 @@ function gameplay.enter(stateMachine)
         end
     end
 
-    if not player then
-        if initialSpawn then
-            player = Player.new({x = initialSpawn.x, y = initialSpawn.y, speed = 150})
-            player:load()
-            player.lp = 5
-            player.isDead = false
-            player.lastCheckpoint = {x = initialSpawn.x, y = initialSpawn.y}
-        end
-    else
-        -- On reload (retry), respawn at last checkpoint
-        if player.lastCheckpoint then
-            player.x = player.lastCheckpoint.x
-            player.y = player.lastCheckpoint.y
-        end
+    local spawn = initialSpawn
+    if savedCheckpoint then
+        spawn = savedCheckpoint
+    end
+    if spawn then
+        player = Player.new({x = spawn.x, y = spawn.y, speed = 150})
+        player:load()
+        player.lp = 5
+        player.isDead = false
+        player.lastCheckpoint = {x = spawn.x, y = spawn.y}
     end
     
    
@@ -202,9 +201,21 @@ function gameplay.enter(stateMachine)
             local platform = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
             platform:setType("static")
             platform:setCollisionClass("Platform")
+            if obj.name == "Door" then
+                doorCollider = platform
+            end
             table.insert(platforms, platform)
         end
     end
+
+    if map.layers["Key"] then
+        for _, obj in ipairs(map.layers["Key"].objects) do
+            if obj.name == "Key" then
+                keyObject = {x = obj.x, y = obj.y, width = obj.width or 32, height = obj.height or 32, collected = false}
+            end
+        end
+    end
+
     if player then
         anchor = CameraAnchor.new(player.x, player.y, 3)
     end
@@ -232,11 +243,8 @@ end
 
 
 
-
-
-
-
 function gameplay.update(dt)
+    print(savedCheckpoint)
     if player and not player.isDead then
         checkPlayerCheckpoint()
          if hitFreezeTimer > 0 then
@@ -271,6 +279,19 @@ function gameplay.update(dt)
                     shakeY = love.math.random(-camShakeMagnitude, camShakeMagnitude)
                 end
                 cam:lookAt(anchor.x + shakeX, anchor.y + shakeY)
+
+                if cam.x < SETTINGS.DISPLAY.WIDTH/2 then
+                    cam.x = SETTINGS.DISPLAY.WIDTH/2
+                end
+                if cam.y < SETTINGS.DISPLAY.HEIGHT/2 then
+                    cam.y = SETTINGS.DISPLAY.HEIGHT/2
+                end
+                if cam.x > map.width * map.tilewidth - SETTINGS.DISPLAY.WIDTH/2 then
+                    cam.x = map.width * map.tilewidth - SETTINGS.DISPLAY.WIDTH/2
+                end
+                if cam.y > map.height * map.tileheight - SETTINGS.DISPLAY.HEIGHT/2 then
+                    cam.y = map.height * map.tileheight - SETTINGS.DISPLAY.HEIGHT/2
+                end
             end
             if enemyManager then
                 enemyManager:update(dt, player)
@@ -333,6 +354,18 @@ function gameplay.update(dt)
                 end
             end
         end
+        if keyObject and not keyObject.collected then
+            local px, py = player.x, player.y
+            -- Simple AABB collision
+            if px + player.width > keyObject.x and px < keyObject.x + keyObject.width and
+            py + player.height > keyObject.y and py < keyObject.y + keyObject.height then
+                keyObject.collected = true
+                player.isKey = true
+            end
+        elseif keyObject and doorCollider then
+            doorCollider:destroy()
+            doorCollider = nil
+        end
     else
         if player and player.isDead then
             if stateMachineRef then
@@ -351,28 +384,38 @@ function gameplay.draw()
         cam:attach()
         love.graphics.setColor(1,1,1)
 
+        
+        ----------------- BG DRAW ---------------------
             map:drawLayer(map.layers["bg"])
             map:drawLayer(map.layers["cimitero1"])
             map:drawLayer(map.layers["chapel"])
             map:drawLayer(map.layers["cimitero2"])
             map:drawLayer(map.layers["città1"])
             map:drawLayer(map.layers["città2"])
-            
+
+        --------------------------------------------------     
+        ----------------- LAYER DRAW ---------------------
             map:drawLayer(map.layers["Bloc_BG2"])
             map:drawLayer(map.layers["Block_BG"])
             map:drawLayer(map.layers["Block"])
 
-            map:drawLayer(map.layers["Church"])
+            if keyObject and not keyObject.collected then
+                map:drawLayer(map.layers["Door"])
+                love.graphics.draw(keySprite, keyObject.x, keyObject.y)
+             end
+-------------------------------------------------
+           
 
 
             if player and not player.isDead then
                 player:draw() 
             end
-
+                
             if enemyManager then
                 enemyManager:draw()
             end
 
+            map:drawLayer(map.layers["Church"])
             world:draw()
 
         cam:detach()

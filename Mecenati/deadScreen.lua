@@ -8,7 +8,7 @@ local restart = love.graphics.newImage("Assets/Sprites/UI/restartUI.png")
 
 local stateMachineRef = nil
 
-local debugText = true -- Set to true to enable debug messages
+local debugText = false -- Set to true to enable debug messages
 
 function DeadScreen.load(cb)
     callbacks = cb or {}
