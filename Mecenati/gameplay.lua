@@ -46,7 +46,7 @@ local lastPlayerLp = nil
 local bottleAnimDuration = 0.25 -- durata animazione svuotamento (in secondi)
 
 local keyObject = nil
-local keySprite = love.graphics.newImage("Assets/Sprites/player.png")
+local keySpriteSheet = nil
 local doorCollider = nil
 --------------------------------------------------
 
@@ -96,6 +96,10 @@ function gameplay.enter(stateMachine)
     UI_LP_image = love.graphics.newImage("Assets/Sprites/UI/lpUI.png")
     UI_LP_grid = anim8.newGrid(16, 16, UI_LP_image:getWidth(), UI_LP_image:getHeight())
     UI_LP_animation = anim8.newAnimation(UI_LP_grid('1-5', 1), 1)
+
+    keySpriteSheet = love.graphics.newImage("Assets/Sprites/Key/key.png")
+    keyGrid = anim8.newGrid(60, 30, keySpriteSheet:getWidth(), keySpriteSheet:getHeight())
+    keyAnimation = anim8.newAnimation(keyGrid('1-27', 1), 0.12)
 
     --------------------------------------------------
 
@@ -307,6 +311,9 @@ function gameplay.update(dt)
         UI_PLAYER_animation:update(dt)
         UI_LP_animation:update(dt)
         UI_Cross_animation:update(dt)
+        if keyObject and not keyObject.collected then
+            keyAnimation:update(dt)
+        end
 
         -- Aggiorna animazione boccette LP
         if player and player.maxLp and player.lp and lpBottles then
@@ -404,7 +411,7 @@ function gameplay.draw()
 
             if keyObject and not keyObject.collected then
                 map:drawLayer(map.layers["Door"])
-                love.graphics.draw(keySprite, keyObject.x, keyObject.y)
+                keyAnimation:draw(keySpriteSheet, keyObject.x, keyObject.y)
              end
 -------------------------------------------------
            
