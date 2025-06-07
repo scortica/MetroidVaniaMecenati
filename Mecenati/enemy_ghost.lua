@@ -68,7 +68,7 @@ function EnemyGhost.new(params)
 end
 -----------------------------------------------------------------------------------------------
 
-local debugText = true
+local debugText = false
 
 ---------------------------------FUNZIONI ENEMY------------------------------------------------
 -----------------------------------------------------------------------------------------------
@@ -182,6 +182,10 @@ function EnemyGhost:load()
 end
 
 function EnemyGhost:update(dt,player)
+
+    if debugText then
+        print("Ghost pos:", self.x, self.y, "Player pos:", player.x, player.y)
+    end
     
     if self.flashTimer > 0 then
         self.flashTimer = self.flashTimer - dt
