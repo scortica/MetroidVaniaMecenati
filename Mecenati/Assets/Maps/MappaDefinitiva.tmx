@@ -346,7 +346,7 @@
  </objectgroup>
  <objectgroup id="13" name="PlayerSpawn">
   <object id="178" name="Spawn" x="16288" y="827" width="56" height="115"/>
-  <object id="179" name="CheckPoint" x="25586" y="1780" width="194" height="327"/>
+  <object id="179" name="CheckPoint" x="25595" y="1784" width="194" height="327"/>
  </objectgroup>
  <objectgroup id="15" name="EnemySpawn">
   <object id="180" name="Ghost" x="25249" y="1866" width="120" height="233"/>
