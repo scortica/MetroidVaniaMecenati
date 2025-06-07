@@ -181,7 +181,7 @@ function EnemyShooter:load()
     self.image = love.graphics.newImage(self.spriteSheetPath.idle)
     self.collider:setCollisionClass("Enemy")
     self.collider:setFixedRotation(true)
-    self.collider:setLinearDamping(10) 
+     
    
 
     self.enemySprite = {
@@ -227,6 +227,15 @@ function EnemyShooter:update(dt,player)
 
     self.x = self.collider:getX()
     self.y = self.collider:getY()
+
+    local vx, vy = self.collider:getLinearVelocity()
+    if math.abs(vy) < 1 then
+        -- Likely on ground
+        self.collider:setLinearDamping(10)
+    else
+        -- In air (falling or jumping)
+        self.collider:setLinearDamping(0)
+    end
 
 
     if self.shootCooldownTimer > 0 then

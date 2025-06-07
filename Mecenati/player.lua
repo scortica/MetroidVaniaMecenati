@@ -29,6 +29,8 @@ function Player.new(params)
     self.isDead = false
     self.healing = false
     self.healTimer = 0
+    self.redGlowTimer = 0
+    self.redGlowDuration = 0.3
 
     self.jumpNum = 0
     self.jumpResetTime = 0.095
@@ -473,7 +475,9 @@ function Player:update(dt)
         self.parryCollider:setPosition(self.collider:getX() - 50, self.collider:getY())
     end
 
-
+    if self.redGlowTimer > 0 then
+        self.redGlowTimer = self.redGlowTimer - dt
+    end
 -----------------------------------------LOGICA ANIMAZIONI----------------------------------------------------
 ---
 ---
@@ -510,13 +514,19 @@ function Player:update(dt)
         end
         -- End healing after animation finishes (assuming 7 frames at 0.15s each)
         self.healTimer = (self.healTimer or 0) + dt
+        if not self.redGlowTriggered and self.healTimer > 5 * 0.15 then
+            self.redGlowTimer = self.redGlowDuration
+            self.redGlowTriggered = true
+        end
         if self.healTimer > 7 * 0.15 then
             self.healing = false
             self.healTimer = 0
             self.currentAnimation = self.playerSprite.idle
+            
         end
         return -- skip other animation logic while healing
 
+    
 ------------------------------------------------SALTO--------------------------------------------------------
 
     elseif not self.isGrounded then
@@ -649,7 +659,11 @@ end
 ---------------------------------------------DRAW----------------------------------------------------------------------------------------
 	
 function Player:draw()
-    love.graphics.setColor(1,1,1,1)
+    if self.redGlowTimer > 0 then
+        love.graphics.setColor(1, 0, 0, 1) -- red tint
+    else
+        love.graphics.setColor(1, 1, 1, 1)
+    end
     if self.currentAnimation then
         if self.dx == "Right" then
             self.currentAnimation.animation_r:draw(self.currentAnimation.sprite, self.x, self.y, 0, 1 , 1 , self.currentAnimation.sprite:getWidth()/(self.currentAnimation.frameN*3), self.currentAnimation.sprite:getHeight()/2)
