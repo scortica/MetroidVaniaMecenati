@@ -67,6 +67,12 @@ function EnemyManager:update(dt, player)
         if shooter.isActive then
             if isInCameraView(cam, shooter.x, shooter.y) then
                 shooter:update(dt, player)
+            else
+                if shooter.bullet then
+                    shooter.bullet.collider:destroy()
+                    shooter.bullet = nil 
+                end
+
             end
         else
             -- Se il fantasma non è attivo, rimuovilo dalla lista

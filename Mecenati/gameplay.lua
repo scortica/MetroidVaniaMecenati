@@ -73,7 +73,7 @@ local function checkPlayerCheckpoint()
         local dx = player.x - checkpointSpawn.x
         local dy = player.y - checkpointSpawn.y
         if math.abs(dx) < 50 and math.abs(dy) < 10000 then -- 32 is the checkpoint "radius"
-            savedCheckpoint = {x = checkpointSpawn.x, y = checkpointSpawn.y + 64}
+            savedCheckpoint = {x = checkpointSpawn.x, y = checkpointSpawn.y + 200}
             checkpointSpawn = nil
         end
     end
@@ -412,7 +412,9 @@ function gameplay.draw()
             if keyObject and not keyObject.collected then
                 map:drawLayer(map.layers["Door"])
                 keyAnimation:draw(keySpriteSheet, keyObject.x, keyObject.y)
-             end
+            else
+                map:drawLayer(map.layers["DoorBG"])
+            end
 -------------------------------------------------
            
 
@@ -426,7 +428,8 @@ function gameplay.draw()
             end
 
             map:drawLayer(map.layers["Church"])
-            world:draw()
+
+            --world:draw()
 
         cam:detach()
 
