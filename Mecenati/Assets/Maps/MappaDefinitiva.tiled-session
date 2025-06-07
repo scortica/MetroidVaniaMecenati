@@ -27,11 +27,11 @@
             "scaleInDock": 1
         },
         "MappaDefinitiva.tmx": {
-            "scale": 0.33,
-            "selectedLayer": 7,
+            "scale": 0.5,
+            "selectedLayer": 12,
             "viewCenter": {
-                "x": 17316.666666666664,
-                "y": 1145.4545454545455
+                "x": 877,
+                "y": 1750
             }
         },
         "MappaDefinitiva.tmx#TS_tileset1": {
@@ -76,8 +76,10 @@
             "scaleInDock": 1
         }
     },
+    "last.exportedFilePath": "C:/Users/amico/Desktop/MetroidVaniaMecenati/Mecenati/Assets/Maps",
     "last.imagePath": "C:/Users/amico/Desktop/MetroidVaniaMecenati/Mecenati/Assets/Maps/Tilez",
     "map.height": 34,
+    "map.lastUsedExportFilter": "Tutti i file (*)",
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 64,
     "map.tileWidth": 64,

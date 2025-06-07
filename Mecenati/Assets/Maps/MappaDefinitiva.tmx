@@ -383,7 +383,7 @@
   <object id="214" name="Door" x="20334" y="1920" width="17" height="128"/>
  </objectgroup>
  <objectgroup id="13" name="PlayerSpawn">
-  <object id="178" name="Spawn" x="24628" y="1973" width="56" height="115"/>
+  <object id="178" name="Spawn" x="92" y="1983" width="56" height="115"/>
   <object id="179" name="CheckPoint" x="25595" y="1784" width="194" height="327"/>
  </objectgroup>
  <objectgroup id="15" name="EnemySpawn">

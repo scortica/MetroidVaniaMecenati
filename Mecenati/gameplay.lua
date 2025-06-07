@@ -495,7 +495,7 @@ function gameplay.draw()
                 map:drawLayer(map.layers["Church"])
             end
 
-            world:draw()
+            --world:draw()
 
         cam:detach()
 
