@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="64" tileheight="64" infinite="0" nextlayerid="3" nextobjectid="1">
- <tileset firstgid="1" source="nero.tsx"/>
- <tileset firstgid="2" source="nero2.tsx"/>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="64" tileheight="64" infinite="0" nextlayerid="6" nextobjectid="7">
+ <editorsettings>
+  <export target="../BossArena.lua" format="lua"/>
+ </editorsettings>
+ <tileset firstgid="1" name="nero" tilewidth="64" tileheight="64" tilecount="1" columns="1">
+  <image source="Sprite-0001.png" width="64" height="64"/>
+ </tileset>
+ <tileset firstgid="2" name="Sprite-0002" tilewidth="64" tileheight="64" tilecount="1" columns="1">
+  <image source="Sprite-0002.png" width="64" height="64"/>
+ </tileset>
  <imagelayer id="2" name="bg" offsetx="-0.0833333" offsety="9.66667">
   <image source="ArenaBossFight.png" width="1920" height="1078"/>
  </imagelayer>
- <layer id="1" name="Livello tile 1" width="30" height="20">
+ <layer id="1" name="Block" width="30" height="20">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -29,4 +36,15 @@
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 </data>
  </layer>
+ <objectgroup id="3" name="Platform">
+  <object id="2" x="0" y="1024" width="1920" height="64"/>
+  <object id="5" x="-77" y="10" width="77" height="1014"/>
+  <object id="6" x="1920" y="10" width="77" height="1014"/>
+ </objectgroup>
+ <objectgroup id="4" name="PlayerSpawn">
+  <object id="3" x="61" y="809" width="91" height="183"/>
+ </objectgroup>
+ <objectgroup id="5" name="EnemySpawn">
+  <object id="4" name="Boss" x="1554" y="764" width="134" height="234"/>
+ </objectgroup>
 </map>

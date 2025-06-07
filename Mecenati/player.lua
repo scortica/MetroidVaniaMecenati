@@ -34,7 +34,7 @@ function Player.new(params)
 
     self.jumpNum = 0
     self.jumpResetTime = 0.095
-    self.collider = world:newBSGRectangleCollider(params.x, params.y, 64, 128, 2)  -- collider del player windfield
+    self.collider = nil
     self.isGrounded = false
 
     self.spriteSheetPath = {idle='Assets/Sprites/player/player_r_idle_sheet.png',
@@ -51,9 +51,9 @@ function Player.new(params)
     self.attackHasHit = false
     self.attackTimer = 0
     self.attackDuration = 0.5
-    self.attackCollider = world:newRectangleCollider(params.x, params.y, 175, 75) -- collider dell'attacco windfield
+    self.attackCollider = nil
 
-    self.parryCollider = world:newRectangleCollider(params.x, params.y, 32 , 128)
+    self.parryCollider = nil
     self.parry = false
     self.parryTimer = 0
     self.parryCooldown = 0.5
@@ -65,7 +65,7 @@ function Player.new(params)
 
     self.knockbackPending = false
     self.knockbackDir = 0
-    self.knockbackStrength = 6000 -- adjust as needed
+    self.knockbackStrength = 6000
     self.knockbackUp = -3000 
 
 
@@ -75,8 +75,6 @@ function Player.new(params)
     self.jumpState = "idle"
     self.apexTimer = 0
     self.succParry = false
-
-    self.collider:setObject(self)
     
     return self
 end
@@ -163,13 +161,17 @@ function Player:load()
 
 
     -- Inizzializzi i vari collider del player, dell'attacco e del parry
+    self.collider = world:newBSGRectangleCollider(self.x, self.y, 64, 128, 2)
     self.collider:setFixedRotation(true)
     self.collider:setCollisionClass("Player")
+    self.collider:setObject(self)
+    self.attackCollider = world:newRectangleCollider(self.x, self.y, 175, 75) -- collider dell'attacco windfield
     self.attackCollider:setType("dynamic")
     self.attackCollider:setFixedRotation(true)
     self.attackCollider:setGravityScale(0)
     self.attackCollider:setCollisionClass("PlayerAttack")
     self.attackCollider:setActive(false)
+    self.parryCollider = world:newRectangleCollider(self.x, self.y, 32 , 128)
     self.parryCollider:setType("dynamic")
     self.parryCollider:setFixedRotation(true)
     self.parryCollider:setGravityScale(0)
@@ -477,6 +479,7 @@ function Player:update(dt)
 
     if self.redGlowTimer > 0 then
         self.redGlowTimer = self.redGlowTimer - dt
+        self.redGlowTriggered = false
     end
 -----------------------------------------LOGICA ANIMAZIONI----------------------------------------------------
 ---

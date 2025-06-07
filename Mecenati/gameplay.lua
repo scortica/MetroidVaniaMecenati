@@ -48,12 +48,36 @@ local bottleAnimDuration = 0.25 -- durata animazione svuotamento (in secondi)
 local keyObject = nil
 local keySpriteSheet = nil
 local doorCollider = nil
+
+
+local currentMapName = "main"
+local bossMap = nil
 --------------------------------------------------
 
 --------------------------------------------------
 -- FUNZIONI 
 --------------------------------------------------
 ---
+local function setupMapCollisions(map)
+    world:destroy()
+    world = wf.newWorld(0, 500, true)
+    world:addCollisionClass('Platform')
+    world:addCollisionClass('Player')
+    world:addCollisionClass('PlayerAttack', {ignores = {'Player', 'Platform'}})
+    world:addCollisionClass('PlayerParry', {ignores = {'Player' , 'PlayerAttack', 'Platform'}})
+    world:addCollisionClass('Enemy', {ignores = {'Player', 'PlayerParry', 'Enemy'}})
+    world:addCollisionClass('EnemyAttack', {ignores = {'Enemy', 'PlayerAttack', 'EnemyAttack'}})
+    platforms = {}
+    if map.layers["Platform"] then
+        for i, obj in pairs(map.layers["Platform"].objects) do
+            local platform = world:newRectangleCollider(obj.x, obj.y, obj.width, obj.height)
+            platform:setType("static")
+            platform:setCollisionClass("Platform")
+            table.insert(platforms, platform)
+        end
+    end
+end
+
 function gameplay.reset()
     player = nil
     world = nil
@@ -65,6 +89,7 @@ function gameplay.reset()
     checkpointSpawn = nil
     lastPlayerLp = nil
     lpBottles = {}
+    currentMapName = "main"
 
 end
 
@@ -164,6 +189,7 @@ function gameplay.enter(stateMachine)
     cam = camera()
 
     map = sti('Assets/Maps/Mappa.lua')
+    bossMap = sti('Assets/Maps/BossArena.lua')
     world = wf.newWorld(0, 500, true)
 
     world:addCollisionClass('Platform')
@@ -249,6 +275,34 @@ end
 
 function gameplay.update(dt)
     if player and not player.isDead then
+
+        if currentMapName == "main" and player.x > map.width * map.tilewidth - 64 then
+            currentMapName = "boss"
+            if not bossMap then
+                bossMap = sti('Assets/Maps/BossArena.lua')
+            end
+            map = bossMap
+           local savedState = {
+                lp = player.lp,
+                crossPoints = player.crossPoints,
+                -- add other fields you want to keep
+            }
+
+            setupMapCollisions(map)
+
+            -- Recreate player at boss spawn
+            local spawnObj = bossMap.layers["PlayerSpawn"].objects[1]
+            player = Player.new({x = spawnObj.x, y = spawnObj.y, speed = 150})
+            player:load()
+            -- Restore saved state
+            player.lp = savedState.lp
+            player.crossPoints = savedState.crossPoints
+            player.isDead = false
+
+            enemyManager:load()
+            -- etc.
+        end
+
         checkPlayerCheckpoint()
         local deathY = map.height * map.tileheight + 200 -- 200 pixels below the map, adjust as needed
         if player.y > deathY then
@@ -285,7 +339,11 @@ function gameplay.update(dt)
                     shakeX = love.math.random(-camShakeMagnitude, camShakeMagnitude)
                     shakeY = love.math.random(-camShakeMagnitude, camShakeMagnitude)
                 end
-                cam:lookAt(anchor.x + shakeX, anchor.y + shakeY)
+                local camYOffset = 0
+                if currentMapName == "boss" then
+                    camYOffset = -50000 -- adjust this value as needed (negative moves camera up)
+                end
+                cam:lookAt(anchor.x + shakeX, anchor.y + shakeY + camYOffset)
 
                 if cam.x < SETTINGS.DISPLAY.WIDTH/2 then
                     cam.x = SETTINGS.DISPLAY.WIDTH/2
@@ -301,7 +359,7 @@ function gameplay.update(dt)
                 end
             end
             if enemyManager then
-                enemyManager:update(dt, player)
+                enemyManager:update(dt, player, currentMapName)
             end
         end
 
@@ -396,24 +454,30 @@ function gameplay.draw()
 
         
         ----------------- BG DRAW ---------------------
+
             map:drawLayer(map.layers["bg"])
-            map:drawLayer(map.layers["cimitero1"])
-            map:drawLayer(map.layers["chapel"])
-            map:drawLayer(map.layers["cimitero2"])
-            map:drawLayer(map.layers["città1"])
-            map:drawLayer(map.layers["città2"])
+            if currentMapName == "main" then
+                map:drawLayer(map.layers["cimitero1"])
+                map:drawLayer(map.layers["chapel"])
+                map:drawLayer(map.layers["cimitero2"])
+                map:drawLayer(map.layers["città1"])
+                map:drawLayer(map.layers["città2"])          
 
         --------------------------------------------------     
         ----------------- LAYER DRAW ---------------------
-            map:drawLayer(map.layers["Bloc_BG2"])
-            map:drawLayer(map.layers["Block_BG"])
+                map:drawLayer(map.layers["Bloc_BG2"])
+                map:drawLayer(map.layers["Block_BG"])
+            end
+
             map:drawLayer(map.layers["Block"])
 
-            if keyObject and not keyObject.collected then
-                map:drawLayer(map.layers["Door"])
-                keyAnimation:draw(keySpriteSheet, keyObject.x, keyObject.y)
-            else
-                map:drawLayer(map.layers["DoorBG"])
+            if currentMapName == "main" then
+                if keyObject and not keyObject.collected then
+                    map:drawLayer(map.layers["Door"])
+                    keyAnimation:draw(keySpriteSheet, keyObject.x, keyObject.y)
+                else
+                    map:drawLayer(map.layers["DoorBG"])
+                end
             end
 -------------------------------------------------
            
@@ -427,9 +491,11 @@ function gameplay.draw()
                 enemyManager:draw()
             end
 
-            map:drawLayer(map.layers["Church"])
+            if currentMapName == "main" then
+                map:drawLayer(map.layers["Church"])
+            end
 
-            --world:draw()
+            world:draw()
 
         cam:detach()
 

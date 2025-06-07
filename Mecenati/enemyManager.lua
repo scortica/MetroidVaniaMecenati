@@ -4,6 +4,7 @@ local Boss = require("boss")
 local EnemyManager = {}
 EnemyManager.__index = EnemyManager
 
+local currentMap = nil
 function EnemyManager
 .new(params)
     local self = setmetatable({}, EnemyManager)
@@ -47,48 +48,52 @@ function EnemyManager:load()
     end
 end
 
-function EnemyManager:update(dt, player)
-    for i, ghost in ipairs(self.ghosts) do
+function EnemyManager:update(dt, player, currentMapName)
+    currentMap = currentMapName or currentMap
+    if currentMap == "main" then
+        for i, ghost in ipairs(self.ghosts) do
 
-        if ghost.isActive then
-            if isInCameraView(cam, ghost.x, ghost.y) then
-                ghost:update(dt, player)
-            end
-        else
-            -- Se il fantasma non è attivo, rimuovilo dalla lista
-            ghost.collider:destroy() -- Distruggi il collider del fantasma
-            ghost.attackCollider:destroy()
-            table.remove(self.ghosts, i)
-        end
-    end
-
-   for i, shooter in ipairs(self.shooters) do
-    
-        if shooter.isActive then
-            if isInCameraView(cam, shooter.x, shooter.y) then
-                shooter:update(dt, player)
-            else
-                if shooter.bullet then
-                    shooter.bullet.collider:destroy()
-                    shooter.bullet = nil 
+            if ghost.isActive then
+                if isInCameraView(cam, ghost.x, ghost.y) then
+                    ghost:update(dt, player)
                 end
-
+            else
+                -- Se il fantasma non è attivo, rimuovilo dalla lista
+                ghost.collider:destroy() -- Distruggi il collider del fantasma
+                ghost.attackCollider:destroy()
+                table.remove(self.ghosts, i)
             end
-        else
-            -- Se il fantasma non è attivo, rimuovilo dalla lista
-            shooter.collider:destroy() -- Distruggi il collider del fantasma
-            if shooter.bullet then
-                shooter.bullet.collider:destroy() -- Distruggi il collider del proiettile se esiste
-            end
-            table.remove(self.shooters, i)
         end
-        
-    end
 
-    for i, boss in ipairs(self.boss) do
-        if boss.isActive then
-            if isInCameraView(cam, boss.x, boss.y) then
-                boss:update(dt)
+    for i, shooter in ipairs(self.shooters) do
+        
+            if shooter.isActive then
+                if isInCameraView(cam, shooter.x, shooter.y) then
+                    shooter:update(dt, player)
+                else
+                    if shooter.bullet then
+                        shooter.bullet.collider:destroy()
+                        shooter.bullet = nil 
+                    end
+
+                end
+            else
+                -- Se il fantasma non è attivo, rimuovilo dalla lista
+                shooter.collider:destroy() -- Distruggi il collider del fantasma
+                if shooter.bullet then
+                    shooter.bullet.collider:destroy() -- Distruggi il collider del proiettile se esiste
+                end
+                table.remove(self.shooters, i)
+            end
+            
+        end
+    else
+
+        for i, boss in ipairs(self.boss) do
+            if boss.isActive then
+                if isInCameraView(cam, boss.x, boss.y) then
+                    boss:update(dt)
+                end
             end
         end
     end
@@ -96,16 +101,18 @@ end
 
 
 function EnemyManager:draw()
-    for i, ghost in ipairs(self.ghosts) do
-        ghost:draw()
-    end
+    if currentMap == "main" then
+        for i, ghost in ipairs(self.ghosts) do
+            ghost:draw()
+        end
 
-    for i, shooter in ipairs(self.shooters) do
-        shooter:draw()
-    end
-
-    for i, boss in ipairs(self.boss) do
-        boss:draw()
+        for i, shooter in ipairs(self.shooters) do
+            shooter:draw()
+        end
+    else
+        for i, boss in ipairs(self.boss) do
+            boss:draw()
+        end
     end
 end
 
