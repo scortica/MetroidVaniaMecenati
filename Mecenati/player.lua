@@ -255,7 +255,6 @@ function Player:load()
                 object:getParried()
                 self.succParry = true
                 self:chargeCross()
-                hitFreezeTimer = hitFreezeDuration + 0.1
             end
         end
     end)

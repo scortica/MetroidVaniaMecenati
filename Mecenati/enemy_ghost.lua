@@ -219,9 +219,9 @@ function EnemyGhost:update(dt,player)
     end
 
     if self.dx == "Right" then
-        self.attackCollider:setPosition(self.x + 50, self.y)
+        self.attackCollider:setPosition(self.x + 40, self.y)
     elseif self.dx == "Left" then
-        self.attackCollider:setPosition(self.x - 50, self.y)
+        self.attackCollider:setPosition(self.x - 40, self.y)
     end
 
     -- Aggiorna il timer dell'attacco
@@ -255,9 +255,22 @@ function EnemyGhost:update(dt,player)
             self.dx = "Right"
         end
         if not self.isAttacking then
-             self:attack(player, dist, dt)
-        end
+            local xDist = (player.x - self.x) / dist
+            local yDist = (player.y - self.y) / dist
+            self.x = self.x + xDist * self.speed * dt
+            self.y = self.y + yDist * self.speed * dt
        
+            if dist <= 70 then
+                self.isAttacking = true
+                self.attackTimer = 0
+            end
+            if self.dx == "Left" then
+                self.currentAnimation = self.animationatk_l
+            else
+                self.currentAnimation = self.animationatk_r
+            end
+            
+        end
     end
 
     self.currentAnimation:update(dt)
