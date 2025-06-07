@@ -244,9 +244,12 @@ end
 
 
 function gameplay.update(dt)
-    print(savedCheckpoint)
     if player and not player.isDead then
         checkPlayerCheckpoint()
+        local deathY = map.height * map.tileheight + 200 -- 200 pixels below the map, adjust as needed
+        if player.y > deathY then
+            player.isDead = true
+        end
          if hitFreezeTimer > 0 then
             hitFreezeTimer = hitFreezeTimer - dt
             return -- skip updates during freeze
